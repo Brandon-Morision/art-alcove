@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Art Alcove — Browse Works</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=DM+Mono:wght@400;500&family=Libre+Baskerville:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    :root {
+      --ink:#0e0b07; --ink-2:#3a3228; --ink-3:#7a6e60;
+      --paper:#f7f3ee; --paper-2:#efe9e0; --paper-3:#e4dbd0; --cream:#faf7f2;
+      --vermillion:#c8391a; --gold:#b8902a; --sage:#4a6b52;
+      --serif:'Playfair Display',Georgia,serif;
+      --body:'Libre Baskerville',Georgia,serif;
+      --mono:'DM Mono',monospace;
+      --t:0.28s cubic-bezier(0.4,0,0.2,1);
+      --r-xs:6px; --r-sm:12px; --r-md:18px; --r-lg:24px; --r-pill:9999px;
+      --sidebar:260px;
+    }
+    *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+    body{font-family:var(--body);background:var(--paper);color:var(--ink);-webkit-font-smoothing:antialiased;overflow-x:hidden;}
+    img{display:block;max-width:100%;} a{text-decoration:none;color:inherit;} button{font-family:inherit;cursor:pointer;border:none;background:none;}
+
+    /* NAV */
+    #nav{position:sticky;top:0;z-index:200;display:flex;align-items:center;justify-content:space-between;padding:0 40px;height:64px;background:rgba(247,243,238,0.92);backdrop-filter:blur(20px);border-bottom:1px solid var(--paper-3);}
+    .nav-logo{font-family:var(--serif);font-size:1.3rem;font-weight:900;color:var(--ink);letter-spacing:-0.02em;display:flex;align-items:baseline;gap:2px;}
+    .nav-logo-dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--vermillion);margin:0 1px 3px;flex-shrink:0;}
+    .nav-links{display:flex;align-items:center;gap:28px;}
+    .nav-links a{font-family:var(--mono);font-size:0.65rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--ink-3);transition:color var(--t);}
+    .nav-links a:hover,.nav-links a.active{color:var(--ink);}
+    .nav-links a.active{color:var(--vermillion);}
+    .btn-primary{font-family:var(--mono);font-size:0.65rem;letter-spacing:0.1em;text-transform:uppercase;color:#fff;padding:8px 18px;background:var(--vermillion);border-radius:var(--r-sm);transition:all var(--t);display:inline-flex;align-items:center;gap:7px;}
+    .btn-primary:hover{background:var(--ink);transform:translateY(-1px);}
+
+    /* PAGE HEADER */
+    .page-header{background:var(--ink);padding:56px 40px 48px;display:flex;align-items:flex-end;justify-content:space-between;}
+    .ph-left{}
+    .ph-overline{font-family:var(--mono);font-size:0.58rem;letter-spacing:0.18em;text-transform:uppercase;color:rgba(255,255,255,0.35);margin-bottom:10px;}
+    .ph-title{font-family:var(--serif);font-size:2.6rem;font-weight:900;color:#fff;line-height:1.05;letter-spacing:-0.02em;}
+    .ph-sub{font-family:var(--mono);font-size:0.65rem;letter-spacing:0.08em;color:rgba(255,255,255,0.35);margin-top:10px;}
+
+    /* TOOLBAR */
+    .toolbar{display:flex;align-items:center;gap:12px;padding:16px 40px;background:var(--cream);border-bottom:1px solid var(--paper-3);overflow-x:auto;scrollbar-width:none;}
+    .toolbar::-webkit-scrollbar{display:none;}
+    .search-bar{display:flex;align-items:center;gap:10px;background:var(--paper);border:1px solid var(--paper-3);border-radius:var(--r-sm);padding:9px 14px;min-width:220px;transition:var(--t);}
+    .search-bar:focus-within{border-color:var(--ink-2);}
+    .search-bar i{color:var(--ink-3);font-size:0.75rem;flex-shrink:0;}
+    .search-bar input{background:none;border:none;outline:none;font-family:var(--mono);font-size:0.7rem;letter-spacing:0.04em;color:var(--ink);width:100%;}
+    .search-bar input::placeholder{color:var(--ink-3);}
+    .toolbar-divider{width:1px;height:24px;background:var(--paper-3);flex-shrink:0;}
+    .filter-chip{font-family:var(--mono);font-size:0.62rem;letter-spacing:0.08em;text-transform:uppercase;padding:7px 14px;border:1px solid var(--paper-3);border-radius:var(--r-pill);color:var(--ink-3);white-space:nowrap;transition:all var(--t);}
+    .filter-chip:hover{border-color:var(--ink-2);color:var(--ink);}
+    .filter-chip.active{background:var(--ink);border-color:var(--ink);color:var(--cream);}
+    .sort-select{font-family:var(--mono);font-size:0.62rem;letter-spacing:0.06em;color:var(--ink-3);border:1px solid var(--paper-3);border-radius:var(--r-sm);padding:7px 12px;background:var(--paper);outline:none;cursor:pointer;margin-left:auto;flex-shrink:0;}
+    .result-count{font-family:var(--mono);font-size:0.62rem;letter-spacing:0.06em;color:var(--ink-3);white-space:nowrap;flex-shrink:0;}
+
+    /* LAYOUT */
+    .browse-layout{display:grid;grid-template-columns:var(--sidebar) 1fr;align-items:start;}
+
+    /* SIDEBAR FILTERS */
+    .filter-sidebar{border-right:1px solid var(--paper-3);background:var(--cream);position:sticky;top:64px;height:calc(100vh - 64px);overflow-y:auto;scrollbar-width:thin;scrollbar-color:var(--paper-3) transparent;}
+    .filter-group{border-bottom:1px solid var(--paper-3);padding:24px 24px;}
+    .filter-group-title{font-family:var(--mono);font-size:0.58rem;letter-spacing:0.16em;text-transform:uppercase;color:var(--ink-3);margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;}
+    .filter-group-title i{font-size:0.6rem;transition:transform var(--t);}
+    .filter-group.open .filter-group-title i{transform:rotate(180deg);}
+    .filter-options{display:flex;flex-direction:column;gap:10px;}
+    .filter-opt{display:flex;align-items:center;gap:10px;font-size:0.84rem;color:var(--ink-2);cursor:pointer;transition:color var(--t);}
+    .filter-opt:hover{color:var(--ink);}
+    .filter-opt input[type=checkbox]{accent-color:var(--vermillion);width:14px;height:14px;flex-shrink:0;}
+    .filter-opt-count{font-family:var(--mono);font-size:0.6rem;color:var(--ink-3);margin-left:auto;}
+    .price-range{display:flex;flex-direction:column;gap:12px;}
+    .price-inputs{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+    .price-input{padding:8px 12px;border:1px solid var(--paper-3);border-radius:var(--r-xs);font-family:var(--mono);font-size:0.7rem;color:var(--ink);background:var(--paper);outline:none;width:100%;transition:border-color var(--t);}
+    .price-input:focus{border-color:var(--ink-2);}
+    .filter-apply{width:100%;padding:10px;background:var(--vermillion);color:#fff;font-family:var(--mono);font-size:0.62rem;letter-spacing:0.1em;text-transform:uppercase;border-radius:var(--r-sm);transition:all var(--t);margin-top:4px;}
+    .filter-apply:hover{background:var(--ink);}
+    .filter-clear{width:100%;padding:8px;background:transparent;color:var(--ink-3);font-family:var(--mono);font-size:0.6rem;letter-spacing:0.1em;text-transform:uppercase;border:1px solid var(--paper-3);border-radius:var(--r-sm);transition:all var(--t);margin-top:6px;}
+    .filter-clear:hover{border-color:var(--ink-2);color:var(--ink);}
+
+    /* GRID */
+    .works-area{padding:28px 32px 80px;}
+    .works-grid{columns:3;column-gap:3px;}
+    .work-card{break-inside:avoid;margin-bottom:3px;border:1px solid var(--paper-3);background:var(--cream);overflow:hidden;cursor:pointer;transition:transform var(--t),box-shadow var(--t);position:relative;}
+    .work-card:hover{transform:translateY(-4px);box-shadow:0 14px 40px rgba(14,11,7,0.12);z-index:2;}
+    .work-img-wrap{position:relative;overflow:hidden;}
+    .work-img-wrap img{width:100%;height:auto;display:block;transition:transform 0.55s ease;}
+    .work-card:hover .work-img-wrap img{transform:scale(1.04);}
+    .work-overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(14,11,7,0.75) 0%,transparent 50%);opacity:0;transition:opacity var(--t);display:flex;align-items:flex-end;padding:16px;}
+    .work-card:hover .work-overlay{opacity:1;}
+    .overlay-btn{font-family:var(--mono);font-size:0.58rem;letter-spacing:0.1em;text-transform:uppercase;color:#fff;padding:7px 14px;border:1px solid rgba(255,255,255,0.35);border-radius:var(--r-xs);transition:all var(--t);}
+    .overlay-btn:hover{background:var(--vermillion);border-color:var(--vermillion);}
+    .work-info{padding:14px 16px 16px;}
+    .work-title{font-family:var(--serif);font-size:0.9rem;font-weight:700;color:var(--ink);margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+    .work-artist{font-family:var(--mono);font-size:0.58rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--ink-3);margin-bottom:10px;}
+    .work-footer{display:flex;align-items:center;justify-content:space-between;padding-top:10px;border-top:1px solid var(--paper-3);}
+    .work-price{font-family:var(--mono);font-size:0.78rem;font-weight:600;color:var(--ink);}
+    .work-save{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--ink-3);font-size:0.75rem;border:1px solid var(--paper-3);transition:all var(--t);}
+    .work-save:hover,.work-save.saved{border-color:var(--vermillion);color:var(--vermillion);}
+    .work-tag{position:absolute;top:10px;left:10px;font-family:var(--mono);font-size:0.55rem;letter-spacing:0.08em;text-transform:uppercase;padding:4px 9px;border-radius:var(--r-pill);font-weight:600;}
+    .tag-new{background:var(--vermillion);color:#fff;}
+    .tag-sold{background:var(--ink);color:var(--cream);}
+
+    @media(max-width:1100px){.works-grid{columns:2;}}
+    @media(max-width:768px){
+      #nav{padding:0 20px;} .nav-links{display:none;}
+      .browse-layout{grid-template-columns:1fr;}
+      .filter-sidebar{display:none;}
+      .works-area{padding:20px 16px 60px;}
+      .works-grid{columns:2;}
+      .toolbar{padding:12px 16px;}
+      .page-header{padding:40px 20px 32px;}
+      .ph-title{font-size:1.8rem;}
+    }
+    @media(max-width:480px){.works-grid{columns:1;}}
+  </style>
+</head>
+<body>
+
+  <nav id="nav">
+    <a href="index.html" class="nav-logo">Art<span class="nav-logo-dot"></span>Alcove</a>
+    <div class="nav-links">
+      <a href="browse.html" class="active">Browse</a>
+      <a href="artist.html">Artists</a>
+      <a href="#">Editorial</a>
+    </div>
+    <a href="dashboard.html" class="btn-primary"><i class="fas fa-plus"></i> Sell</a>
+  </nav>
+
+  <div class="page-header">
+    <div class="ph-left">
+      <div class="ph-overline">Original Art Marketplace</div>
+      <h1 class="ph-title">Browse Works</h1>
+      <div class="ph-sub">12,480 original works · 3,400 artists · 60+ countries</div>
+    </div>
+  </div>
+
+  <div class="toolbar">
+    <div class="search-bar">
+      <i class="fas fa-search"></i>
+      <input type="text" placeholder="Search works, artists, styles…" id="searchInput">
+    </div>
+    <div class="toolbar-divider"></div>
+    <button class="filter-chip active" data-cat="all">All</button>
+    <button class="filter-chip" data-cat="oil">Oil Paintings</button>
+    <button class="filter-chip" data-cat="watercolour">Watercolour</button>
+    <button class="filter-chip" data-cat="photography">Photography</button>
+    <button class="filter-chip" data-cat="abstract">Abstract</button>
+    <button class="filter-chip" data-cat="prints">Prints</button>
+    <div class="toolbar-divider"></div>
+    <div class="result-count" id="resultCount">Showing 12 works</div>
+    <select class="sort-select" id="sortSelect">
+      <option>Sort: Featured</option>
+      <option>Price: Low to High</option>
+      <option>Price: High to Low</option>
+      <option>Newest First</option>
+      <option>Most Popular</option>
+    </select>
+  </div>
+
+  <div class="browse-layout">
+
+    <!-- Sidebar Filters -->
+    <aside class="filter-sidebar">
+      <div class="filter-group open">
+        <div class="filter-group-title">Medium <i class="fas fa-chevron-down"></i></div>
+        <div class="filter-options">
+          <label class="filter-opt"><input type="checkbox" checked> Oil on Canvas <span class="filter-opt-count">2,840</span></label>
+          <label class="filter-opt"><input type="checkbox"> Watercolour <span class="filter-opt-count">1,620</span></label>
+          <label class="filter-opt"><input type="checkbox"> Acrylic <span class="filter-opt-count">980</span></label>
+          <label class="filter-opt"><input type="checkbox"> Photography <span class="filter-opt-count">3,210</span></label>
+          <label class="filter-opt"><input type="checkbox"> Mixed Media <span class="filter-opt-count">760</span></label>
+          <label class="filter-opt"><input type="checkbox"> Printmaking <span class="filter-opt-count">430</span></label>
+          <label class="filter-opt"><input type="checkbox"> Sculpture <span class="filter-opt-count">218</span></label>
+        </div>
+      </div>
+
+      <div class="filter-group open">
+        <div class="filter-group-title">Price Range (KES) <i class="fas fa-chevron-down"></i></div>
+        <div class="price-range">
+          <div class="price-inputs">
+            <input class="price-input" type="number" placeholder="Min" value="0">
+            <input class="price-input" type="number" placeholder="Max" value="500000">
+          </div>
+          <button class="filter-apply">Apply</button>
+          <button class="filter-clear">Clear</button>
+        </div>
+      </div>
+
+      <div class="filter-group open">
+        <div class="filter-group-title">Style <i class="fas fa-chevron-down"></i></div>
+        <div class="filter-options">
+          <label class="filter-opt"><input type="checkbox"> Abstract <span class="filter-opt-count">1,980</span></label>
+          <label class="filter-opt"><input type="checkbox"> Landscape <span class="filter-opt-count">1,240</span></label>
+          <label class="filter-opt"><input type="checkbox"> Portrait <span class="filter-opt-count">870</span></label>
+          <label class="filter-opt"><input type="checkbox"> Still Life <span class="filter-opt-count">540</span></label>
+          <label class="filter-opt"><input type="checkbox"> Figurative <span class="filter-opt-count">390</span></label>
+        </div>
+      </div>
+
+      <div class="filter-group open">
+        <div class="filter-group-title">Size <i class="fas fa-chevron-down"></i></div>
+        <div class="filter-options">
+          <label class="filter-opt"><input type="checkbox"> Small (under 40cm) <span class="filter-opt-count">3,120</span></label>
+          <label class="filter-opt"><input type="checkbox"> Medium (40–80cm) <span class="filter-opt-count">5,440</span></label>
+          <label class="filter-opt"><input type="checkbox"> Large (80–120cm) <span class="filter-opt-count">2,680</span></label>
+          <label class="filter-opt"><input type="checkbox"> Extra Large (120cm+) <span class="filter-opt-count">1,240</span></label>
+        </div>
+      </div>
+
+      <div class="filter-group open">
+        <div class="filter-group-title">Availability <i class="fas fa-chevron-down"></i></div>
+        <div class="filter-options">
+          <label class="filter-opt"><input type="checkbox" checked> For Sale <span class="filter-opt-count">10,840</span></label>
+          <label class="filter-opt"><input type="checkbox"> Print on Demand <span class="filter-opt-count">1,640</span></label>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Works Grid -->
+    <div class="works-area">
+      <div class="works-grid" id="worksGrid"></div>
+    </div>
+
+  </div>
+
+  <script>
+  'use strict';
+  const WORKS = [
+    { id:1, title:'Golden Hour Study',   artist:'Elena Vasquez', price:'KES 54,600',  cat:'oil',       tag:'new',  img:'https://images.unsplash.com/photo-1541961017774-22349e4a1262?w=500&q=80' },
+    { id:2, title:'Meridian',            artist:'Elena Vasquez', price:'KES 136,500', cat:'oil',       tag:'',     img:'https://images.unsplash.com/photo-1547036967-23d11aacaee0?w=500&q=80' },
+    { id:3, title:'Still Water',         artist:'Marcus Chen',   price:'KES 75,400',  cat:'watercolour',tag:'',    img:'https://images.unsplash.com/photo-1579783901586-d88db74b4fe4?w=500&q=80' },
+    { id:4, title:'Harbour at Dusk',     artist:'Amara Osei',    price:'KES 62,400',  cat:'photography',tag:'',    img:'https://images.unsplash.com/photo-1549490349-8643362247b5?w=500&q=80' },
+    { id:5, title:'Chromatic Study III', artist:'Yuki Tanaka',   price:'KES 109,200', cat:'abstract',  tag:'new',  img:'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=500&q=80' },
+    { id:6, title:'Midnight Bloom',      artist:'Elena Vasquez', price:'KES 49,400',  cat:'prints',    tag:'',     img:'https://images.unsplash.com/photo-1579783902614-a3fb3927b6a5?w=500&q=80' },
+    { id:7, title:'Open Field',          artist:'Marcus Chen',   price:'KES 57,200',  cat:'oil',       tag:'',     img:'https://images.unsplash.com/photo-1505765050516-f72dcac9c60e?w=500&q=80' },
+    { id:8, title:'Urban Geometry',      artist:'Yuki Tanaka',   price:'KES 88,400',  cat:'abstract',  tag:'new',  img:'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=500&q=80' },
+    { id:9, title:'Portrait in Ochre',   artist:'Amara Osei',    price:'KES 94,000',  cat:'oil',       tag:'sold', img:'https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=500&q=80' },
+    { id:10,title:'Tide Study No. 4',    artist:'Marcus Chen',   price:'KES 42,900',  cat:'watercolour',tag:'',    img:'https://images.unsplash.com/photo-1544967082-d9d25d867d66?w=500&q=80' },
+    { id:11,title:'Fracture',            artist:'Yuki Tanaka',   price:'KES 130,000', cat:'abstract',  tag:'',     img:'https://images.unsplash.com/photo-1552084117-56a987666449?w=500&q=80' },
+    { id:12,title:'Market Morning',      artist:'Amara Osei',    price:'KES 68,500',  cat:'photography',tag:'new', img:'https://images.unsplash.com/photo-1516912481808-3406841bd33c?w=500&q=80' },
+  ];
+
+  let currentCat = 'all';
+  let savedWorks = new Set();
+
+  function renderWorks(list) {
+    const grid = document.getElementById('worksGrid');
+    const count = document.getElementById('resultCount');
+    if (!grid) return;
+    grid.innerHTML = list.map(w => `
+      <div class="work-card" onclick="location.href='listing.html'">
+        ${w.tag ? `<div class="work-tag tag-${w.tag}">${w.tag}</div>` : ''}
+        <div class="work-img-wrap">
+          <img src="${w.img}" alt="${w.title}" loading="lazy">
+          <div class="work-overlay">
+            <a class="overlay-btn" onclick="event.stopPropagation();location.href='listing.html'">View Work</a>
+          </div>
+        </div>
+        <div class="work-info">
+          <div class="work-title">${w.title}</div>
+          <div class="work-artist">${w.artist}</div>
+          <div class="work-footer">
+            <div class="work-price">${w.price}</div>
+            <button class="work-save${savedWorks.has(w.id)?' saved':''}"
+              onclick="event.stopPropagation();toggleSave(this,${w.id})" aria-label="Save">
+              <i class="${savedWorks.has(w.id)?'fas':'far'} fa-heart"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    `).join('');
+    if (count) count.textContent = `Showing ${list.length} works`;
+  }
+
+  function toggleSave(btn, id) {
+    if (savedWorks.has(id)) { savedWorks.delete(id); btn.classList.remove('saved'); btn.querySelector('i').className='far fa-heart'; }
+    else { savedWorks.add(id); btn.classList.add('saved'); btn.querySelector('i').className='fas fa-heart'; }
+  }
+
+  function filter() {
+    const q = (document.getElementById('searchInput')?.value || '').toLowerCase();
+    return WORKS.filter(w =>
+      (currentCat === 'all' || w.cat === currentCat) &&
+      (!q || w.title.toLowerCase().includes(q) || w.artist.toLowerCase().includes(q))
+    );
+  }
+
+  renderWorks(WORKS);
+
+  document.querySelectorAll('.filter-chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+      chip.classList.add('active');
+      currentCat = chip.dataset.cat || 'all';
+      renderWorks(filter());
+    });
+  });
+
+  const searchInput = document.getElementById('searchInput');
+  if (searchInput) {
+    let debounce;
+    searchInput.addEventListener('input', () => {
+      clearTimeout(debounce);
+      debounce = setTimeout(() => renderWorks(filter()), 200);
+    });
+  }
+
+  document.querySelectorAll('.filter-group-title').forEach(title => {
+    title.addEventListener('click', () => title.closest('.filter-group').classList.toggle('open'));
+  });
+  </script>
+</body>
+</html>
