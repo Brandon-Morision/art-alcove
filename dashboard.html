@@ -1,0 +1,1073 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Art Alcove — Dashboard</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Mono:wght@400;500&family=Libre+Baskerville:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <style>
+    /* ═══════════════════════════════════════
+       DESIGN TOKENS
+    ═══════════════════════════════════════ */
+    :root {
+      --ink:        #0e0b07;
+      --ink-2:      #3a3228;
+      --ink-3:      #7a6e60;
+      --paper:      #f7f3ee;
+      --paper-2:    #efe9e0;
+      --paper-3:    #e4dbd0;
+      --cream:      #faf7f2;
+      --vermillion: #c8391a;
+      --gold:       #b8902a;
+      --gold-light: #d4b04a;
+      --sage:       #4a6b52;
+      --sage-light: #e8f0ea;
+
+      --serif: 'Playfair Display', Georgia, serif;
+      --body:  'Libre Baskerville', Georgia, serif;
+      --mono:  'DM Mono', monospace;
+
+      --t: 0.28s cubic-bezier(0.4,0,0.2,1);
+
+      --r-xs:  6px;
+      --r-sm:  12px;
+      --r-md:  18px;
+      --r-lg:  24px;
+      --r-xl:  32px;
+      --r-pill:9999px;
+
+      --sidebar-w: 240px;
+      --topnav-h:  64px;
+    }
+
+    /* ═══════════════════════════════════════
+       RESET
+    ═══════════════════════════════════════ */
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+    img { display:block; max-width:100%; }
+    a   { text-decoration:none; color:inherit; }
+    button { font-family:inherit; cursor:pointer; border:none; background:none; }
+
+    /* ═══════════════════════════════════════
+       LAYOUT — CSS Grid shell, cannot break
+    ═══════════════════════════════════════ */
+    body {
+      font-family: var(--body);
+      background: var(--paper);
+      color: var(--ink);
+      -webkit-font-smoothing: antialiased;
+      display: grid;
+      grid-template-columns: var(--sidebar-w) 1fr;
+      grid-template-rows: var(--topnav-h) 1fr;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    /* ═══════════════════════════════════════
+       TOP NAV  — spans full width above both columns
+    ═══════════════════════════════════════ */
+    #topnav {
+      grid-column: 1 / -1;
+      grid-row: 1;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 28px 0 0;
+      background: var(--ink);
+      border-bottom: 1px solid rgba(255,255,255,0.07);
+      z-index: 100;
+      overflow: hidden;
+    }
+
+    .nav-left {
+      display: flex;
+      align-items: center;
+      height: 100%;
+    }
+
+    /* Collapse toggle — matches sidebar width */
+    #sidebarToggle {
+      width: var(--sidebar-w);
+      height: 100%;
+      display: flex;
+      align-items: center;
+      padding: 0 24px;
+      gap: 14px;
+      color: rgba(255,255,255,0.5);
+      font-size: 1.1rem;
+      transition: color var(--t), background var(--t);
+      flex-shrink: 0;
+      border-right: 1px solid rgba(255,255,255,0.07);
+      transition: width var(--t);
+    }
+    #sidebarToggle:hover { color: #fff; background: rgba(255,255,255,0.04); }
+
+    .nav-logo-text {
+      font-family: var(--serif);
+      font-size: 1.2rem;
+      font-weight: 900;
+      color: #fff;
+      letter-spacing: -0.02em;
+      white-space: nowrap;
+      overflow: hidden;
+      transition: opacity var(--t), width var(--t);
+    }
+    .nav-logo-dot {
+      display: inline-block;
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--vermillion);
+      margin: 0 1px 3px 1px;
+      flex-shrink: 0;
+    }
+
+    .nav-center {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      padding: 0 28px;
+    }
+
+    .nav-search-wrap {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: var(--r-sm);
+      padding: 8px 14px;
+      width: 300px;
+      transition: var(--t);
+    }
+    .nav-search-wrap:focus-within {
+      border-color: rgba(200,57,26,0.4);
+      background: rgba(255,255,255,0.09);
+    }
+    .nav-search-wrap i { color: rgba(255,255,255,0.3); font-size:0.8rem; }
+    .nav-search-wrap input {
+      background: none; border: none; outline: none;
+      color: #fff;
+      font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.06em;
+      width: 100%;
+    }
+    .nav-search-wrap input::placeholder { color: rgba(255,255,255,0.3); }
+
+    .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .nav-icon-btn {
+      width: 36px; height: 36px;
+      border-radius: var(--r-sm);
+      display: flex; align-items: center; justify-content: center;
+      color: rgba(255,255,255,0.5);
+      font-size: 0.85rem;
+      position: relative;
+      transition: color var(--t), background var(--t);
+    }
+    .nav-icon-btn:hover { color: #fff; background: rgba(255,255,255,0.07); }
+
+    .nav-badge {
+      position: absolute; top: 4px; right: 4px;
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--vermillion);
+      border: 1.5px solid var(--ink);
+    }
+
+    .nav-avatar {
+      width: 34px; height: 34px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid rgba(255,255,255,0.15);
+      cursor: pointer;
+      transition: border-color var(--t);
+    }
+    .nav-avatar:hover { border-color: var(--vermillion); }
+
+    .nav-divider {
+      width: 1px; height: 24px;
+      background: rgba(255,255,255,0.1);
+    }
+
+    /* ═══════════════════════════════════════
+       SIDEBAR
+    ═══════════════════════════════════════ */
+    #sidebar {
+      grid-column: 1;
+      grid-row: 2;
+      background: var(--cream);
+      border-right: 1px solid var(--paper-3);
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+      overflow-x: hidden;
+      transition: width var(--t);
+      width: var(--sidebar-w);
+      scrollbar-width: thin;
+      scrollbar-color: var(--paper-3) transparent;
+    }
+
+    body.collapsed {
+      grid-template-columns: 70px 1fr;
+    }
+    body.collapsed #sidebar { width: 70px; }
+    body.collapsed #sidebarToggle { width: 70px; }
+    body.collapsed .snav-label,
+    body.collapsed .snav-group-label,
+    body.collapsed .sidebar-artist-info,
+    body.collapsed .sidebar-footer-links,
+    body.collapsed .snav-badge { display: none; }
+    body.collapsed .sidebar-artist-card { align-items: center; padding: 20px 14px; }
+    body.collapsed .snav-link { justify-content: center; padding: 12px; }
+    body.collapsed .nav-logo-text { opacity: 0; width: 0; overflow: hidden; }
+    body.collapsed #sidebarToggle { justify-content: center; }
+
+    /* Artist card */
+    .sidebar-artist-card {
+      padding: 24px 20px;
+      border-bottom: 1px solid var(--paper-3);
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .sac-avatar-wrap { position: relative; display: inline-block; margin-bottom: 12px; }
+    .sac-avatar {
+      width: 52px; height: 52px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid var(--paper-3);
+    }
+    .sac-verified {
+      position: absolute; bottom: -2px; right: -2px;
+      width: 18px; height: 18px;
+      border-radius: 50%;
+      background: var(--sage);
+      border: 2px solid var(--cream);
+      display: flex; align-items: center; justify-content: center;
+      color: #fff; font-size: 0.48rem;
+    }
+    .sac-name {
+      font-family: var(--serif);
+      font-size: 0.95rem; font-weight: 700;
+      color: var(--ink);
+    }
+    .sac-handle {
+      font-family: var(--mono);
+      font-size: 0.6rem; letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--ink-3);
+      margin-bottom: 8px;
+    }
+    .sac-stars { color: var(--gold); font-size: 0.6rem; letter-spacing: 1px; }
+
+    /* Nav links */
+    .sidebar-nav { padding: 12px; flex: 1; }
+
+    .snav-group-label {
+      font-family: var(--mono);
+      font-size: 0.55rem; letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--ink-3);
+      padding: 10px 8px 4px;
+      margin-top: 4px;
+    }
+
+    .snav-link {
+      display: flex; align-items: center; gap: 11px;
+      padding: 10px 12px;
+      border-radius: var(--r-sm);
+      font-family: var(--mono);
+      font-size: 0.68rem; letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--ink-3);
+      cursor: pointer;
+      transition: all var(--t);
+      position: relative;
+      margin-bottom: 2px;
+      white-space: nowrap;
+    }
+    .snav-link:hover { background: var(--paper-2); color: var(--ink); }
+    .snav-link.active { background: var(--ink); color: var(--cream); }
+    .snav-link.active i { color: var(--cream); }
+    .snav-link i {
+      width: 16px; text-align: center;
+      font-size: 0.78rem;
+      color: var(--ink-3);
+      flex-shrink: 0;
+      transition: color var(--t);
+    }
+    .snav-link:hover i { color: var(--ink); }
+
+    .snav-badge {
+      margin-left: auto;
+      background: var(--vermillion); color: #fff;
+      font-size: 0.55rem; padding: 2px 6px;
+      border-radius: var(--r-pill);
+      font-weight: 600;
+    }
+    .snav-badge--gold { background: var(--gold); }
+
+    .sidebar-footer-links {
+      padding: 16px;
+      border-top: 1px solid var(--paper-3);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .sidebar-ext-link {
+      display: flex; align-items: center; gap: 10px;
+      padding: 9px 12px;
+      border: 1px solid var(--paper-3);
+      border-radius: var(--r-sm);
+      font-family: var(--mono); font-size: 0.62rem;
+      letter-spacing: 0.08em; text-transform: uppercase;
+      color: var(--ink-3);
+      transition: all var(--t);
+    }
+    .sidebar-ext-link:hover { border-color: var(--ink-2); color: var(--ink); }
+    .sidebar-ext-link i:last-child { margin-left: auto; font-size: 0.55rem; opacity: 0.5; }
+
+    /* ═══════════════════════════════════════
+       MAIN CONTENT
+    ═══════════════════════════════════════ */
+    #main {
+      grid-column: 2;
+      grid-row: 2;
+      overflow-y: auto;
+      overflow-x: hidden;
+      background: var(--paper);
+      scroll-behavior: smooth;
+    }
+
+    .section { display: none; padding: 40px 44px 80px; }
+    .section.active { display: block; }
+
+    /* Page header */
+    .page-header {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      margin-bottom: 36px;
+      padding-bottom: 24px;
+      border-bottom: 1px solid var(--paper-3);
+    }
+    .page-label {
+      font-family: var(--mono);
+      font-size: 0.6rem; letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--vermillion);
+      margin-bottom: 8px;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .page-label::before {
+      content: '';
+      display: block;
+      width: 20px; height: 1.5px;
+      background: var(--vermillion);
+    }
+    .page-title {
+      font-family: var(--serif);
+      font-size: 2rem; font-weight: 900;
+      color: var(--ink); line-height: 1.1;
+    }
+    .page-sub {
+      font-size: 0.85rem; color: var(--ink-3);
+      margin-top: 4px;
+    }
+    .btn-primary {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 11px 22px;
+      background: var(--vermillion);
+      color: #fff;
+      font-family: var(--mono); font-size: 0.7rem;
+      letter-spacing: 0.08em; text-transform: uppercase;
+      border-radius: var(--r-sm);
+      transition: all var(--t);
+      white-space: nowrap;
+    }
+    .btn-primary:hover {
+      background: var(--ink);
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(14,11,7,0.2);
+    }
+
+    /* ── KPI Cards ── */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 3px;
+      margin-bottom: 32px;
+    }
+    .kpi-card {
+      background: var(--cream);
+      border: 1px solid var(--paper-3);
+      padding: 24px;
+      position: relative;
+      overflow: hidden;
+    }
+    .kpi-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+    }
+    .kpi-card--rev::before  { background: var(--vermillion); }
+    .kpi-card--sold::before { background: var(--gold); }
+    .kpi-card--views::before{ background: var(--sage); }
+    .kpi-card--rating::before{ background: var(--ink-3); }
+    .kpi-card:first-child { border-radius: var(--r-sm) 0 0 var(--r-sm); }
+    .kpi-card:last-child  { border-radius: 0 var(--r-sm) var(--r-sm) 0; }
+
+    .kpi-label {
+      font-family: var(--mono); font-size: 0.6rem;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--ink-3); margin-bottom: 10px;
+    }
+    .kpi-value {
+      font-family: var(--serif);
+      font-size: 1.75rem; font-weight: 900;
+      color: var(--ink); line-height: 1;
+      margin-bottom: 8px;
+    }
+    .kpi-delta {
+      font-family: var(--mono);
+      font-size: 0.62rem; letter-spacing: 0.06em;
+      color: var(--sage);
+    }
+    .kpi-delta--down { color: var(--vermillion); }
+
+    /* ── Charts row ── */
+    .charts-row {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 3px;
+      margin-bottom: 32px;
+    }
+
+    .chart-card {
+      background: var(--cream);
+      border: 1px solid var(--paper-3);
+      padding: 28px;
+      border-radius: var(--r-sm);
+    }
+    .chart-card-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 24px;
+    }
+    .chart-title {
+      font-family: var(--serif);
+      font-size: 1rem; font-weight: 700;
+      color: var(--ink);
+    }
+    .chart-sub {
+      font-family: var(--mono);
+      font-size: 0.6rem; letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--ink-3);
+      margin-top: 2px;
+    }
+    .chart-period {
+      font-family: var(--mono); font-size: 0.62rem;
+      color: var(--ink-3); letter-spacing: 0.06em;
+    }
+
+    /* Donut chart */
+    .donut-wrap {
+      display: flex; flex-direction: column;
+      align-items: center; gap: 20px;
+      padding-top: 8px;
+    }
+    .donut-container { position: relative; width: 140px; height: 140px; }
+    .donut-center {
+      position: absolute; inset: 0;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      pointer-events: none;
+    }
+    .donut-total {
+      font-family: var(--serif);
+      font-size: 1.5rem; font-weight: 900;
+      color: var(--ink); line-height: 1;
+    }
+    .donut-label {
+      font-family: var(--mono); font-size: 0.55rem;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--ink-3);
+    }
+    .donut-legend { width: 100%; }
+    .dl-item {
+      display: flex; align-items: center; gap: 10px;
+      padding: 6px 0;
+      border-bottom: 1px solid var(--paper-3);
+      font-family: var(--mono); font-size: 0.65rem;
+    }
+    .dl-item:last-child { border-bottom: none; }
+    .dl-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%; flex-shrink: 0;
+    }
+    .dl-name { flex: 1; color: var(--ink-2); }
+    .dl-pct { color: var(--ink); font-weight: 500; }
+
+    /* ── Recent Orders Table ── */
+    .table-card {
+      background: var(--cream);
+      border: 1px solid var(--paper-3);
+      border-radius: var(--r-sm);
+      overflow: hidden;
+      margin-bottom: 32px;
+    }
+    .table-card-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 20px 24px;
+      border-bottom: 1px solid var(--paper-3);
+    }
+    .table-card-title {
+      font-family: var(--serif); font-size: 1rem; font-weight: 700;
+    }
+    table { width: 100%; border-collapse: collapse; }
+    th {
+      font-family: var(--mono); font-size: 0.58rem;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--ink-3); font-weight: 500;
+      padding: 12px 16px; text-align: left;
+      background: var(--paper-2);
+      border-bottom: 1px solid var(--paper-3);
+    }
+    td {
+      padding: 14px 16px;
+      font-size: 0.84rem;
+      border-bottom: 1px solid var(--paper-3);
+      vertical-align: middle;
+    }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: rgba(14,11,7,0.02); }
+
+    .order-thumb {
+      width: 40px; height: 40px;
+      object-fit: cover;
+      border-radius: var(--r-xs);
+      border: 1px solid var(--paper-3);
+    }
+    .order-title { font-weight: 700; font-size: 0.84rem; color: var(--ink); }
+    .order-medium { font-family: var(--mono); font-size: 0.65rem; color: var(--ink-3); margin-top: 2px; }
+
+    .status-pill {
+      display: inline-flex; align-items: center; gap: 5px;
+      padding: 3px 10px;
+      border-radius: var(--r-pill);
+      font-family: var(--mono); font-size: 0.6rem;
+      letter-spacing: 0.06em; text-transform: uppercase; font-weight: 600;
+    }
+    .status-pill--paid      { background: var(--sage-light);           color: var(--sage); }
+    .status-pill--shipped   { background: rgba(184,144,42,0.12);       color: var(--gold); }
+    .status-pill--delivered { background: rgba(184,144,42,0.12);       color: var(--gold); }
+    .status-pill--pending   { background: rgba(200,57,26,0.1);         color: var(--vermillion); }
+    .status-pill::before    { content:''; width:5px; height:5px; border-radius:50%; background:currentColor; }
+
+    .table-action-btn {
+      font-family: var(--mono); font-size: 0.6rem;
+      letter-spacing: 0.06em; text-transform: uppercase;
+      padding: 5px 12px;
+      border: 1px solid var(--paper-3);
+      border-radius: var(--r-xs);
+      color: var(--ink-3);
+      transition: all var(--t);
+    }
+    .table-action-btn:hover { border-color: var(--ink-2); color: var(--ink); background: var(--paper-2); }
+
+    /* ── Revenue (other sections skeleton) ── */
+    .section-placeholder {
+      display: flex; flex-direction: column; align-items: center;
+      justify-content: center; gap: 16px;
+      min-height: 400px;
+      color: var(--ink-3);
+      font-family: var(--mono); font-size: 0.72rem;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      text-align: center;
+    }
+    .section-placeholder i { font-size: 2.5rem; opacity: 0.25; }
+
+    /* ═══════════════════════════════════════
+       TOAST
+    ═══════════════════════════════════════ */
+    #toast-stack {
+      position: fixed; bottom: 28px; left: 50%;
+      transform: translateX(-50%);
+      z-index: 9000;
+      display: flex; flex-direction: column-reverse;
+      align-items: center; gap: 8px;
+      pointer-events: none;
+    }
+    .toast-item {
+      display: inline-flex; align-items: center; gap: 12px;
+      padding: 12px 22px;
+      background: var(--ink); color: var(--cream);
+      border-radius: var(--r-sm);
+      font-family: var(--mono); font-size: 0.7rem; letter-spacing: 0.06em;
+      box-shadow: 0 8px 32px rgba(14,11,7,0.3);
+      border-left: 3px solid var(--vermillion);
+      pointer-events: all;
+      animation: toastIn 0.3s cubic-bezier(0.34,1.56,0.64,1);
+      transition: opacity 0.2s ease, transform 0.2s ease;
+    }
+    .toast-item.out { opacity: 0; transform: translateY(6px); }
+    @keyframes toastIn {
+      from { opacity:0; transform:translateY(10px) scale(0.96); }
+      to   { opacity:1; transform:translateY(0) scale(1); }
+    }
+
+    /* ═══════════════════════════════════════
+       RESPONSIVE
+    ═══════════════════════════════════════ */
+    @media (max-width: 1100px) {
+      .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+      .charts-row { grid-template-columns: 1fr; }
+      .section { padding: 28px 24px 60px; }
+    }
+    @media (max-width: 768px) {
+      :root { --sidebar-w: 70px; }
+      body { grid-template-columns: 70px 1fr; }
+      .snav-label, .snav-group-label, .sidebar-artist-info,
+      .sidebar-footer-links, .snav-badge { display: none; }
+      .snav-link { justify-content: center; padding: 12px; }
+      .sidebar-artist-card { align-items: center; padding: 16px 10px; }
+      .nav-logo-text { display: none; }
+      #sidebarToggle { width: 70px; justify-content: center; }
+      .kpi-grid { grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 480px) {
+      .kpi-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+
+<body id="body">
+
+  <!-- ══════════ TOP NAV ══════════ -->
+  <header id="topnav">
+    <div class="nav-left">
+      <button id="sidebarToggle" aria-label="Toggle sidebar">
+        <i class="fas fa-bars"></i>
+        <span class="nav-logo-text">Art Alcove<span class="nav-logo-dot"></span></span>
+      </button>
+    </div>
+
+    <div class="nav-center">
+      <div class="nav-search-wrap">
+        <i class="fas fa-search"></i>
+        <input type="text" placeholder="Search orders, works, messages…" aria-label="Search">
+      </div>
+    </div>
+
+    <div class="nav-right">
+      <button class="nav-icon-btn" aria-label="View store" onclick="window.open('browse.html')">
+        <i class="fas fa-external-link-alt"></i>
+      </button>
+      <button class="nav-icon-btn" aria-label="Notifications">
+        <i class="fas fa-bell"></i>
+        <span class="nav-badge"></span>
+      </button>
+      <div class="nav-divider"></div>
+      <img class="nav-avatar"
+        src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=80&q=80"
+        alt="Elena Vasquez">
+    </div>
+  </header>
+
+  <!-- ══════════ SIDEBAR ══════════ -->
+  <aside id="sidebar">
+
+    <div class="sidebar-artist-card">
+      <div class="sac-avatar-wrap">
+        <img class="sac-avatar"
+          src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=80&q=80"
+          alt="Elena Vasquez">
+        <div class="sac-verified"><i class="fas fa-check"></i></div>
+      </div>
+      <div class="sidebar-artist-info">
+        <div class="sac-name">Elena Vasquez</div>
+        <div class="sac-handle">@elenavasquezart</div>
+        <div class="sac-stars">★★★★★</div>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <div class="snav-link active" data-section="overview">
+        <i class="fas fa-th-large"></i>
+        <span class="snav-label">Overview</span>
+      </div>
+
+      <div class="snav-group-label">Sales</div>
+      <div class="snav-link" data-section="orders">
+        <i class="fas fa-shopping-bag"></i>
+        <span class="snav-label">Orders</span>
+        <span class="snav-badge">2</span>
+      </div>
+      <div class="snav-link" data-section="revenue">
+        <i class="fas fa-pound-sign"></i>
+        <span class="snav-label">Payouts</span>
+      </div>
+
+      <div class="snav-group-label">Catalogue</div>
+      <div class="snav-link" data-section="works">
+        <i class="fas fa-images"></i>
+        <span class="snav-label">My Works</span>
+      </div>
+      <div class="snav-link" data-section="upload">
+        <i class="fas fa-plus-circle"></i>
+        <span class="snav-label">Add New Work</span>
+        <span class="snav-badge snav-badge--gold">New</span>
+      </div>
+
+      <div class="snav-group-label">Audience</div>
+      <div class="snav-link" data-section="messages">
+        <i class="fas fa-paper-plane"></i>
+        <span class="snav-label">Messages</span>
+        <span class="snav-badge">3</span>
+      </div>
+      <div class="snav-link" data-section="analytics">
+        <i class="fas fa-chart-line"></i>
+        <span class="snav-label">Analytics</span>
+      </div>
+
+      <div class="snav-group-label">Account</div>
+      <div class="snav-link" data-section="settings">
+        <i class="fas fa-cog"></i>
+        <span class="snav-label">Settings</span>
+      </div>
+      <div class="snav-link" style="color:var(--vermillion)" data-section="logout">
+        <i class="fas fa-sign-out-alt" style="color:var(--vermillion)"></i>
+        <span class="snav-label">Log Out</span>
+      </div>
+    </nav>
+
+    <div class="sidebar-footer-links">
+      <a href="browse.html" class="sidebar-ext-link">
+        <i class="fas fa-images" style="font-size:0.7rem"></i>
+        Browse Gallery
+        <i class="fas fa-external-link-alt"></i>
+      </a>
+      <a href="artist.html" class="sidebar-ext-link">
+        <i class="fas fa-store" style="font-size:0.7rem"></i>
+        Public Profile
+        <i class="fas fa-external-link-alt"></i>
+      </a>
+    </div>
+
+  </aside>
+
+  <!-- ══════════ MAIN ══════════ -->
+  <main id="main">
+
+    <!-- ── OVERVIEW ── -->
+    <div class="section active" id="section-overview">
+      <div class="page-header">
+        <div>
+          <div class="page-label">Dashboard</div>
+          <h1 class="page-title">Good morning, Elena</h1>
+          <p class="page-sub">Here's what's happening with your store today.</p>
+        </div>
+        <button class="btn-primary" onclick="showSection('upload')">
+          <i class="fas fa-plus"></i> Add New Work
+        </button>
+      </div>
+
+      <!-- KPIs -->
+      <div class="kpi-grid">
+        <div class="kpi-card kpi-card--rev">
+          <div class="kpi-label">Total Revenue</div>
+          <div class="kpi-value">KES 1,094,600</div>
+          <div class="kpi-delta"><i class="fas fa-arrow-up" style="font-size:0.5rem"></i> +18% this month</div>
+        </div>
+        <div class="kpi-card kpi-card--sold">
+          <div class="kpi-label">Works Sold</div>
+          <div class="kpi-value">218</div>
+          <div class="kpi-delta"><i class="fas fa-arrow-up" style="font-size:0.5rem"></i> +7 this month</div>
+        </div>
+        <div class="kpi-card kpi-card--views">
+          <div class="kpi-label">Profile Views</div>
+          <div class="kpi-value">4.1K</div>
+          <div class="kpi-delta kpi-delta--down"><i class="fas fa-arrow-down" style="font-size:0.5rem"></i> −23% this month</div>
+        </div>
+        <div class="kpi-card kpi-card--rating">
+          <div class="kpi-label">Avg. Rating</div>
+          <div class="kpi-value">4.9</div>
+          <div class="kpi-delta">Based on 84 reviews</div>
+        </div>
+      </div>
+
+      <!-- Charts -->
+      <div class="charts-row">
+        <div class="chart-card">
+          <div class="chart-card-header">
+            <div>
+              <div class="chart-title">Revenue Over Time</div>
+              <div class="chart-sub">Monthly earnings in KES</div>
+            </div>
+            <div class="chart-period">Last 12 months</div>
+          </div>
+          <canvas id="revenueChart" height="80"></canvas>
+        </div>
+
+        <div class="chart-card">
+          <div class="chart-card-header">
+            <div>
+              <div class="chart-title">Sales by Category</div>
+              <div class="chart-sub">Works sold breakdown</div>
+            </div>
+          </div>
+          <div class="donut-wrap">
+            <div class="donut-container">
+              <canvas id="categoryChart"></canvas>
+              <div class="donut-center">
+                <div class="donut-total">218</div>
+                <div class="donut-label">Total</div>
+              </div>
+            </div>
+            <div class="donut-legend">
+              <div class="dl-item"><div class="dl-dot" style="background:#c8391a"></div><div class="dl-name">Oil Paintings</div><div class="dl-pct">42%</div></div>
+              <div class="dl-item"><div class="dl-dot" style="background:#b8902a"></div><div class="dl-name">Watercolours</div><div class="dl-pct">23%</div></div>
+              <div class="dl-item"><div class="dl-dot" style="background:#4a6b52"></div><div class="dl-name">Prints</div><div class="dl-pct">14%</div></div>
+              <div class="dl-item"><div class="dl-dot" style="background:#7a6e60"></div><div class="dl-name">Other</div><div class="dl-pct">21%</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recent Orders -->
+      <div class="table-card">
+        <div class="table-card-header">
+          <div class="table-card-title">Recent Orders</div>
+          <button class="table-action-btn" onclick="showSection('orders')">View All</button>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>Work</th><th>Buyer</th><th>Amount</th><th>Status</th><th>Date</th><th></th>
+            </tr>
+          </thead>
+          <tbody id="overviewOrdersBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ── ORDERS ── -->
+    <div class="section" id="section-orders">
+      <div class="page-header">
+        <div>
+          <div class="page-label">Sales</div>
+          <h1 class="page-title">Orders</h1>
+          <p class="page-sub">Manage and track your sales.</p>
+        </div>
+      </div>
+      <div class="table-card">
+        <div class="table-card-header">
+          <div class="table-card-title">All Orders</div>
+        </div>
+        <table>
+          <thead>
+            <tr><th>Work</th><th>Buyer</th><th>Amount</th><th>Status</th><th>Date</th><th></th></tr>
+          </thead>
+          <tbody id="allOrdersBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ── PLACEHOLDERS for other sections ── -->
+    <div class="section" id="section-revenue">
+      <div class="page-header"><div><div class="page-label">Sales</div><h1 class="page-title">Payouts</h1></div></div>
+      <div class="section-placeholder"><i class="fas fa-pound-sign"></i>Payout history &amp; bank details coming soon</div>
+    </div>
+    <div class="section" id="section-works">
+      <div class="page-header"><div><div class="page-label">Catalogue</div><h1 class="page-title">My Works</h1></div></div>
+      <div class="section-placeholder"><i class="fas fa-images"></i>Your portfolio listings will appear here</div>
+    </div>
+    <div class="section" id="section-upload">
+      <div class="page-header"><div><div class="page-label">Catalogue</div><h1 class="page-title">Add New Work</h1></div></div>
+      <div class="section-placeholder"><i class="fas fa-plus-circle"></i>Upload form coming soon</div>
+    </div>
+    <div class="section" id="section-messages">
+      <div class="page-header"><div><div class="page-label">Audience</div><h1 class="page-title">Messages</h1></div></div>
+      <div class="section-placeholder"><i class="fas fa-paper-plane"></i>Inbox coming soon</div>
+    </div>
+    <div class="section" id="section-analytics">
+      <div class="page-header"><div><div class="page-label">Audience</div><h1 class="page-title">Analytics</h1></div></div>
+      <div class="section-placeholder"><i class="fas fa-chart-line"></i>Audience analytics coming soon</div>
+    </div>
+    <div class="section" id="section-settings">
+      <div class="page-header"><div><div class="page-label">Account</div><h1 class="page-title">Settings</h1></div></div>
+      <div class="section-placeholder"><i class="fas fa-cog"></i>Account settings coming soon</div>
+    </div>
+
+  </main>
+
+  <!-- ══════════ TOAST ══════════ -->
+  <div id="toast-stack"></div>
+
+  <script>
+  'use strict';
+
+  /* ── Orders data ── */
+  const ORDERS = [
+    { title:'Golden Hour Study', medium:'Oil on Canvas',  buyer:'James T., London', amount:'KES 54,600',  status:'paid',      date:'Today',      img:'https://images.unsplash.com/photo-1541961017774-22349e4a1262?w=80&q=80' },
+    { title:'Meridian',          medium:'Oil & Resin',    buyer:'Priya M., Mumbai', amount:'KES 136,500', status:'shipped',    date:'Yesterday',  img:'https://images.unsplash.com/photo-1547036967-23d11aacaee0?w=80&q=80' },
+    { title:'Still Water',       medium:'Oil on Canvas',  buyer:'Daniel O., NY',    amount:'KES 75,400',  status:'delivered',  date:'3 days ago', img:'https://images.unsplash.com/photo-1579783901586-d88db74b4fe4?w=80&q=80' },
+    { title:'Midnight Bloom',    medium:'Giclee Print',   buyer:'Yui K., Tokyo',    amount:'KES 49,400',  status:'pending',    date:'5 days ago', img:'https://images.unsplash.com/photo-1579783902614-a3fb3927b6a5?w=80&q=80' },
+    { title:'Harbour at Dusk',   medium:'Watercolour',    buyer:'Lars E., Oslo',    amount:'KES 62,400',  status:'delivered',  date:'8 days ago', img:'https://images.unsplash.com/photo-1549490349-8643362247b5?w=80&q=80' },
+  ];
+
+  function orderRow(o) {
+    return `<tr>
+      <td><div style="display:flex;align-items:center;gap:12px">
+        <img class="order-thumb" src="${o.img}" alt="">
+        <div><div class="order-title">${o.title}</div><div class="order-medium">${o.medium}</div></div>
+      </div></td>
+      <td style="font-size:0.82rem;color:var(--ink-2)">${o.buyer}</td>
+      <td style="font-family:var(--mono);font-size:0.78rem;font-weight:600">${o.amount}</td>
+      <td><span class="status-pill status-pill--${o.status}">${o.status.charAt(0).toUpperCase()+o.status.slice(1)}</span></td>
+      <td style="font-family:var(--mono);font-size:0.7rem;color:var(--ink-3)">${o.date}</td>
+      <td><button class="table-action-btn">View</button></td>
+    </tr>`;
+  }
+
+  const overviewBody = document.getElementById('overviewOrdersBody');
+  const allOrdersBody = document.getElementById('allOrdersBody');
+  if (overviewBody) ORDERS.slice(0,4).forEach(o => overviewBody.innerHTML += orderRow(o));
+  if (allOrdersBody) ORDERS.forEach(o => allOrdersBody.innerHTML += orderRow(o));
+
+  /* ── Charts ── */
+  const ctxRevenue = document.getElementById('revenueChart');
+  if (ctxRevenue) {
+    new Chart(ctxRevenue, {
+      type: 'line',
+      data: {
+        labels: ['Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec','Jan'],
+        datasets: [{
+          label: 'Revenue (KES)',
+          data: [42000, 55000, 48000, 65000, 80600, 88400, 98800, 104000, 125100, 142500, 127300, 136500],
+          borderColor: '#c8391a',
+          backgroundColor: 'rgba(200,57,26,0.07)',
+          borderWidth: 2.5,
+          fill: true,
+          tension: 0.4,
+          pointBackgroundColor: '#c8391a',
+          pointRadius: 3,
+          pointHoverRadius: 5,
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            backgroundColor: '#0e0b07',
+            titleFont: { family: "'DM Mono', monospace", size: 10 },
+            bodyFont: { family: "'DM Mono', monospace", size: 11 },
+            padding: 12,
+            callbacks: {
+              label: ctx => ' KES ' + ctx.raw.toLocaleString()
+            }
+          }
+        },
+        scales: {
+          x: {
+            grid: { color: 'rgba(14,11,7,0.05)' },
+            ticks: { font: { family: "'DM Mono', monospace", size: 10 }, color: '#7a6e60' }
+          },
+          y: {
+            grid: { color: 'rgba(14,11,7,0.05)' },
+            ticks: {
+              font: { family: "'DM Mono', monospace", size: 10 },
+              color: '#7a6e60',
+              callback: v => 'K' + (v/1000)
+            }
+          }
+        }
+      }
+    });
+  }
+
+  const ctxCat = document.getElementById('categoryChart');
+  if (ctxCat) {
+    new Chart(ctxCat, {
+      type: 'doughnut',
+      data: {
+        labels: ['Oil Paintings','Watercolours','Prints','Other'],
+        datasets: [{
+          data: [42, 23, 14, 21],
+          backgroundColor: ['#c8391a','#b8902a','#4a6b52','#7a6e60'],
+          borderWidth: 0,
+          hoverOffset: 4,
+        }]
+      },
+      options: {
+        responsive: true,
+        cutout: '72%',
+        plugins: { legend: { display: false }, tooltip: {
+          backgroundColor: '#0e0b07',
+          titleFont: { family: "'DM Mono', monospace", size: 10 },
+          bodyFont: { family: "'DM Mono', monospace", size: 11 },
+          padding: 10,
+        }}
+      }
+    });
+  }
+
+  /* ── Sidebar toggle ── */
+  const body     = document.getElementById('body');
+  const toggleBtn = document.getElementById('sidebarToggle');
+  if (toggleBtn) {
+    toggleBtn.addEventListener('click', () => {
+      body.classList.toggle('collapsed');
+    });
+  }
+
+  /* ── Section navigation ── */
+  function showSection(id) {
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.snav-link').forEach(l => l.classList.remove('active'));
+    const section = document.getElementById('section-' + id);
+    const link    = document.querySelector(`.snav-link[data-section="${id}"]`);
+    if (section) {
+      section.classList.add('active');
+      const main = document.getElementById('main');
+      if (main) main.scrollTop = 0;
+    }
+    if (link) link.classList.add('active');
+  }
+
+  document.querySelectorAll('.snav-link').forEach(link => {
+    link.addEventListener('click', () => {
+      const id = link.dataset.section;
+      if (id === 'logout') { showToast('Logging out…'); return; }
+      showSection(id);
+    });
+  });
+
+  /* ── Toast ── */
+  function showToast(msg) {
+    const stack = document.getElementById('toast-stack');
+    if (!stack) return;
+    const t = document.createElement('div');
+    t.className = 'toast-item';
+    t.textContent = msg;
+    stack.appendChild(t);
+    setTimeout(() => {
+      t.classList.add('out');
+      setTimeout(() => t.remove(), 250);
+    }, 2800);
+  }
+  </script>
+
+</body>
+</html>

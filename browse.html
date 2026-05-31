@@ -1,316 +1,2098 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Art Alcove — Browse Works</title>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="description" content="Art Alcove — Browse & shop original artworks from independent artists worldwide."/>
+  <title>Browse Works — Art Alcove</title>
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=DM+Mono:wght@400;500&family=Libre+Baskerville:wght@400;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=DM+Mono:wght@400;500&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+
   <style>
+    /* ═══════════════════════════════════════
+       TOKENS (shared with homepage)
+    ═══════════════════════════════════════ */
     :root {
-      --ink:#0e0b07; --ink-2:#3a3228; --ink-3:#7a6e60;
-      --paper:#f7f3ee; --paper-2:#efe9e0; --paper-3:#e4dbd0; --cream:#faf7f2;
-      --vermillion:#c8391a; --gold:#b8902a; --sage:#4a6b52;
-      --serif:'Playfair Display',Georgia,serif;
-      --body:'Libre Baskerville',Georgia,serif;
-      --mono:'DM Mono',monospace;
-      --t:0.28s cubic-bezier(0.4,0,0.2,1);
-      --r-xs:6px; --r-sm:12px; --r-md:18px; --r-lg:24px; --r-pill:9999px;
-      --sidebar:260px;
+  /* ── Glassmorphic extension tokens ── */
+  --glass-1:        rgba(250,247,242,0.55);
+  --glass-2:        rgba(250,247,242,0.35);
+  --glass-3:        rgba(250,247,242,0.18);
+  --glass-dark:     rgba(14,11,7,0.55);
+  --glass-border:   rgba(255,255,255,0.45);
+  --glass-border-2: rgba(255,255,255,0.25);
+  --glass-shadow:   0 8px 32px rgba(14,11,7,0.12), 0 2px 8px rgba(14,11,7,0.06);
+  --glass-shadow-lg:0 20px 60px rgba(14,11,7,0.18), 0 4px 16px rgba(14,11,7,0.08);
+  --blur-sm:  blur(10px);
+  --blur-md:  blur(20px);
+  --blur-lg:  blur(32px);
+  /* Rounded edge system */
+  --r-xs:  6px;
+  --r-sm:  12px;
+  --r-md:  18px;
+  --r-lg:  24px;
+  --r-xl:  32px;
+  --r-2xl: 40px;
+  --r-pill:9999px;
+
+      --ink:        #0e0b07;
+      --ink-2:      #3a3228;
+      --ink-3:      #7a6e60;
+      --paper:      #f7f3ee;
+      --paper-2:    #efe9e0;
+      --paper-3:    #e4dbd0;
+      --cream:      #faf7f2;
+      --vermillion: #c8391a;
+      --gold:       #b8902a;
+      --gold-light: #d4b04a;
+      --sage:       #4a6b52;
+
+      --serif: 'Playfair Display', Georgia, serif;
+      --body:  'Libre Baskerville', Georgia, serif;
+      --mono:  'DM Mono', monospace;
+      --t:    0.28s cubic-bezier(0.4,0,0.2,1);
+
+      --sidebar-w: 272px;
     }
-    *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
-    body{font-family:var(--body);background:var(--paper);color:var(--ink);-webkit-font-smoothing:antialiased;overflow-x:hidden;}
-    img{display:block;max-width:100%;} a{text-decoration:none;color:inherit;} button{font-family:inherit;cursor:pointer;border:none;background:none;}
 
-    /* NAV */
-    #nav{position:sticky;top:0;z-index:200;display:flex;align-items:center;justify-content:space-between;padding:0 40px;height:64px;background:rgba(247,243,238,0.92);backdrop-filter:blur(20px);border-bottom:1px solid var(--paper-3);}
-    .nav-logo{font-family:var(--serif);font-size:1.3rem;font-weight:900;color:var(--ink);letter-spacing:-0.02em;display:flex;align-items:baseline;gap:2px;}
-    .nav-logo-dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--vermillion);margin:0 1px 3px;flex-shrink:0;}
-    .nav-links{display:flex;align-items:center;gap:28px;}
-    .nav-links a{font-family:var(--mono);font-size:0.65rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--ink-3);transition:color var(--t);}
-    .nav-links a:hover,.nav-links a.active{color:var(--ink);}
-    .nav-links a.active{color:var(--vermillion);}
-    .btn-primary{font-family:var(--mono);font-size:0.65rem;letter-spacing:0.1em;text-transform:uppercase;color:#fff;padding:8px 18px;background:var(--vermillion);border-radius:var(--r-sm);transition:all var(--t);display:inline-flex;align-items:center;gap:7px;}
-    .btn-primary:hover{background:var(--ink);transform:translateY(-1px);}
-
-    /* PAGE HEADER */
-    .page-header{background:var(--ink);padding:56px 40px 48px;display:flex;align-items:flex-end;justify-content:space-between;}
-    .ph-left{}
-    .ph-overline{font-family:var(--mono);font-size:0.58rem;letter-spacing:0.18em;text-transform:uppercase;color:rgba(255,255,255,0.35);margin-bottom:10px;}
-    .ph-title{font-family:var(--serif);font-size:2.6rem;font-weight:900;color:#fff;line-height:1.05;letter-spacing:-0.02em;}
-    .ph-sub{font-family:var(--mono);font-size:0.65rem;letter-spacing:0.08em;color:rgba(255,255,255,0.35);margin-top:10px;}
-
-    /* TOOLBAR */
-    .toolbar{display:flex;align-items:center;gap:12px;padding:16px 40px;background:var(--cream);border-bottom:1px solid var(--paper-3);overflow-x:auto;scrollbar-width:none;}
-    .toolbar::-webkit-scrollbar{display:none;}
-    .search-bar{display:flex;align-items:center;gap:10px;background:var(--paper);border:1px solid var(--paper-3);border-radius:var(--r-sm);padding:9px 14px;min-width:220px;transition:var(--t);}
-    .search-bar:focus-within{border-color:var(--ink-2);}
-    .search-bar i{color:var(--ink-3);font-size:0.75rem;flex-shrink:0;}
-    .search-bar input{background:none;border:none;outline:none;font-family:var(--mono);font-size:0.7rem;letter-spacing:0.04em;color:var(--ink);width:100%;}
-    .search-bar input::placeholder{color:var(--ink-3);}
-    .toolbar-divider{width:1px;height:24px;background:var(--paper-3);flex-shrink:0;}
-    .filter-chip{font-family:var(--mono);font-size:0.62rem;letter-spacing:0.08em;text-transform:uppercase;padding:7px 14px;border:1px solid var(--paper-3);border-radius:var(--r-pill);color:var(--ink-3);white-space:nowrap;transition:all var(--t);}
-    .filter-chip:hover{border-color:var(--ink-2);color:var(--ink);}
-    .filter-chip.active{background:var(--ink);border-color:var(--ink);color:var(--cream);}
-    .sort-select{font-family:var(--mono);font-size:0.62rem;letter-spacing:0.06em;color:var(--ink-3);border:1px solid var(--paper-3);border-radius:var(--r-sm);padding:7px 12px;background:var(--paper);outline:none;cursor:pointer;margin-left:auto;flex-shrink:0;}
-    .result-count{font-family:var(--mono);font-size:0.62rem;letter-spacing:0.06em;color:var(--ink-3);white-space:nowrap;flex-shrink:0;}
-
-    /* LAYOUT */
-    .browse-layout{display:grid;grid-template-columns:var(--sidebar) 1fr;align-items:start;}
-
-    /* SIDEBAR FILTERS */
-    .filter-sidebar{border-right:1px solid var(--paper-3);background:var(--cream);position:sticky;top:64px;height:calc(100vh - 64px);overflow-y:auto;scrollbar-width:thin;scrollbar-color:var(--paper-3) transparent;}
-    .filter-group{border-bottom:1px solid var(--paper-3);padding:24px 24px;}
-    .filter-group-title{font-family:var(--mono);font-size:0.58rem;letter-spacing:0.16em;text-transform:uppercase;color:var(--ink-3);margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;}
-    .filter-group-title i{font-size:0.6rem;transition:transform var(--t);}
-    .filter-group.open .filter-group-title i{transform:rotate(180deg);}
-    .filter-options{display:flex;flex-direction:column;gap:10px;}
-    .filter-opt{display:flex;align-items:center;gap:10px;font-size:0.84rem;color:var(--ink-2);cursor:pointer;transition:color var(--t);}
-    .filter-opt:hover{color:var(--ink);}
-    .filter-opt input[type=checkbox]{accent-color:var(--vermillion);width:14px;height:14px;flex-shrink:0;}
-    .filter-opt-count{font-family:var(--mono);font-size:0.6rem;color:var(--ink-3);margin-left:auto;}
-    .price-range{display:flex;flex-direction:column;gap:12px;}
-    .price-inputs{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
-    .price-input{padding:8px 12px;border:1px solid var(--paper-3);border-radius:var(--r-xs);font-family:var(--mono);font-size:0.7rem;color:var(--ink);background:var(--paper);outline:none;width:100%;transition:border-color var(--t);}
-    .price-input:focus{border-color:var(--ink-2);}
-    .filter-apply{width:100%;padding:10px;background:var(--vermillion);color:#fff;font-family:var(--mono);font-size:0.62rem;letter-spacing:0.1em;text-transform:uppercase;border-radius:var(--r-sm);transition:all var(--t);margin-top:4px;}
-    .filter-apply:hover{background:var(--ink);}
-    .filter-clear{width:100%;padding:8px;background:transparent;color:var(--ink-3);font-family:var(--mono);font-size:0.6rem;letter-spacing:0.1em;text-transform:uppercase;border:1px solid var(--paper-3);border-radius:var(--r-sm);transition:all var(--t);margin-top:6px;}
-    .filter-clear:hover{border-color:var(--ink-2);color:var(--ink);}
-
-    /* GRID */
-    .works-area{padding:28px 32px 80px;}
-    .works-grid{columns:3;column-gap:3px;}
-    .work-card{break-inside:avoid;margin-bottom:3px;border:1px solid var(--paper-3);background:var(--cream);overflow:hidden;cursor:pointer;transition:transform var(--t),box-shadow var(--t);position:relative;}
-    .work-card:hover{transform:translateY(-4px);box-shadow:0 14px 40px rgba(14,11,7,0.12);z-index:2;}
-    .work-img-wrap{position:relative;overflow:hidden;}
-    .work-img-wrap img{width:100%;height:auto;display:block;transition:transform 0.55s ease;}
-    .work-card:hover .work-img-wrap img{transform:scale(1.04);}
-    .work-overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(14,11,7,0.75) 0%,transparent 50%);opacity:0;transition:opacity var(--t);display:flex;align-items:flex-end;padding:16px;}
-    .work-card:hover .work-overlay{opacity:1;}
-    .overlay-btn{font-family:var(--mono);font-size:0.58rem;letter-spacing:0.1em;text-transform:uppercase;color:#fff;padding:7px 14px;border:1px solid rgba(255,255,255,0.35);border-radius:var(--r-xs);transition:all var(--t);}
-    .overlay-btn:hover{background:var(--vermillion);border-color:var(--vermillion);}
-    .work-info{padding:14px 16px 16px;}
-    .work-title{font-family:var(--serif);font-size:0.9rem;font-weight:700;color:var(--ink);margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-    .work-artist{font-family:var(--mono);font-size:0.58rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--ink-3);margin-bottom:10px;}
-    .work-footer{display:flex;align-items:center;justify-content:space-between;padding-top:10px;border-top:1px solid var(--paper-3);}
-    .work-price{font-family:var(--mono);font-size:0.78rem;font-weight:600;color:var(--ink);}
-    .work-save{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--ink-3);font-size:0.75rem;border:1px solid var(--paper-3);transition:all var(--t);}
-    .work-save:hover,.work-save.saved{border-color:var(--vermillion);color:var(--vermillion);}
-    .work-tag{position:absolute;top:10px;left:10px;font-family:var(--mono);font-size:0.55rem;letter-spacing:0.08em;text-transform:uppercase;padding:4px 9px;border-radius:var(--r-pill);font-weight:600;}
-    .tag-new{background:var(--vermillion);color:#fff;}
-    .tag-sold{background:var(--ink);color:var(--cream);}
-
-    @media(max-width:1100px){.works-grid{columns:2;}}
-    @media(max-width:768px){
-      #nav{padding:0 20px;} .nav-links{display:none;}
-      .browse-layout{grid-template-columns:1fr;}
-      .filter-sidebar{display:none;}
-      .works-area{padding:20px 16px 60px;}
-      .works-grid{columns:2;}
-      .toolbar{padding:12px 16px;}
-      .page-header{padding:40px 20px 32px;}
-      .ph-title{font-size:1.8rem;}
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+    html { scroll-behavior:smooth; }
+    body {
+      font-family: var(--body);
+      background: var(--cream);
+      color: var(--ink);
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
     }
-    @media(max-width:480px){.works-grid{columns:1;}}
-  </style>
+    img { display:block; max-width:100%; }
+    a   { text-decoration:none; color:inherit; }
+    button { font-family:inherit; cursor:pointer; border:none; background:none; }
+    input, select { font-family:inherit; }
+
+    /* ═══════════════════════════════════════
+       NAV (same as homepage)
+    ═══════════════════════════════════════ */
+    #nav {
+      position: sticky; top:0; z-index:200;
+      display:flex; align-items:center; justify-content:space-between;
+      padding: 0 48px; height:72px;
+      background: rgba(250,247,242,0.95);
+      backdrop-filter: blur(14px);
+      border-bottom: 1px solid var(--paper-3);
+      box-shadow: 0 2px 24px rgba(14,11,7,0.07);
+    }
+    .nav-logo { display:flex; align-items:baseline; gap:2px; }
+    .nav-logo-word { font-family:var(--serif); font-size:1.5rem; font-weight:900; color:var(--ink); letter-spacing:-0.02em; }
+    .nav-logo-dot  { width:7px; height:7px; border-radius:50%; background:var(--vermillion); margin:0 1px 2px; flex-shrink:0; }
+    .nav-links { display:flex; align-items:center; gap:36px; list-style:none; }
+    .nav-links a {
+      font-family:var(--mono); font-size:0.72rem; letter-spacing:0.1em; text-transform:uppercase;
+      color:var(--ink-2); transition:color var(--t); position:relative;
+    }
+    .nav-links a.active { color:var(--vermillion); }
+    .nav-links a::after {
+      content:''; position:absolute; bottom:-3px; left:0; right:0;
+      height:1px; background:var(--vermillion);
+      transform:scaleX(0); transform-origin:left; transition:transform var(--t);
+    }
+    .nav-links a.active::after, .nav-links a:hover::after { transform:scaleX(1); }
+    .nav-actions { display:flex; align-items:center; gap:12px; }
+    .nav-icon-btn {
+      width:38px; height:38px; display:flex; align-items:center; justify-content:center;
+      border-radius:var(--r-sm); color:var(--ink-2); font-size:0.9rem;
+      transition:color var(--t), background var(--t);
+    }
+    .nav-icon-btn:hover { color:var(--ink); background:var(--paper-2); }
+    .nav-icon-wrap { position:relative; }
+    .nav-cart-count {
+      position:absolute; top:-3px; right:-3px;
+      width:16px; height:16px; border-radius:50%;
+      background:var(--vermillion); color:#fff;
+      font-family:var(--mono); font-size:0.6rem;
+      display:flex; align-items:center; justify-content:center;
+    }
+    .btn-sell {
+      padding:9px 22px; background:var(--ink); color:var(--cream);
+      font-family:var(--mono); font-size:0.72rem; letter-spacing:0.1em;
+      text-transform:uppercase; border-radius:var(--r-sm);
+      transition:background var(--t), transform var(--t);
+    }
+    .btn-sell:hover { background:var(--vermillion); transform:translateY(-1px); }
+
+    /* ═══════════════════════════════════════
+       PAGE HEADER
+    ═══════════════════════════════════════ */
+    #page-header {
+      background: var(--ink);
+      padding: 52px 80px 48px;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: end;
+      gap: 40px;
+      position: relative;
+      overflow: hidden;
+    }
+    .ph-bg {
+      position:absolute; font-family:var(--serif); font-size:18rem; font-weight:900;
+      color:rgba(255,255,255,0.025); top:50%; left:50%;
+      transform:translate(-50%,-50%); white-space:nowrap; pointer-events:none; user-select:none;
+    }
+    .ph-label {
+      font-family:var(--mono); font-size:0.65rem; letter-spacing:0.16em;
+      text-transform:uppercase; color:var(--gold-light);
+      margin-bottom:12px; display:flex; align-items:center; gap:10px;
+    }
+    .ph-label::before { content:''; width:20px; height:1px; background:var(--gold-light); }
+    .ph-title {
+      font-family:var(--serif); font-size:clamp(2.2rem,3.5vw,3.6rem);
+      font-weight:900; line-height:1.0; letter-spacing:-0.025em; color:#fff;
+    }
+    .ph-title em { font-style:italic; color:var(--gold-light); }
+    .ph-right { position:relative; z-index:1; }
+    .ph-count {
+      font-family:var(--serif); font-size:3.5rem; font-weight:900;
+      color:#fff; line-height:1; text-align:right;
+    }
+    .ph-count-label {
+      font-family:var(--mono); font-size:0.65rem; letter-spacing:0.12em;
+      text-transform:uppercase; color:rgba(255,255,255,0.4); text-align:right; margin-top:4px;
+    }
+
+    /* ═══════════════════════════════════════
+       TOOLBAR
+    ═══════════════════════════════════════ */
+    #toolbar {
+      background: var(--paper);
+      border-bottom: 1px solid var(--paper-3);
+      padding: 0 80px;
+      display: flex; align-items: center; gap: 0;
+      height: 56px;
+      position: sticky; top: 72px; z-index: 100;
+    }
+    .toolbar-left {
+      display:flex; align-items:center; gap:6px; flex:1; overflow-x:auto;
+      scrollbar-width:none; -ms-overflow-style:none;
+    }
+    .toolbar-left::-webkit-scrollbar { display:none; }
+
+    .filter-chip {
+      display:inline-flex; align-items:center; gap:6px;
+      padding:6px 14px; border-radius: 10px ;
+      border:1px solid var(--paper-3); background:transparent;
+      font-family:var(--mono); font-size:0.65rem; letter-spacing:0.1em; text-transform:uppercase;
+      color:var(--ink-3); white-space:nowrap; flex-shrink:0;
+      transition:all var(--t); cursor:pointer;
+    }
+    .filter-chip:hover { border-color:var(--ink-2); color:var(--ink); }
+    .filter-chip.active {
+      background:var(--ink); border-color:var(--ink); color:var(--cream);
+    }
+    .filter-chip .chip-x {
+      font-size:0.55rem; opacity:0.6; margin-left:2px;
+    }
+
+    .toolbar-sep { width:1px; height:24px; background:var(--paper-3); margin:0 16px; flex-shrink:0; }
+
+    .toolbar-right { display:flex; align-items:center; gap:12px; flex-shrink:0; }
+    .sort-select {
+      appearance:none; background:transparent;
+      border:1px solid var(--paper-3); border-radius: 10px ;
+      padding:6px 32px 6px 12px; font-family:var(--mono);
+      font-size:0.65rem; letter-spacing:0.08em; text-transform:uppercase;
+      color:var(--ink-2); cursor:pointer; outline:none;
+      transition:border-color var(--t);
+    }
+    .sort-select:focus { border-color:var(--ink-2); }
+    .sort-wrap { position:relative; }
+    .sort-arrow {
+      position:absolute; right:10px; top:50%; transform:translateY(-50%);
+      font-size:0.6rem; color:var(--ink-3); pointer-events:none;
+    }
+    .view-toggle { display:flex; gap:2px; }
+    .view-btn {
+      width:32px; height:32px; display:flex; align-items:center; justify-content:center;
+      border-radius:var(--r-sm); border:1px solid var(--paper-3);
+      color:var(--ink-3); font-size:0.8rem; transition:all var(--t);
+    }
+    .view-btn.active { background:var(--ink); border-color:var(--ink); color:var(--cream); }
+    .view-btn:hover:not(.active) { border-color:var(--ink-2); color:var(--ink); }
+    .results-count {
+      font-family:var(--mono); font-size:0.65rem; letter-spacing:0.08em;
+      text-transform:uppercase; color:var(--ink-3); white-space:nowrap;
+    }
+    .results-count strong { color:var(--ink); }
+
+    /* ═══════════════════════════════════════
+       LAYOUT: SIDEBAR + GRID
+    ═══════════════════════════════════════ */
+    #browse-body {
+      display: grid;
+      grid-template-columns: var(--sidebar-w) 1fr;
+      align-items: start;
+      min-height: calc(100vh - 72px - 56px);
+    }
+
+    /* ═══════════════════════════════════════
+       SIDEBAR FILTERS
+    ═══════════════════════════════════════ */
+    #sidebar {
+      position: sticky; top: calc(72px + 56px);
+      height: calc(100vh - 72px - 56px);
+      overflow-y: auto; overflow-x: hidden;
+      background: var(--paper);
+      border-right: 1px solid var(--paper-3);
+      padding: 32px 28px;
+      scrollbar-width: thin;
+      scrollbar-color: var(--paper-3) transparent;
+    }
+    #sidebar::-webkit-scrollbar { width:4px; }
+    #sidebar::-webkit-scrollbar-thumb { background:var(--paper-3); border-radius: 10px ; }
+
+    .sidebar-section { margin-bottom:32px; padding-bottom:32px; border-bottom:1px solid var(--paper-3); }
+    .sidebar-section:last-child { border-bottom:none; margin-bottom:0; }
+
+    .sidebar-title {
+      font-family:var(--mono); font-size:0.62rem; letter-spacing:0.14em;
+      text-transform:uppercase; color:var(--ink-3); margin-bottom:14px;
+      display:flex; align-items:center; justify-content:space-between; cursor:pointer;
+    }
+    .sidebar-title-arrow { transition:transform var(--t); font-size:0.6rem; }
+    .sidebar-title.collapsed .sidebar-title-arrow { transform:rotate(-90deg); }
+
+    .sidebar-body { overflow:hidden; transition:max-height 0.3s ease; }
+    .sidebar-body.collapsed { max-height:0 !important; }
+
+    /* Category list */
+    .cat-list { list-style:none; display:flex; flex-direction:column; gap:2px; }
+    .cat-list-item {
+      display:flex; align-items:center; justify-content:space-between;
+      padding:8px 10px; border-radius:var(--r-sm); cursor:pointer;
+      transition:background var(--t); user-select:none;
+    }
+    .cat-list-item:hover { background:var(--paper-2); }
+    .cat-list-item.active { background:var(--ink); }
+    .cat-list-item.active .cat-list-name, .cat-list-item.active .cat-list-count { color:#fff; }
+    .cat-list-name {
+      font-family:var(--body); font-size:0.88rem; color:var(--ink-2);
+      transition:color var(--t);
+    }
+    .cat-list-count {
+      font-family:var(--mono); font-size:0.6rem; letter-spacing:0.06em;
+      color:var(--ink-3); transition:color var(--t);
+    }
+
+    /* Price range */
+    .price-inputs { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:12px; }
+    .price-input-wrap { position:relative; }
+    .price-input-sym {
+      position:absolute; left:10px; top:50%; transform:translateY(-50%);
+      font-family:var(--mono); font-size:0.75rem; color:var(--ink-3);
+    }
+    .price-input {
+      width:100%; padding:8px 8px 8px 22px;
+      border:1px solid var(--paper-3); border-radius:var(--r-sm);
+      background:var(--cream); color:var(--ink);
+      font-family:var(--mono); font-size:0.78rem;
+      outline:none; transition:border-color var(--t);
+    }
+    .price-input:focus { border-color:var(--ink-2); }
+    .price-slider-wrap { position:relative; height:20px; margin:8px 0; }
+    .price-slider {
+      -webkit-appearance:none; appearance:none;
+      width:100%; height:2px; border-radius: 10px ;
+      background:linear-gradient(to right, var(--vermillion) 0%, var(--vermillion) 60%, var(--paper-3) 60%);
+      outline:none; cursor:pointer;
+      position:absolute; top:50%; transform:translateY(-50%);
+    }
+    .price-slider::-webkit-slider-thumb {
+      -webkit-appearance:none; width:16px; height:16px; border-radius:50%;
+      background:var(--cream); border:2px solid var(--vermillion); cursor:pointer;
+    }
+    .price-slider::-moz-range-thumb {
+      width:16px; height:16px; border-radius:50%;
+      background:var(--cream); border:2px solid var(--vermillion); cursor:pointer; border:none;
+    }
+
+    /* Checkboxes */
+    .check-list { display:flex; flex-direction:column; gap:8px; }
+    .check-item { display:flex; align-items:center; gap:10px; cursor:pointer; user-select:none; }
+    .check-box {
+      width:16px; height:16px; border:1.5px solid var(--paper-3); border-radius: 10px ;
+      flex-shrink:0; display:flex; align-items:center; justify-content:center;
+      transition:all var(--t); background:transparent;
+    }
+    .check-item:hover .check-box { border-color:var(--ink-2); }
+    .check-item.checked .check-box { background:var(--ink); border-color:var(--ink); }
+    .check-item.checked .check-box::after { content:'✓'; font-size:0.65rem; color:#fff; }
+    .check-label { font-size:0.85rem; color:var(--ink-2); transition:color var(--t); }
+    .check-item:hover .check-label { color:var(--ink); }
+
+    /* Color swatches */
+    .swatch-grid { display:flex; flex-wrap:wrap; gap:8px; }
+    .swatch {
+      width:28px; height:28px; border-radius:50%; cursor:pointer;
+      border:2px solid transparent; transition:transform var(--t), border-color var(--t);
+      position:relative;
+    }
+    .swatch:hover { transform:scale(1.15); }
+    .swatch.active { border-color:var(--ink); }
+    .swatch.active::after {
+      content:''; position:absolute; inset:-4px; border-radius:50%;
+      border:1.5px solid var(--ink-3);
+    }
+
+    /* Size buttons */
+    .size-grid { display:flex; flex-wrap:wrap; gap:6px; }
+    .size-btn {
+      padding:5px 12px; border:1px solid var(--paper-3); border-radius: 10px ;
+      font-family:var(--mono); font-size:0.62rem; letter-spacing:0.08em; text-transform:uppercase;
+      color:var(--ink-3); cursor:pointer; transition:all var(--t);
+    }
+    .size-btn:hover { border-color:var(--ink-2); color:var(--ink); }
+    .size-btn.active { background:var(--ink); border-color:var(--ink); color:#fff; }
+
+    /* Clear filters */
+    .clear-btn {
+      width:100%; padding:10px; border:1px solid var(--paper-3);
+      border-radius:var(--r-sm); font-family:var(--mono); font-size:0.65rem;
+      letter-spacing:0.1em; text-transform:uppercase; color:var(--ink-3);
+      transition:all var(--t); cursor:pointer;
+    }
+    .clear-btn:hover { border-color:var(--vermillion); color:var(--vermillion); }
+
+    /* ═══════════════════════════════════════
+       GALLERY GRID
+    ═══════════════════════════════════════ */
+    #gallery-area {
+      padding: 32px 40px 80px;
+      background: var(--cream);
+    }
+
+    /* Masonry-style columns */
+    .art-grid {
+      columns: 3;
+      column-gap: 16px;
+      transition: columns var(--t);
+    }
+    .art-grid.grid-2 { columns: 2; }
+    .art-grid.grid-4 { columns: 4; }
+    .art-grid.grid-list { columns: 1; }
+
+    /* ── Art Card ── */
+    .art-card {
+      break-inside: avoid;
+      margin-bottom: 16px;
+      background: var(--paper);
+      border: 1px solid var(--paper-3);
+      position: relative;
+      overflow: hidden;
+      cursor: pointer;
+      transition: transform var(--t), box-shadow var(--t), border-color var(--t);
+      contain: layout style paint;
+    }
+    .art-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 16px 48px rgba(14,11,7,0.12);
+      border-color: var(--paper-2);
+    }
+    .art-card-img-wrap { overflow:hidden; position:relative; }
+    .art-card-img {
+      width:100%; display:block;
+      transition: transform 0.6s cubic-bezier(0.4,0,0.2,1);
+    }
+    .art-card:hover .art-card-img { transform:scale(1.05); }
+
+    /* Hover overlay */
+    .art-card-overlay {
+      position:absolute; inset:0;
+      background:linear-gradient(to top, rgba(14,11,7,0.82) 0%, rgba(14,11,7,0.15) 50%, transparent 70%);
+      opacity:0; transition:opacity var(--t);
+      display:flex; flex-direction:column; justify-content:flex-end;
+      padding:18px;
+    }
+    .art-card:hover .art-card-overlay { opacity:1; }
+    .overlay-actions {
+      display:flex; gap:8px;
+      transform:translateY(8px);
+      transition:transform var(--t);
+    }
+    .art-card:hover .overlay-actions { transform:translateY(0); }
+    .oa-btn {
+      flex:1; padding:9px 6px; text-align:center;
+      background:rgba(250,247,242,0.93); backdrop-filter:blur(8px);
+      border:1px solid rgba(255,255,255,0.2); border-radius:var(--r-sm);
+      font-family:var(--mono); font-size:0.62rem; letter-spacing:0.08em; text-transform:uppercase;
+      color:var(--ink); transition:background var(--t), color var(--t);
+    }
+    .oa-btn:hover, .oa-btn.oa-primary { background:var(--vermillion); color:#fff; border-color:var(--vermillion); }
+    .oa-icon {
+      width:34px; height:34px; border-radius:var(--r-sm);
+      background:rgba(250,247,242,0.93); backdrop-filter:blur(8px);
+      border:1px solid rgba(255,255,255,0.2);
+      display:flex; align-items:center; justify-content:center;
+      color:var(--ink); font-size:0.78rem; flex-shrink:0;
+      transition:background var(--t), color var(--t);
+    }
+    .oa-icon:hover { background:rgba(200,57,26,0.9); color:#fff; }
+    .oa-icon.loved { background:rgba(200,57,26,0.9); color:#fff; }
+
+    /* Card footer */
+    .art-card-footer {
+      padding: 14px 16px 16px;
+      background: var(--paper);
+    }
+    .art-card-top-row {
+      display:flex; align-items:flex-start; justify-content:space-between; gap:8px; margin-bottom:4px;
+    }
+    .art-card-artist {
+      font-family:var(--mono); font-size:0.6rem; letter-spacing:0.1em;
+      text-transform:uppercase; color:var(--ink-3);
+    }
+    .art-card-wishlist-btn {
+      background:none; border:none; cursor:pointer;
+      color:var(--paper-3); font-size:0.75rem;
+      transition:color var(--t); flex-shrink:0; padding:0;
+    }
+    .art-card-wishlist-btn.loved { color:var(--vermillion); }
+    .art-card-wishlist-btn:hover { color:var(--vermillion); }
+    .art-card-title {
+      font-family:var(--serif); font-size:0.95rem; font-weight:700;
+      color:var(--ink); margin-bottom:8px; line-height:1.25;
+    }
+    .art-card-bottom {
+      display:flex; align-items:center; justify-content:space-between;
+    }
+    .art-card-price {
+      font-family:var(--mono); font-size:0.88rem; font-weight:500; color:var(--ink);
+    }
+    .art-card-price .was {
+      font-size:0.72rem; text-decoration:line-through; color:var(--ink-3); margin-right:6px;
+    }
+    .art-card-medium {
+      font-family:var(--mono); font-size:0.58rem; letter-spacing:0.08em;
+      text-transform:uppercase; color:var(--ink-3);
+    }
+
+    /* Badges */
+    .art-badge {
+      position:absolute; top:12px; left:12px; z-index:2;
+      font-family:var(--mono); font-size:0.58rem; letter-spacing:0.1em; text-transform:uppercase;
+      padding:3px 9px; border-radius: 999px; color:#fff;
+    }
+    .art-badge--new    { background:var(--sage); }
+    .art-badge--sale   { background:var(--vermillion); }
+    .art-badge--ltd    { background:var(--gold); }
+    .art-badge--sold   { background:var(--ink-2); }
+
+    /* List view card */
+    .art-grid.grid-list .art-card {
+      display:grid; grid-template-columns:240px 1fr auto;
+      break-inside:avoid;
+    }
+    .art-grid.grid-list .art-card-img-wrap { height:180px; }
+    .art-grid.grid-list .art-card-img { height:100%; object-fit:cover; }
+    .art-grid.grid-list .art-card-overlay { display:none; }
+    .art-grid.grid-list .art-card-footer { display:flex; flex-direction:column; justify-content:center; padding:20px 24px; }
+    .art-grid.grid-list .art-card-title { font-size:1.1rem; margin-bottom:12px; }
+    .art-grid.grid-list .art-card-artist { margin-bottom:6px; }
+    .art-grid.grid-list .art-card-bottom { flex-direction:column; align-items:flex-start; gap:8px; }
+    .art-grid.grid-list .list-action-col {
+      display:flex; flex-direction:column; align-items:flex-end; justify-content:center;
+      padding:20px 24px; gap:10px; border-left:1px solid var(--paper-3);
+    }
+    .art-grid.grid-list .list-action-col .list-btn {
+      padding:10px 20px; font-family:var(--mono); font-size:0.65rem;
+      letter-spacing:0.08em; text-transform:uppercase; border-radius:var(--r-sm);
+      white-space:nowrap; transition:all var(--t);
+    }
+    .art-grid.grid-list .list-action-col .list-btn-primary {
+      background:var(--vermillion); color:#fff; border:1px solid var(--vermillion);
+    }
+    .art-grid.grid-list .list-action-col .list-btn-primary:hover { background:#a82e14; }
+    .art-grid.grid-list .list-action-col .list-btn-ghost {
+      background:transparent; color:var(--ink-2); border:1px solid var(--paper-3);
+    }
+    .art-grid.grid-list .list-action-col .list-btn-ghost:hover { border-color:var(--ink-2); color:var(--ink); }
+
+    /* Empty state */
+    #empty-state {
+      display:none; text-align:center; padding:80px 24px; grid-column:1/-1;
+    }
+    .empty-icon {
+      width:72px; height:72px; border-radius:var(--r-lg);
+      background:var(--paper); border:1px solid var(--paper-3);
+      display:flex; align-items:center; justify-content:center;
+      font-size:1.8rem; color:var(--ink-3); margin:0 auto 20px;
+    }
+    .empty-title { font-family:var(--serif); font-size:1.4rem; font-weight:700; color:var(--ink); margin-bottom:8px; }
+    .empty-sub { font-size:0.9rem; color:var(--ink-3); }
+
+    /* Load more */
+    #load-more-wrap {
+      text-align:center; padding:48px 0 0;
+    }
+    .load-more-btn {
+      display:inline-flex; align-items:center; gap:10px;
+      padding:14px 36px; border:1px solid var(--paper-3); border-radius: 10px ;
+      font-family:var(--mono); font-size:0.72rem; letter-spacing:0.1em; text-transform:uppercase;
+      color:var(--ink-2); background:transparent;
+      transition:all var(--t); cursor:pointer;
+    }
+    .load-more-btn:hover { border-color:var(--ink); color:var(--ink); background:var(--paper); }
+    .load-more-sub {
+      font-family:var(--mono); font-size:0.62rem; letter-spacing:0.08em;
+      text-transform:uppercase; color:var(--ink-3); margin-top:12px;
+    }
+
+    /* ═══════════════════════════════════════
+       LIGHTBOX
+    ═══════════════════════════════════════ */
+    #lightbox {
+      position:fixed; inset:0; z-index:500;
+      display:flex; align-items:center; justify-content:center;
+      opacity:0; visibility:hidden;
+      transition:opacity var(--t), visibility var(--t);
+    }
+    #lightbox.active { opacity:1; visibility:visible; }
+    .lb-backdrop {
+      position:absolute; inset:0;
+      background:rgba(14,11,7,0.96);
+      backdrop-filter:blur(24px);
+    }
+    .lb-content {
+      position:relative; z-index:1;
+      display:grid; grid-template-columns:1fr 380px;
+      width:90vw; max-width:1140px; max-height:88vh;
+      background:var(--cream); overflow:hidden;
+      animation:lbSlide 0.32s cubic-bezier(0.34,1.56,0.64,1);
+    }
+    @keyframes lbSlide {
+      from { opacity:0; transform:scale(0.96) translateY(16px); }
+      to   { opacity:1; transform:scale(1) translateY(0); }
+    }
+    .lb-img-wrap {
+      position:relative; overflow:hidden; background:var(--paper-2);
+      display:flex; align-items:center; justify-content:center; min-height:500px;
+    }
+    .lb-img {
+      max-width:100%; max-height:88vh; width:auto; height:auto;
+      object-fit:contain; display:block;
+    }
+    .lb-close {
+      position:absolute; top:16px; right:16px; z-index:10;
+      width:40px; height:40px; border-radius:var(--r-sm);
+      background:rgba(250,247,242,0.88); backdrop-filter:blur(10px);
+      border:1px solid rgba(14,11,7,0.1);
+      display:flex; align-items:center; justify-content:center;
+      color:var(--ink); font-size:0.85rem; transition:all var(--t);
+    }
+    .lb-close:hover { background:rgba(200,57,26,0.15); color:var(--vermillion); transform:rotate(90deg); }
+
+    .lb-nav {
+      position:absolute; top:50%; transform:translateY(-50%); z-index:5;
+      width:44px; height:44px; border-radius:var(--r-sm);
+      background:rgba(250,247,242,0.88); backdrop-filter:blur(10px);
+      border:1px solid rgba(14,11,7,0.1);
+      display:flex; align-items:center; justify-content:center;
+      color:var(--ink); font-size:0.9rem; transition:all var(--t);
+    }
+    .lb-nav:hover { background:var(--ink); color:#fff; }
+    .lb-prev { left:16px; }
+    .lb-next { right:16px; }
+
+    .lb-panel {
+      padding:40px 36px; display:flex; flex-direction:column;
+      overflow-y:auto; border-left:1px solid var(--paper-3);
+    }
+    .lb-panel-artist {
+      font-family:var(--mono); font-size:0.62rem; letter-spacing:0.12em;
+      text-transform:uppercase; color:var(--ink-3); margin-bottom:6px;
+      display:flex; align-items:center; gap:10px;
+    }
+    .lb-panel-artist-dot { width:6px; height:6px; border-radius:50%; background:var(--vermillion); }
+    .lb-panel-title {
+      font-family:var(--serif); font-size:1.7rem; font-weight:700;
+      line-height:1.15; color:var(--ink); margin-bottom:6px;
+    }
+    .lb-panel-year {
+      font-family:var(--mono); font-size:0.65rem; letter-spacing:0.1em;
+      text-transform:uppercase; color:var(--ink-3); margin-bottom:24px;
+    }
+    .lb-panel-price {
+      font-family:var(--serif); font-size:2rem; font-weight:700;
+      color:var(--ink); margin-bottom:6px;
+    }
+    .lb-panel-avail {
+      display:inline-flex; align-items:center; gap:6px;
+      font-family:var(--mono); font-size:0.62rem; letter-spacing:0.1em;
+      text-transform:uppercase; color:var(--sage); margin-bottom:28px;
+    }
+    .lb-panel-avail::before {
+      content:''; width:6px; height:6px; border-radius:50%; background:var(--sage);
+    }
+    .lb-detail-grid {
+      display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:28px;
+    }
+    .lb-detail-item {}
+    .lb-detail-label {
+      font-family:var(--mono); font-size:0.58rem; letter-spacing:0.1em;
+      text-transform:uppercase; color:var(--ink-3); margin-bottom:3px;
+    }
+    .lb-detail-val { font-size:0.85rem; color:var(--ink); }
+    .lb-desc {
+      font-size:0.85rem; line-height:1.7; color:var(--ink-2);
+      margin-bottom:32px; padding-bottom:28px; border-bottom:1px solid var(--paper-3);
+    }
+    .lb-actions { display:flex; flex-direction:column; gap:10px; margin-bottom:24px; }
+    .lb-btn-primary {
+      padding:13px; background:var(--vermillion); color:#fff; border-radius:var(--r-sm);
+      font-family:var(--mono); font-size:0.72rem; letter-spacing:0.1em; text-transform:uppercase;
+      text-align:center; transition:background var(--t), transform var(--t);
+      display:flex; align-items:center; justify-content:center; gap:8px;
+    }
+    .lb-btn-primary:hover { background:#a82e14; transform:translateY(-1px); }
+    .lb-btn-secondary {
+      padding:12px; background:transparent; color:var(--ink-2);
+      border:1px solid var(--paper-3); border-radius:var(--r-sm);
+      font-family:var(--mono); font-size:0.72rem; letter-spacing:0.1em; text-transform:uppercase;
+      text-align:center; transition:all var(--t);
+      display:flex; align-items:center; justify-content:center; gap:8px;
+    }
+    .lb-btn-secondary:hover { border-color:var(--ink-2); color:var(--ink); }
+    .lb-trust {
+      display:flex; align-items:center; gap:8px;
+      font-family:var(--mono); font-size:0.6rem; letter-spacing:0.08em;
+      text-transform:uppercase; color:var(--ink-3);
+    }
+    .lb-trust i { color:var(--sage); }
+
+    /* ═══════════════════════════════════════
+       MOBILE SIDEBAR TOGGLE
+    ═══════════════════════════════════════ */
+    .mobile-filter-btn {
+      display:none; align-items:center; gap:8px;
+      padding:8px 16px; border:1px solid var(--paper-3);
+      border-radius:var(--r-sm); font-family:var(--mono);
+      font-size:0.65rem; letter-spacing:0.1em; text-transform:uppercase;
+      color:var(--ink-2); transition:all var(--t);
+    }
+    .mobile-filter-btn:hover { border-color:var(--ink-2); color:var(--ink); }
+
+    /* ═══════════════════════════════════════
+       SCROLL REVEAL
+    ═══════════════════════════════════════ */
+    .reveal { opacity:0; transform:translateY(20px); transition:opacity 0.5s ease, transform 0.5s ease; }
+    .reveal.visible { opacity:1; transform:translateY(0); }
+
+    /* ═══════════════════════════════════════
+       RESPONSIVE
+    ═══════════════════════════════════════ */
+    @media (max-width:1100px) {
+      #browse-body { grid-template-columns:220px 1fr; }
+      --sidebar-w: 220px;
+      .art-grid { columns:2; }
+      .art-grid.grid-4 { columns:3; }
+    }
+    @media (max-width:900px) {
+      #browse-body { grid-template-columns:1fr; }
+      #sidebar {
+        position:fixed; left:0; top:0; bottom:0; z-index:300;
+        transform:translateX(-100%); transition:transform var(--t);
+        box-shadow:4px 0 32px rgba(14,11,7,0.12);
+        height:100vh; top:0;
+        padding-top:80px;
+      }
+      #sidebar.open { transform:translateX(0); }
+      .mobile-filter-btn { display:flex; }
+      #page-header { padding:40px 24px 36px; }
+      #toolbar { padding:0 24px; }
+      #gallery-area { padding:24px 20px 60px; }
+      .lb-content { grid-template-columns:1fr; width:96vw; }
+      .lb-panel { max-height:320px; }
+      .art-grid { columns:2; }
+    }
+    @media (max-width:600px) {
+      #nav { padding:0 20px; }
+      .nav-links { display:none; }
+      .art-grid, .art-grid.grid-4 { columns:1; }
+    }
+  
+    /* ── SHARED MOBILE NAV SUPPORT ── */
+    @media (max-width: 768px) {
+      .nav-links { display: none; }
+      .nav-hamburger { display: flex !important; }
+    }
+
+    /* ── MOBILE SIDEBAR DRAWER ── */
+    @media (max-width: 900px) {
+      .browse-layout { grid-template-columns: 1fr; }
+      .sidebar {
+        position: fixed;
+        top: 0; left: 0; bottom: 0;
+        z-index: 300;
+        width: min(300px, 88vw);
+        transform: translateX(-110%);
+        transition: transform 0.35s cubic-bezier(0.4,0,0.2,1);
+        box-shadow: 4px 0 32px rgba(14,11,7,0.15);
+        overflow-y: auto;
+        border-right: 1px solid var(--paper-3);
+      }
+      .sidebar.mobile-open {
+        transform: translateX(0);
+      }
+      .sidebar-backdrop {
+        display: none;
+        position: fixed; inset: 0;
+        z-index: 299;
+        background: rgba(14,11,7,0.45);
+        backdrop-filter: blur(3px);
+      }
+      .sidebar-backdrop.visible { display: block; }
+      .mobile-filter-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 9px 18px;
+        border: 1px solid var(--paper-3);
+        border-radius: var(--r-sm);
+        font-family: var(--mono);
+        font-size: 0.68rem;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--ink-2);
+        cursor: pointer;
+        transition: all var(--t);
+        background: var(--cream);
+      }
+      .mobile-filter-btn:hover { border-color: var(--ink-2); color: var(--ink); }
+    }
+    @media (min-width: 901px) {
+      .mobile-filter-btn { display: none !important; }
+      .sidebar-backdrop   { display: none !important; }
+    }
+
+  /* ═══════════════════════════════════════════════════════════
+     ART ALCOVE — GLASSMORPHIC DESIGN SYSTEM v2
+     Magazine editorial warmth + deep frosted glass surfaces
+  ═══════════════════════════════════════════════════════════ */
+
+  /* ── 1. Ambient light orbs (warm paper tone atmosphere) ── */
+  body { position: relative; }
+  body::before {
+    content: '';
+    position: fixed; inset: 0; z-index: -2; pointer-events: none;
+    background:
+      radial-gradient(ellipse 90% 70% at 10% 5%,   rgba(200,57,26,0.09)  0%, transparent 55%),
+      radial-gradient(ellipse 70% 60% at 90% 90%,  rgba(184,144,42,0.08) 0%, transparent 55%),
+      radial-gradient(ellipse 80% 80% at 50% 45%,  rgba(74,107,82,0.05)  0%, transparent 65%),
+      radial-gradient(ellipse 50% 40% at 70% 15%,  rgba(200,57,26,0.05)  0%, transparent 50%);
+  }
+
+  /* ── 2. Nav — heavy frosted glass ── */
+  #nav, #site-header {
+    background: rgba(250,247,242,0.68) !important;
+    backdrop-filter: blur(40px) saturate(1.6) brightness(1.05) !important;
+    -webkit-backdrop-filter: blur(40px) saturate(1.6) brightness(1.05) !important;
+    border-bottom: 1px solid rgba(255,255,255,0.7) !important;
+    box-shadow:
+      0 1px 0 rgba(255,255,255,0.9) inset,
+      0 4px 32px rgba(14,11,7,0.08),
+      0 1px 4px rgba(14,11,7,0.04) !important;
+  }
+
+  /* ── 3. Art cards — glass cards with rounded top image ── */
+  .art-card, .work-card {
+    background: rgba(250,247,242,0.60) !important;
+    backdrop-filter: blur(16px) saturate(1.3) !important;
+    -webkit-backdrop-filter: blur(16px) saturate(1.3) !important;
+    border: 1px solid rgba(255,255,255,0.55) !important;
+    border-radius: 20px !important;
+    box-shadow:
+      0 2px 0 rgba(255,255,255,0.8) inset,
+      0 12px 40px rgba(14,11,7,0.10),
+      0 2px 8px rgba(14,11,7,0.06) !important;
+    overflow: hidden !important;
+  }
+  .art-card:hover, .work-card:hover {
+    box-shadow:
+      0 2px 0 rgba(255,255,255,0.9) inset,
+      0 20px 60px rgba(14,11,7,0.16),
+      0 4px 12px rgba(14,11,7,0.08) !important;
+    border-color: rgba(255,255,255,0.75) !important;
+    transform: translateY(-4px) scale(1.01);
+  }
+  .art-card-img-wrap {
+    border-radius: 20px 20px 0 0 !important;
+  }
+
+  /* ── 4. Artist cards ── */
+  .artist-card .artist-img-wrap {
+    border-radius: 16px !important;
+    overflow: hidden !important;
+    border: 1px solid rgba(255,255,255,0.5) !important;
+    box-shadow: 0 8px 28px rgba(14,11,7,0.10) !important;
+  }
+
+  /* ── 5. Category cards ── */
+  .cat-card {
+    border-radius: 16px !important;
+    overflow: hidden !important;
+    border: 1px solid rgba(255,255,255,0.4) !important;
+    box-shadow: 0 8px 24px rgba(14,11,7,0.10) !important;
+  }
+  .cat-card:hover {
+    box-shadow: 0 16px 48px rgba(14,11,7,0.16) !important;
+  }
+
+  /* ── 6. How-it-works cards — glass on hover ── */
+  .how-card {
+    border-radius: 20px !important;
+    border: 1px solid rgba(255,255,255,0.4) !important;
+  }
+  .how-card:hover {
+    background: rgba(14,11,7,0.88) !important;
+    backdrop-filter: blur(20px) !important;
+    -webkit-backdrop-filter: blur(20px) !important;
+    border-color: rgba(255,255,255,0.12) !important;
+    box-shadow: 0 20px 60px rgba(14,11,7,0.22) !important;
+  }
+  .how-icon {
+    border-radius: 12px !important;
+    backdrop-filter: blur(8px) !important;
+    border: 1px solid rgba(255,255,255,0.3) !important;
+  }
+
+  /* ── 7. Testimonial mini cards ── */
+  .t-mini-card {
+    border-radius: 16px !important;
+    border: 1px solid rgba(255,255,255,0.45) !important;
+    background: rgba(250,247,242,0.65) !important;
+    backdrop-filter: blur(12px) !important;
+    -webkit-backdrop-filter: blur(12px) !important;
+    box-shadow: 0 4px 20px rgba(14,11,7,0.07) !important;
+  }
+  .t-mini-card:hover {
+    background: rgba(250,247,242,0.85) !important;
+    box-shadow: 0 8px 32px rgba(14,11,7,0.12) !important;
+  }
+
+  /* ── 8. Mosaic labels & price tags ── */
+  .mosaic-label {
+    background: rgba(250,247,242,0.80) !important;
+    backdrop-filter: blur(16px) saturate(1.3) !important;
+    border: 1px solid rgba(255,255,255,0.7) !important;
+    border-radius: 12px !important;
+    box-shadow: 0 4px 16px rgba(14,11,7,0.12) !important;
+  }
+  .mosaic-price {
+    background: rgba(200,57,26,0.88) !important;
+    backdrop-filter: blur(10px) !important;
+    border: 1px solid rgba(255,255,255,0.25) !important;
+    border-radius: 999px !important;
+    padding: 5px 14px !important;
+    color: #fff !important;
+    font-size: 0.7rem !important;
+  }
+
+  /* ── 9. Art card footer & price ── */
+  .art-card-footer {
+    background: rgba(250,247,242,0.88) !important;
+    backdrop-filter: blur(12px) !important;
+    border-top: 1px solid rgba(255,255,255,0.6) !important;
+  }
+  .art-card-price {
+    font-family: var(--mono) !important;
+    background: rgba(14,11,7,0.06) !important;
+    border-radius: 999px !important;
+    padding: 3px 12px !important;
+    border: 1px solid rgba(14,11,7,0.08) !important;
+    font-size: 0.78rem !important;
+  }
+
+  /* ── 10. Quick-buy buttons glass ── */
+  .qbtn, .qbtn-icon, .oa-btn, .oa-icon, .wco-btn, .wco-icon {
+    border-radius: 10px !important;
+    backdrop-filter: blur(16px) !important;
+    background: rgba(250,247,242,0.88) !important;
+    border: 1px solid rgba(255,255,255,0.6) !important;
+    box-shadow: 0 2px 8px rgba(14,11,7,0.08) !important;
+  }
+  .qbtn:hover, .qbtn--primary,
+  .oa-btn:hover, .oa-primary,
+  .wco-btn:hover, .wco-primary {
+    background: var(--vermillion) !important;
+    border-color: transparent !important;
+    color: #fff !important;
+  }
+
+  /* ── 11. Buttons rounded ── */
+  .btn-sell, .btn-primary, .btn-gold, .btn-light,
+  .btn-ghost, .btn-addcart, .btn-wishlist, .btn-offer,
+  .lb-btn-primary, .lb-btn-secondary, .btn-commission,
+  .list-btn, .oa-btn, .wco-btn, .overlay-actions button,
+  .nav-icon-btn, .nav-icon-wrap button,
+  .artist-follow-btn {
+    border-radius: 12px !important;
+  }
+  .btn-sell, .btn-primary, .btn-gold {
+    box-shadow: 0 4px 20px rgba(14,11,7,0.12) !important;
+  }
+  .btn-primary:hover {
+    box-shadow: 0 8px 32px rgba(200,57,26,0.28) !important;
+  }
+  .btn-sell:hover {
+    box-shadow: 0 8px 28px rgba(200,57,26,0.22) !important;
+  }
+
+  /* ── 12. Tags / chips / badges — pill style ── */
+  .tag, .edition-badge, .timeline-tag, .art-badge,
+  .work-card-badge, .status-pill, .sac-verified,
+  .nav-cart-count {
+    border-radius: 999px !important;
+  }
+  .tag, .edition-badge, .art-badge, .work-card-badge {
+    backdrop-filter: blur(8px) !important;
+    background: rgba(250,247,242,0.85) !important;
+    border: 1px solid rgba(255,255,255,0.5) !important;
+  }
+  .edition-badge--featured, .art-badge--new, .art-badge--ltd {
+    background: rgba(184,144,42,0.85) !important;
+    border-color: rgba(255,255,255,0.3) !important;
+    color: #fff !important;
+  }
+  .edition-badge:not(.edition-badge--featured), .art-badge:not(.art-badge--new):not(.art-badge--ltd) {
+    background: rgba(14,11,7,0.75) !important;
+    border-color: rgba(255,255,255,0.15) !important;
+    color: var(--cream) !important;
+  }
+
+  /* ── 13. Filter chips ── */
+  .chip, .wlt-chip, .wf-chip {
+    border-radius: 999px !important;
+    border: 1px solid rgba(14,11,7,0.12) !important;
+    background: rgba(250,247,242,0.7) !important;
+    backdrop-filter: blur(8px) !important;
+    transition: all 0.25s ease !important;
+  }
+  .chip.active, .wlt-chip.active, .wf-chip.active {
+    background: var(--vermillion) !important;
+    border-color: transparent !important;
+    color: #fff !important;
+    box-shadow: 0 4px 16px rgba(200,57,26,0.25) !important;
+  }
+
+  /* ── 14. Browse sidebar ── */
+  .sidebar, #sidebar {
+    background: rgba(250,247,242,0.78) !important;
+    backdrop-filter: blur(28px) saturate(1.4) !important;
+    -webkit-backdrop-filter: blur(28px) saturate(1.4) !important;
+    border-right: 1px solid rgba(255,255,255,0.6) !important;
+    box-shadow: 2px 0 24px rgba(14,11,7,0.06) !important;
+  }
+
+  /* ── 15. Form inputs ── */
+  .glass-input, .form-input, input[type="text"],
+  input[type="email"], input[type="number"],
+  select, textarea, .price-input,
+  .msg-compose-input, .topnav-center input {
+    border-radius: 12px !important;
+    background: rgba(250,247,242,0.7) !important;
+    backdrop-filter: blur(8px) !important;
+    border: 1px solid rgba(255,255,255,0.6) !important;
+    box-shadow: 0 2px 8px rgba(14,11,7,0.05) inset !important;
+  }
+  .glass-input:focus, .form-input:focus,
+  input[type="text"]:focus, input[type="email"]:focus,
+  select:focus, textarea:focus {
+    background: rgba(250,247,242,0.92) !important;
+    border-color: rgba(200,57,26,0.35) !important;
+    outline: none !important;
+    box-shadow: 0 0 0 3px rgba(200,57,26,0.08), 0 2px 8px rgba(14,11,7,0.04) inset !important;
+  }
+
+  /* ── 16. Price range slider track ── */
+  .price-range-track, .range-track {
+    border-radius: 999px !important;
+  }
+  .range-input::-webkit-slider-thumb {
+    border-radius: 50% !important;
+    box-shadow: 0 2px 8px rgba(14,11,7,0.15) !important;
+  }
+
+  /* ── 17. Dashboard KPI cards ── */
+  .kpi-card {
+    background: rgba(250,247,242,0.65) !important;
+    backdrop-filter: blur(20px) saturate(1.3) !important;
+    -webkit-backdrop-filter: blur(20px) saturate(1.3) !important;
+    border: 1px solid rgba(255,255,255,0.6) !important;
+    border-radius: 20px !important;
+    box-shadow:
+      0 2px 0 rgba(255,255,255,0.8) inset,
+      0 12px 40px rgba(14,11,7,0.09) !important;
+  }
+  .kpi-card:hover {
+    box-shadow:
+      0 2px 0 rgba(255,255,255,0.9) inset,
+      0 20px 56px rgba(14,11,7,0.14) !important;
+    transform: translateY(-2px);
+  }
+
+  /* ── 18. Dashboard chart & table cards ── */
+  .chart-card, .analytics-card, .table-card,
+  .dash-section > .dash-col > div,
+  .orders-table-wrap, .works-list-wrap,
+  .payouts-wrap, .notif-list-wrap, .settings-wrap {
+    background: rgba(250,247,242,0.62) !important;
+    backdrop-filter: blur(16px) !important;
+    -webkit-backdrop-filter: blur(16px) !important;
+    border: 1px solid rgba(255,255,255,0.55) !important;
+    border-radius: 20px !important;
+    box-shadow:
+      0 2px 0 rgba(255,255,255,0.75) inset,
+      0 8px 32px rgba(14,11,7,0.08) !important;
+  }
+
+  /* ── 19. Dashboard payout cells ── */
+  .payout-cell {
+    background: rgba(250,247,242,0.65) !important;
+    backdrop-filter: blur(12px) !important;
+    border: 1px solid rgba(255,255,255,0.55) !important;
+    border-radius: 16px !important;
+    box-shadow: 0 4px 16px rgba(14,11,7,0.07) !important;
+  }
+
+  /* ── 20. Dashboard topnav ── */
+  #topnav {
+    background: rgba(14,11,7,0.88) !important;
+    backdrop-filter: blur(32px) saturate(1.4) !important;
+    -webkit-backdrop-filter: blur(32px) saturate(1.4) !important;
+    border-bottom: 1px solid rgba(255,255,255,0.08) !important;
+    box-shadow: 0 2px 20px rgba(0,0,0,0.25) !important;
+  }
+  #topnav .topnav-center input {
+    background: rgba(255,255,255,0.08) !important;
+    border: 1px solid rgba(255,255,255,0.12) !important;
+    border-radius: 999px !important;
+    color: #fff !important;
+  }
+  #topnav .topnav-center input::placeholder { color: rgba(255,255,255,0.35) !important; }
+
+  /* ── 21. Dashboard sidebar ── */
+  #sidebar {
+    background: rgba(250,247,242,0.82) !important;
+    backdrop-filter: blur(32px) saturate(1.4) !important;
+    -webkit-backdrop-filter: blur(32px) saturate(1.4) !important;
+    border-right: 1px solid rgba(255,255,255,0.65) !important;
+    box-shadow: 2px 0 32px rgba(14,11,7,0.07) !important;
+  }
+  .snav-link {
+    border-radius: 12px !important;
+    transition: all 0.22s ease !important;
+  }
+  .snav-link:hover {
+    background: rgba(200,57,26,0.08) !important;
+    backdrop-filter: blur(8px) !important;
+  }
+  .snav-link.active {
+    background: rgba(200,57,26,0.12) !important;
+    backdrop-filter: blur(8px) !important;
+    border: 1px solid rgba(200,57,26,0.2) !important;
+    box-shadow: 0 2px 12px rgba(200,57,26,0.10) !important;
+  }
+
+  /* ── 22. Listing page product viewer ── */
+  .product-viewer {
+    background: rgba(250,247,242,0.55) !important;
+    backdrop-filter: blur(16px) !important;
+    border: 1px solid rgba(255,255,255,0.55) !important;
+    border-radius: 24px !important;
+    box-shadow: 0 12px 48px rgba(14,11,7,0.10) !important;
+    overflow: hidden !important;
+  }
+  .viewer-main {
+    border-radius: 20px !important;
+    overflow: hidden !important;
+  }
+  .viewer-thumb {
+    border-radius: 10px !important;
+    border: 1px solid rgba(255,255,255,0.5) !important;
+    overflow: hidden !important;
+  }
+  .viewer-thumb.active {
+    border-color: var(--vermillion) !important;
+    box-shadow: 0 0 0 2px rgba(200,57,26,0.25) !important;
+  }
+
+  /* ── 23. Listing product panel ── */
+  .product-panel {
+    background: rgba(250,247,242,0.62) !important;
+    backdrop-filter: blur(20px) !important;
+    -webkit-backdrop-filter: blur(20px) !important;
+    border: 1px solid rgba(255,255,255,0.55) !important;
+    border-radius: 24px !important;
+    box-shadow: 0 12px 48px rgba(14,11,7,0.09) !important;
+    padding: 36px !important;
+  }
+
+  /* ── 24. Listing spec cells ── */
+  .spec-cell {
+    background: rgba(250,247,242,0.65) !important;
+    backdrop-filter: blur(10px) !important;
+    border: 1px solid rgba(255,255,255,0.55) !important;
+    border-radius: 14px !important;
+    box-shadow: 0 2px 8px rgba(14,11,7,0.06) !important;
+  }
+  .ship-cell {
+    background: rgba(250,247,242,0.65) !important;
+    backdrop-filter: blur(10px) !important;
+    border: 1px solid rgba(255,255,255,0.55) !important;
+    border-radius: 14px !important;
+    box-shadow: 0 2px 8px rgba(14,11,7,0.06) !important;
+  }
+  .edition-info {
+    background: rgba(184,144,42,0.08) !important;
+    backdrop-filter: blur(10px) !important;
+    border: 1px solid rgba(184,144,42,0.2) !important;
+    border-radius: 14px !important;
+  }
+  .trust-row {
+    background: rgba(250,247,242,0.55) !important;
+    backdrop-filter: blur(8px) !important;
+    border: 1px solid rgba(255,255,255,0.5) !important;
+    border-radius: 14px !important;
+    box-shadow: 0 2px 8px rgba(14,11,7,0.05) !important;
+  }
+
+  /* ── 25. Listing tabs ── */
+  .tab-btn {
+    border-radius: 10px 10px 0 0 !important;
+    transition: all 0.22s ease !important;
+  }
+  .tab-btn.active {
+    background: rgba(200,57,26,0.06) !important;
+    backdrop-filter: blur(8px) !important;
+  }
+
+  /* ── 26. Artist page panels ── */
+  .about-panel {
+    background: rgba(250,247,242,0.65) !important;
+    backdrop-filter: blur(16px) !important;
+    border: 1px solid rgba(255,255,255,0.55) !important;
+    border-radius: 20px !important;
+    box-shadow: 0 8px 32px rgba(14,11,7,0.08) !important;
+  }
+  .review-card {
+    background: rgba(250,247,242,0.65) !important;
+    backdrop-filter: blur(12px) !important;
+    border: 1px solid rgba(255,255,255,0.5) !important;
+    border-radius: 16px !important;
+    box-shadow: 0 4px 16px rgba(14,11,7,0.07) !important;
+  }
+  .artist-stat-panel, .artist-meta-card {
+    background: rgba(250,247,242,0.65) !important;
+    backdrop-filter: blur(16px) !important;
+    border: 1px solid rgba(255,255,255,0.55) !important;
+    border-radius: 20px !important;
+    box-shadow: 0 8px 32px rgba(14,11,7,0.08) !important;
+  }
+
+  /* ── 27. Lightbox ── */
+  .lb-panel, .lightbox-panel {
+    background: rgba(14,11,7,0.82) !important;
+    backdrop-filter: blur(32px) saturate(1.2) !important;
+    -webkit-backdrop-filter: blur(32px) saturate(1.2) !important;
+    border: 1px solid rgba(255,255,255,0.1) !important;
+    border-radius: 20px !important;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.35) !important;
+  }
+  .lb-nav-btn, .lb-close {
+    background: rgba(250,247,242,0.85) !important;
+    backdrop-filter: blur(12px) !important;
+    border: 1px solid rgba(255,255,255,0.6) !important;
+    border-radius: 12px !important;
+    box-shadow: 0 4px 16px rgba(14,11,7,0.12) !important;
+  }
+  .lb-nav-btn:hover, .lb-close:hover {
+    background: var(--vermillion) !important;
+    color: #fff !important;
+    border-color: transparent !important;
+  }
+  /* Browse page lightbox panel */
+  .lbp-wrap, .lb-overlay-panel {
+    background: rgba(250,247,242,0.88) !important;
+    backdrop-filter: blur(32px) !important;
+    border: 1px solid rgba(255,255,255,0.65) !important;
+    border-radius: 24px !important;
+    box-shadow: 0 24px 80px rgba(14,11,7,0.18) !important;
+  }
+
+  /* ── 28. Toasts ── */
+  .aa-toast {
+    background: rgba(14,11,7,0.84) !important;
+    backdrop-filter: blur(24px) saturate(1.2) !important;
+    -webkit-backdrop-filter: blur(24px) saturate(1.2) !important;
+    border: 1px solid rgba(255,255,255,0.12) !important;
+    border-radius: 14px !important;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.25) !important;
+  }
+
+  /* ── 29. Mobile nav drawer ── */
+  .mobile-nav-panel {
+    background: rgba(250,247,242,0.94) !important;
+    backdrop-filter: blur(40px) saturate(1.5) !important;
+    -webkit-backdrop-filter: blur(40px) saturate(1.5) !important;
+    border-left: 1px solid rgba(255,255,255,0.75) !important;
+    border-radius: 24px 0 0 24px !important;
+    box-shadow: -8px 0 48px rgba(14,11,7,0.14) !important;
+  }
+  .mnp-sell-btn {
+    border-radius: 12px !important;
+    background: rgba(200,57,26,0.9) !important;
+    backdrop-filter: blur(8px) !important;
+    border: 1px solid rgba(255,255,255,0.2) !important;
+    box-shadow: 0 4px 16px rgba(200,57,26,0.25) !important;
+  }
+
+  /* ── 30. Breadcrumb ── */
+  .breadcrumb {
+    background: rgba(250,247,242,0.75) !important;
+    backdrop-filter: blur(16px) !important;
+    border-bottom: 1px solid rgba(255,255,255,0.6) !important;
+  }
+
+  /* ── 31. Section padding & backgrounds — glass float ── */
+  #featured, #artists, #testimonials {
+    background: transparent !important;
+  }
+  #categories, #how {
+    background: rgba(239,233,224,0.55) !important;
+    backdrop-filter: blur(8px) !important;
+  }
+
+  /* ── 32. CTA section overlay ── */
+  #cta {
+    position: relative !important;
+  }
+  #cta::after {
+    content: '';
+    position: absolute; inset: 0; z-index: 0;
+    background: rgba(14,11,7,0.04) !important;
+    backdrop-filter: blur(4px) !important;
+    pointer-events: none;
+  }
+  #cta .cta-content { z-index: 1; position: relative; }
+
+  /* ── 33. Upload/add form in dashboard ── */
+  .upload-box, .add-form-wrap {
+    background: rgba(250,247,242,0.65) !important;
+    backdrop-filter: blur(16px) !important;
+    border: 2px dashed rgba(14,11,7,0.15) !important;
+    border-radius: 20px !important;
+  }
+  .upload-box:hover, .add-form-wrap .upload-box:hover {
+    border-color: rgba(200,57,26,0.35) !important;
+    background: rgba(250,247,242,0.80) !important;
+  }
+
+  /* ── 34. Message thread ── */
+  .msg-list, .msg-thread {
+    background: rgba(250,247,242,0.65) !important;
+    backdrop-filter: blur(16px) !important;
+    border: 1px solid rgba(255,255,255,0.55) !important;
+    border-radius: 20px !important;
+  }
+  .msg-compose {
+    background: rgba(250,247,242,0.75) !important;
+    backdrop-filter: blur(12px) !important;
+    border-top: 1px solid rgba(255,255,255,0.6) !important;
+    border-radius: 0 0 20px 20px !important;
+  }
+  .msg-bubble--them {
+    background: rgba(255,255,255,0.75) !important;
+    backdrop-filter: blur(8px) !important;
+    border: 1px solid rgba(255,255,255,0.7) !important;
+    border-radius: 0 14px 14px 14px !important;
+    box-shadow: 0 2px 8px rgba(14,11,7,0.06) !important;
+  }
+  .msg-bubble--me {
+    background: rgba(200,57,26,0.88) !important;
+    backdrop-filter: blur(8px) !important;
+    border-radius: 14px 14px 0 14px !important;
+    box-shadow: 0 4px 16px rgba(200,57,26,0.2) !important;
+  }
+
+  /* ── 35. Notification items ── */
+  .notif-item {
+    background: rgba(250,247,242,0.65) !important;
+    backdrop-filter: blur(10px) !important;
+    border: 1px solid rgba(255,255,255,0.5) !important;
+    border-radius: 14px !important;
+    transition: all 0.22s ease !important;
+  }
+  .notif-item:hover {
+    background: rgba(250,247,242,0.85) !important;
+    box-shadow: 0 4px 20px rgba(14,11,7,0.08) !important;
+  }
+  .notif-item.unread {
+    background: rgba(200,57,26,0.06) !important;
+    border-color: rgba(200,57,26,0.2) !important;
+  }
+
+  /* ── 36. Timeline dots ── */
+  .timeline-dot {
+    background: rgba(250,247,242,0.9) !important;
+    backdrop-filter: blur(8px) !important;
+    box-shadow: 0 0 0 3px rgba(250,247,242,0.5), 0 2px 8px rgba(14,11,7,0.12) !important;
+  }
+
+  /* ── 37. Scrollbar styling ── */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: rgba(250,247,242,0.4); border-radius: 999px; }
+  ::-webkit-scrollbar-thumb { background: rgba(14,11,7,0.18); border-radius: 999px; }
+  ::-webkit-scrollbar-thumb:hover { background: rgba(200,57,26,0.35); }
+
+  /* ── 38. Accordion sections (browse sidebar, dashboard) ── */
+  .filter-section, .acc-section {
+    border-bottom: 1px solid rgba(255,255,255,0.5) !important;
+  }
+  .filter-section-title, .acc-title {
+    border-radius: 8px !important;
+    transition: background 0.22s ease !important;
+  }
+  .filter-section-title:hover, .acc-title:hover {
+    background: rgba(200,57,26,0.06) !important;
+  }
+
+  /* ── 39. Settings toggles ── */
+  .toggle-track {
+    border-radius: 999px !important;
+    backdrop-filter: blur(8px) !important;
+  }
+
+  /* ── 40. Work-card (artist page) image wrap ── */
+  .work-card-img-wrap {
+    border-radius: 16px 16px 0 0 !important;
+    overflow: hidden !important;
+  }
+  .work-card {
+    border-radius: 20px !important;
+    overflow: hidden !important;
+    background: rgba(250,247,242,0.60) !important;
+    backdrop-filter: blur(14px) !important;
+    border: 1px solid rgba(255,255,255,0.55) !important;
+    box-shadow: 0 8px 28px rgba(14,11,7,0.09) !important;
+  }
+
+    /* ── Logo image ── */
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      text-decoration: none;
+      flex-shrink: 0;
+    }
+    .nav-logo-img {
+      height: 52px;
+      width: auto;
+      display: block;
+      object-fit: contain;
+      /* The logo has a near-white background — mix-blend keeps it crisp on the glass nav */
+      mix-blend-mode: multiply;
+      transition: opacity 0.25s ease, transform 0.25s ease;
+    }
+    .nav-logo:hover .nav-logo-img {
+      opacity: 0.85;
+      transform: scale(1.03);
+    }
+    /* Footer logo — smaller, inverted for dark background */
+    .footer-logo-img {
+      height: 44px;
+      width: auto;
+      display: block;
+      object-fit: contain;
+      filter: brightness(0) invert(1);
+      opacity: 0.75;
+      transition: opacity 0.25s ease;
+    }
+    .footer-logo-img:hover { opacity: 1; }
+    /* Dashboard topnav logo */
+    .topnav-logo {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      text-decoration: none;
+      flex-shrink: 0;
+    }
+    .topnav-logo-img {
+      height: 44px;
+      width: auto;
+      display: block;
+      object-fit: contain;
+      filter: brightness(0) invert(1);
+      opacity: 0.88;
+      transition: opacity 0.25s ease;
+    }
+    .topnav-logo:hover .topnav-logo-img { opacity: 1; }
+</style>
+  <link rel="stylesheet" href="shared.css">
 </head>
 <body>
 
+  <!-- ═══════════ NAV ═══════════ -->
+  <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
   <nav id="nav">
-    <a href="index.html" class="nav-logo">Art<span class="nav-logo-dot"></span>Alcove</a>
-    <div class="nav-links">
-      <a href="browse.html" class="active">Browse</a>
-      <a href="artist.html">Artists</a>
-      <a href="#">Editorial</a>
+    <a href="index.html" class="nav-logo">
+      <img class="nav-logo-img" src="Art_Alcove_logo.png" alt="Art Alcove">
+    </a>
+    <ul class="nav-links">
+      <li><a href="browse.html" class="active">Browse</a></li>
+      <li><a href="artist.html">Artists</a></li>
+      <li><a href="browse.html">Categories</a></li>
+      <li><a href="dashboard.html">Commissions</a></li>
+      <li><a href="#">Editorial</a></li>
+    </ul>
+    <div class="nav-actions">
+      <button class="nav-icon-btn" aria-label="Search"><i class="fas fa-search"></i></button>
+      <div class="nav-icon-wrap">
+        <button class="nav-icon-btn" aria-label="Wishlist"><i class="fas fa-heart"></i></button>
+      </div>
+      <div class="nav-icon-wrap">
+        <button class="nav-icon-btn" aria-label="Cart">
+          <i class="fas fa-shopping-bag"></i>
+          <span class="nav-cart-count" id="cartCount">3</span>
+        </button>
+      </div>
+      <a href="dashboard.html" class="btn-sell">Sell Art</a>
     </div>
-    <a href="dashboard.html" class="btn-primary"><i class="fas fa-plus"></i> Sell</a>
   </nav>
 
-  <div class="page-header">
-    <div class="ph-left">
-      <div class="ph-overline">Original Art Marketplace</div>
-      <h1 class="ph-title">Browse Works</h1>
-      <div class="ph-sub">12,480 original works · 3,400 artists · 60+ countries</div>
+  <!-- ═══════════ PAGE HEADER ═══════════ -->
+  <header id="page-header">
+    <div class="ph-bg" aria-hidden="true">BROWSE</div>
+    <div style="position:relative;z-index:1">
+      <div class="ph-label">Marketplace</div>
+      <h1 class="ph-title">Original <em>Works</em><br>For Every Wall</h1>
+    </div>
+    <div class="ph-right">
+      <div class="ph-count" id="totalCount">4,214</div>
+      <div class="ph-count-label">Works Available</div>
+    </div>
+  </header>
+
+  <!-- ═══════════ TOOLBAR ═══════════ -->
+  <div id="toolbar">
+    <div class="toolbar-left" id="activeFilters">
+      <!-- Active filter chips rendered here by JS -->
+      <button class="mobile-filter-btn" id="mobileFilterBtn">
+        <i class="fas fa-sliders-h"></i> Filters
+      </button>
+    </div>
+    <div class="toolbar-sep"></div>
+    <div class="toolbar-right">
+      <span class="results-count"><strong id="resultNum">4,214</strong> results</span>
+      <div class="sort-wrap">
+        <select class="sort-select" id="sortSelect" aria-label="Sort works">
+          <option value="featured">Featured</option>
+          <option value="new">Newest First</option>
+          <option value="price-asc">Price: Low–High</option>
+          <option value="price-desc">Price: High–Low</option>
+          <option value="popular">Most Popular</option>
+        </select>
+        <i class="fas fa-chevron-down sort-arrow"></i>
+      </div>
+      <div class="view-toggle">
+        <button class="view-btn" data-view="grid-2" aria-label="2 columns"><i class="fas fa-th-large"></i></button>
+        <button class="view-btn active" data-view="grid-3" aria-label="3 columns"><i class="fas fa-th"></i></button>
+        <button class="view-btn" data-view="grid-4" aria-label="4 columns"><i class="fas fa-grip-horizontal"></i></button>
+        <button class="view-btn" data-view="grid-list" aria-label="List view"><i class="fas fa-list"></i></button>
+      </div>
     </div>
   </div>
 
-  <div class="toolbar">
-    <div class="search-bar">
-      <i class="fas fa-search"></i>
-      <input type="text" placeholder="Search works, artists, styles…" id="searchInput">
-    </div>
-    <div class="toolbar-divider"></div>
-    <button class="filter-chip active" data-cat="all">All</button>
-    <button class="filter-chip" data-cat="oil">Oil Paintings</button>
-    <button class="filter-chip" data-cat="watercolour">Watercolour</button>
-    <button class="filter-chip" data-cat="photography">Photography</button>
-    <button class="filter-chip" data-cat="abstract">Abstract</button>
-    <button class="filter-chip" data-cat="prints">Prints</button>
-    <div class="toolbar-divider"></div>
-    <div class="result-count" id="resultCount">Showing 12 works</div>
-    <select class="sort-select" id="sortSelect">
-      <option>Sort: Featured</option>
-      <option>Price: Low to High</option>
-      <option>Price: High to Low</option>
-      <option>Newest First</option>
-      <option>Most Popular</option>
-    </select>
-  </div>
+  <!-- ═══════════ SIDEBAR BACKDROP (mobile) ═══════════ -->
+  <div id="sidebarBackdrop" style="display:none;position:fixed;inset:0;background:rgba(14,11,7,0.5);z-index:299;backdrop-filter:blur(4px)"></div>
 
-  <div class="browse-layout">
+  <!-- ═══════════ MAIN BODY ═══════════ -->
+  <div id="browse-body">
 
-    <!-- Sidebar Filters -->
-    <aside class="filter-sidebar">
-      <div class="filter-group open">
-        <div class="filter-group-title">Medium <i class="fas fa-chevron-down"></i></div>
-        <div class="filter-options">
-          <label class="filter-opt"><input type="checkbox" checked> Oil on Canvas <span class="filter-opt-count">2,840</span></label>
-          <label class="filter-opt"><input type="checkbox"> Watercolour <span class="filter-opt-count">1,620</span></label>
-          <label class="filter-opt"><input type="checkbox"> Acrylic <span class="filter-opt-count">980</span></label>
-          <label class="filter-opt"><input type="checkbox"> Photography <span class="filter-opt-count">3,210</span></label>
-          <label class="filter-opt"><input type="checkbox"> Mixed Media <span class="filter-opt-count">760</span></label>
-          <label class="filter-opt"><input type="checkbox"> Printmaking <span class="filter-opt-count">430</span></label>
-          <label class="filter-opt"><input type="checkbox"> Sculpture <span class="filter-opt-count">218</span></label>
+    <!-- SIDEBAR -->
+    <aside id="sidebar" aria-label="Filter works">
+
+      <!-- Category -->
+      <div class="sidebar-section">
+        <div class="sidebar-title" data-target="cat-body">
+          Category <i class="fas fa-chevron-down sidebar-title-arrow"></i>
+        </div>
+        <div class="sidebar-body" id="cat-body">
+          <ul class="cat-list" id="catList">
+            <li class="cat-list-item active" data-cat="all"><span class="cat-list-name">All Works</span><span class="cat-list-count">4,214</span></li>
+            <li class="cat-list-item" data-cat="paintings"><span class="cat-list-name">Paintings</span><span class="cat-list-count">1,240</span></li>
+            <li class="cat-list-item" data-cat="photography"><span class="cat-list-name">Photography</span><span class="cat-list-count">980</span></li>
+            <li class="cat-list-item" data-cat="prints"><span class="cat-list-name">Prints</span><span class="cat-list-count">760</span></li>
+            <li class="cat-list-item" data-cat="drawings"><span class="cat-list-name">Drawings</span><span class="cat-list-count">410</span></li>
+            <li class="cat-list-item" data-cat="digital"><span class="cat-list-name">Digital Art</span><span class="cat-list-count">520</span></li>
+            <li class="cat-list-item" data-cat="sculpture"><span class="cat-list-name">Sculpture</span><span class="cat-list-count">304</span></li>
+          </ul>
         </div>
       </div>
 
-      <div class="filter-group open">
-        <div class="filter-group-title">Price Range (KES) <i class="fas fa-chevron-down"></i></div>
-        <div class="price-range">
+      <!-- Price -->
+      <div class="sidebar-section">
+        <div class="sidebar-title" data-target="price-body">
+          Price Range <i class="fas fa-chevron-down sidebar-title-arrow"></i>
+        </div>
+        <div class="sidebar-body" id="price-body">
           <div class="price-inputs">
-            <input class="price-input" type="number" placeholder="Min" value="0">
-            <input class="price-input" type="number" placeholder="Max" value="500000">
+            <div class="price-input-wrap">
+              <span class="price-input-sym">$</span>
+              <input type="number" class="price-input" id="priceMin" placeholder="0" value="0">
+            </div>
+            <div class="price-input-wrap">
+              <span class="price-input-sym">$</span>
+              <input type="number" class="price-input" id="priceMax" placeholder="5000" value="5000">
+            </div>
           </div>
-          <button class="filter-apply">Apply</button>
-          <button class="filter-clear">Clear</button>
+          <div class="price-slider-wrap">
+            <input type="range" class="price-slider" id="priceSlider" min="0" max="5000" value="3000">
+          </div>
         </div>
       </div>
 
-      <div class="filter-group open">
-        <div class="filter-group-title">Style <i class="fas fa-chevron-down"></i></div>
-        <div class="filter-options">
-          <label class="filter-opt"><input type="checkbox"> Abstract <span class="filter-opt-count">1,980</span></label>
-          <label class="filter-opt"><input type="checkbox"> Landscape <span class="filter-opt-count">1,240</span></label>
-          <label class="filter-opt"><input type="checkbox"> Portrait <span class="filter-opt-count">870</span></label>
-          <label class="filter-opt"><input type="checkbox"> Still Life <span class="filter-opt-count">540</span></label>
-          <label class="filter-opt"><input type="checkbox"> Figurative <span class="filter-opt-count">390</span></label>
+      <!-- Medium -->
+      <div class="sidebar-section">
+        <div class="sidebar-title" data-target="medium-body">
+          Medium <i class="fas fa-chevron-down sidebar-title-arrow"></i>
+        </div>
+        <div class="sidebar-body" id="medium-body">
+          <div class="check-list">
+            <label class="check-item"><div class="check-box"></div><span class="check-label">Oil on Canvas</span></label>
+            <label class="check-item"><div class="check-box"></div><span class="check-label">Acrylic</span></label>
+            <label class="check-item"><div class="check-box"></div><span class="check-label">Watercolour</span></label>
+            <label class="check-item"><div class="check-box"></div><span class="check-label">Pencil & Charcoal</span></label>
+            <label class="check-item"><div class="check-box"></div><span class="check-label">Mixed Media</span></label>
+            <label class="check-item"><div class="check-box"></div><span class="check-label">Photography</span></label>
+            <label class="check-item"><div class="check-box"></div><span class="check-label">Digital</span></label>
+            <label class="check-item"><div class="check-box"></div><span class="check-label">Ceramic</span></label>
+          </div>
         </div>
       </div>
 
-      <div class="filter-group open">
-        <div class="filter-group-title">Size <i class="fas fa-chevron-down"></i></div>
-        <div class="filter-options">
-          <label class="filter-opt"><input type="checkbox"> Small (under 40cm) <span class="filter-opt-count">3,120</span></label>
-          <label class="filter-opt"><input type="checkbox"> Medium (40–80cm) <span class="filter-opt-count">5,440</span></label>
-          <label class="filter-opt"><input type="checkbox"> Large (80–120cm) <span class="filter-opt-count">2,680</span></label>
-          <label class="filter-opt"><input type="checkbox"> Extra Large (120cm+) <span class="filter-opt-count">1,240</span></label>
+      <!-- Size -->
+      <div class="sidebar-section">
+        <div class="sidebar-title" data-target="size-body">
+          Size <i class="fas fa-chevron-down sidebar-title-arrow"></i>
+        </div>
+        <div class="sidebar-body" id="size-body">
+          <div class="size-grid">
+            <button class="size-btn">XS<br><span style="font-size:0.55rem">Under 30cm</span></button>
+            <button class="size-btn">S<br><span style="font-size:0.55rem">30–60cm</span></button>
+            <button class="size-btn active">M<br><span style="font-size:0.55rem">60–100cm</span></button>
+            <button class="size-btn">L<br><span style="font-size:0.55rem">100–150cm</span></button>
+            <button class="size-btn">XL<br><span style="font-size:0.55rem">Over 150cm</span></button>
+          </div>
         </div>
       </div>
 
-      <div class="filter-group open">
-        <div class="filter-group-title">Availability <i class="fas fa-chevron-down"></i></div>
-        <div class="filter-options">
-          <label class="filter-opt"><input type="checkbox" checked> For Sale <span class="filter-opt-count">10,840</span></label>
-          <label class="filter-opt"><input type="checkbox"> Print on Demand <span class="filter-opt-count">1,640</span></label>
+      <!-- Dominant Colour -->
+      <div class="sidebar-section">
+        <div class="sidebar-title" data-target="colour-body">
+          Dominant Colour <i class="fas fa-chevron-down sidebar-title-arrow"></i>
+        </div>
+        <div class="sidebar-body" id="colour-body">
+          <div class="swatch-grid">
+            <div class="swatch" style="background:#1a1a2e" title="Dark / Navy"></div>
+            <div class="swatch" style="background:#c0392b" title="Red"></div>
+            <div class="swatch active" style="background:#e67e22" title="Orange / Warm"></div>
+            <div class="swatch" style="background:#f1c40f" title="Yellow / Gold"></div>
+            <div class="swatch" style="background:#27ae60" title="Green"></div>
+            <div class="swatch" style="background:#2980b9" title="Blue"></div>
+            <div class="swatch" style="background:#8e44ad" title="Purple"></div>
+            <div class="swatch" style="background:#bdc3c7" title="Neutral / Grey"></div>
+            <div class="swatch" style="background:#f5f5f0;border:1px solid #e4dbd0" title="White / Light"></div>
+            <div class="swatch" style="background:#2c1810" title="Brown / Earth"></div>
+          </div>
         </div>
       </div>
+
+      <!-- Availability -->
+      <div class="sidebar-section">
+        <div class="sidebar-title" data-target="avail-body">
+          Availability <i class="fas fa-chevron-down sidebar-title-arrow"></i>
+        </div>
+        <div class="sidebar-body" id="avail-body">
+          <div class="check-list">
+            <label class="check-item checked"><div class="check-box"></div><span class="check-label">For Sale</span></label>
+            <label class="check-item"><div class="check-box"></div><span class="check-label">Limited Edition</span></label>
+            <label class="check-item"><div class="check-box"></div><span class="check-label">Commission Available</span></label>
+          </div>
+        </div>
+      </div>
+
+      <button class="clear-btn" id="clearBtn">
+        <i class="fas fa-times" style="font-size:0.65rem;margin-right:6px"></i> Clear All Filters
+      </button>
+
     </aside>
 
-    <!-- Works Grid -->
-    <div class="works-area">
-      <div class="works-grid" id="worksGrid"></div>
-    </div>
+    <!-- GALLERY AREA -->
+    <main id="main-content">
+      <div class="art-grid" id="artGrid">
 
+        <!-- Cards generated by JS below, with real Unsplash images -->
+
+      </div>
+      <div id="empty-state">
+        <div class="empty-icon"><i class="fas fa-search"></i></div>
+        <div class="empty-title">No works found</div>
+        <div class="empty-sub">Try adjusting your filters or search terms</div>
+      </div>
+      <div id="load-more-wrap">
+        <button class="load-more-btn" id="loadMoreBtn">
+          <i class="fas fa-plus" style="font-size:0.65rem"></i> Load More Works
+        </button>
+        <div class="load-more-sub">Showing <strong id="shownCount">24</strong> of <strong>4,214</strong> works</div>
+      </div>
+    </main>
+
+  </div>
+
+  <!-- ═══════════ LIGHTBOX ═══════════ -->
+  <div id="lightbox" role="dialog" aria-modal="true" aria-label="Artwork detail">
+    <div class="lb-backdrop" id="lbBackdrop"></div>
+    <div class="lb-content">
+      <div class="lb-img-wrap">
+        <button class="lb-close" id="lbClose" aria-label="Close"><i class="fas fa-times"></i></button>
+        <button class="lb-nav lb-prev" id="lbPrev" aria-label="Previous"><i class="fas fa-chevron-left"></i></button>
+        <button class="lb-nav lb-next" id="lbNext" aria-label="Next"><i class="fas fa-chevron-right"></i></button>
+        <img id="lbImg" class="lb-img" src="" alt="">
+      </div>
+      <div class="lb-panel">
+        <div class="lb-panel-artist"><div class="lb-panel-artist-dot"></div><span id="lbArtist"></span></div>
+        <div class="lb-panel-title" id="lbTitle"></div>
+        <div class="lb-panel-year" id="lbYear"></div>
+        <div class="lb-panel-price" id="lbPrice"></div>
+        <div class="lb-panel-avail" id="lbAvail">Original — 1 available</div>
+        <div class="lb-detail-grid">
+          <div class="lb-detail-item"><div class="lb-detail-label">Medium</div><div class="lb-detail-val" id="lbMedium"></div></div>
+          <div class="lb-detail-item"><div class="lb-detail-label">Dimensions</div><div class="lb-detail-val" id="lbDims"></div></div>
+          <div class="lb-detail-item"><div class="lb-detail-label">Category</div><div class="lb-detail-val" id="lbCat"></div></div>
+          <div class="lb-detail-item"><div class="lb-detail-label">Ships From</div><div class="lb-detail-val" id="lbShips"></div></div>
+        </div>
+        <div class="lb-desc" id="lbDesc"></div>
+        <div class="lb-actions">
+          <button class="lb-btn-primary" id="lbAddCart"><i class="fas fa-shopping-bag"></i> Add to Cart</button>
+          <button class="lb-btn-secondary" id="lbWishlist"><i class="fas fa-heart"></i> Save to Wishlist</button>
+        </div>
+        <div class="lb-trust"><i class="fas fa-shield-alt"></i> Secure checkout · Certificate of Authenticity included</div>
+      </div>
+    </div>
   </div>
 
   <script>
   'use strict';
+
+  // ── Data ─────────────────────────────────────────────
   const WORKS = [
-    { id:1, title:'Golden Hour Study',   artist:'Elena Vasquez', price:'KES 54,600',  cat:'oil',       tag:'new',  img:'https://images.unsplash.com/photo-1541961017774-22349e4a1262?w=500&q=80' },
-    { id:2, title:'Meridian',            artist:'Elena Vasquez', price:'KES 136,500', cat:'oil',       tag:'',     img:'https://images.unsplash.com/photo-1547036967-23d11aacaee0?w=500&q=80' },
-    { id:3, title:'Still Water',         artist:'Marcus Chen',   price:'KES 75,400',  cat:'watercolour',tag:'',    img:'https://images.unsplash.com/photo-1579783901586-d88db74b4fe4?w=500&q=80' },
-    { id:4, title:'Harbour at Dusk',     artist:'Amara Osei',    price:'KES 62,400',  cat:'photography',tag:'',    img:'https://images.unsplash.com/photo-1549490349-8643362247b5?w=500&q=80' },
-    { id:5, title:'Chromatic Study III', artist:'Yuki Tanaka',   price:'KES 109,200', cat:'abstract',  tag:'new',  img:'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=500&q=80' },
-    { id:6, title:'Midnight Bloom',      artist:'Elena Vasquez', price:'KES 49,400',  cat:'prints',    tag:'',     img:'https://images.unsplash.com/photo-1579783902614-a3fb3927b6a5?w=500&q=80' },
-    { id:7, title:'Open Field',          artist:'Marcus Chen',   price:'KES 57,200',  cat:'oil',       tag:'',     img:'https://images.unsplash.com/photo-1505765050516-f72dcac9c60e?w=500&q=80' },
-    { id:8, title:'Urban Geometry',      artist:'Yuki Tanaka',   price:'KES 88,400',  cat:'abstract',  tag:'new',  img:'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=500&q=80' },
-    { id:9, title:'Portrait in Ochre',   artist:'Amara Osei',    price:'KES 94,000',  cat:'oil',       tag:'sold', img:'https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=500&q=80' },
-    { id:10,title:'Tide Study No. 4',    artist:'Marcus Chen',   price:'KES 42,900',  cat:'watercolour',tag:'',    img:'https://images.unsplash.com/photo-1544967082-d9d25d867d66?w=500&q=80' },
-    { id:11,title:'Fracture',            artist:'Yuki Tanaka',   price:'KES 130,000', cat:'abstract',  tag:'',     img:'https://images.unsplash.com/photo-1552084117-56a987666449?w=500&q=80' },
-    { id:12,title:'Market Morning',      artist:'Amara Osei',    price:'KES 68,500',  cat:'photography',tag:'new', img:'https://images.unsplash.com/photo-1516912481808-3406841bd33c?w=500&q=80' },
+    { id:1,  title:"Golden Hour Study",      artist:"Elena Vasquez",  price:420,  medium:"Oil on Canvas",    dims:"60×80cm",  cat:"paintings",   year:2025, ships:"Madrid, Spain",   badge:"",    img:"https://images.unsplash.com/photo-1541961017774-22349e4a1262?w=600&q=80", desc:"A luminous exploration of late afternoon light captured in thick impasto strokes. The warmth of the palette draws the viewer into a moment of stillness." },
+    { id:2,  title:"Midnight Bloom",         artist:"Soo-Jin Park",   price:380,  medium:"Giclee Print",     dims:"50×70cm",  cat:"prints",      year:2025, ships:"Seoul, Korea",     badge:"ltd", img:"https://images.unsplash.com/photo-1579783901586-d88db74b4fe4?w=600&q=80", desc:"Limited edition print from the acclaimed Nocturne series. Edition 5 of 12, signed and numbered by the artist." },
+    { id:3,  title:"Still Life No.7",        artist:"Marco Bellini",  price:650,  medium:"Watercolour",      dims:"42×60cm",  cat:"paintings",   year:2024, ships:"Florence, Italy",  badge:"",    img:"https://images.unsplash.com/photo-1508919801845-fc2ae1bc2a28?w=600&q=80", desc:"Part of Bellini's ongoing Still Life series, examining the interplay of light and shadow on domestic objects." },
+    { id:4,  title:"The Weight of Memory",   artist:"Amara Osei",     price:1250, medium:"Mixed Media",      dims:"80×100cm", cat:"paintings",   year:2025, ships:"Accra, Ghana",     badge:"new", img:"https://images.unsplash.com/photo-1543857778-c4a1a3e0b2eb?w=600&q=80", desc:"A deeply personal work exploring themes of diaspora identity. Collaged newspaper fragments beneath translucent layers of paint create a sense of buried history." },
+    { id:5,  title:"Coastal Geometry",       artist:"Nadia Frost",    price:290,  medium:"Photography",      dims:"60×90cm",  cat:"photography", year:2025, ships:"Copenhagen, DK",   badge:"new", img:"https://images.unsplash.com/photo-1547891654-e66ed7ebb968?w=600&q=80", desc:"Shot on medium format film during a residency on the Jutland coast. Printed on Hahnemühle Photo Rag 308gsm." },
+    { id:6,  title:"Chromatic Study III",    artist:"Yuki Tanaka",    price:840,  medium:"Acrylic on Board", dims:"70×70cm",  cat:"paintings",   year:2024, ships:"Tokyo, Japan",     badge:"",    img:"https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=600&q=80", desc:"The third in a series investigating how pure colour relationships create spatial depth without perspective." },
+    { id:7,  title:"Linden Street",         artist:"Clara Voss",     price:510,  medium:"Oil on Canvas",    dims:"90×120cm", cat:"paintings",   year:2025, ships:"Berlin, Germany",  badge:"",    img:"https://images.unsplash.com/photo-1513364776144-60967b0f800f?w=600&q=80", desc:"An intimate urban scene painted on site over three consecutive mornings. The quality of northern European light is central to the work." },
+    { id:8,  title:"Form Studies I–IV",      artist:"Raj Kapoor",     price:195,  medium:"Pencil on Paper",  dims:"30×42cm",  cat:"drawings",    year:2025, ships:"Mumbai, India",    badge:"new", img:"https://images.unsplash.com/photo-1551888954-a5c296b07eb5?w=600&q=80", desc:"A set of four closely observed drawings exploring the human form through contour and negative space." },
+    { id:9,  title:"Archive Dust",           artist:"Léa Moreau",     price:720,  medium:"Photography",      dims:"80×80cm",  cat:"photography", year:2024, ships:"Paris, France",    badge:"",    img:"https://images.unsplash.com/photo-1578301978018-3005759f48f7?w=600&q=80", desc:"From the series documenting forgotten interiors across rural France. Printed in an edition of 8." },
+    { id:10, title:"Terra",                  artist:"Ifeoma Nwosu",   price:930,  medium:"Ceramic Sculpture",dims:"28×18cm",  cat:"sculpture",   year:2025, ships:"Lagos, Nigeria",   badge:"new", img:"https://images.unsplash.com/photo-1493106641515-5d4fd4e6f731?w=600&q=80", desc:"Wheel-thrown and hand-carved stoneware, fired with an ash glaze that captures the colours of laterite earth." },
+    { id:11, title:"Soft Machine",           artist:"Yuki Tanaka",    price:460,  medium:"Digital Print",    dims:"50×70cm",  cat:"digital",     year:2025, ships:"Tokyo, Japan",     badge:"ltd", img:"https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&q=80", desc:"Archival pigment print from a series exploring the boundary between organic and computational form. Edition 3 of 10." },
+    { id:12, title:"Harbour at Dusk",        artist:"Marco Bellini",  price:480,  medium:"Watercolour",      dims:"56×76cm",  cat:"paintings",   year:2024, ships:"Florence, Italy",  badge:"",    img:"https://images.unsplash.com/photo-1549490349-8643362247b5?w=600&q=80", desc:"A study of the Genoa harbour made during a sabbatical residency. The interplay of artificial and fading natural light defines the mood." },
+    { id:13, title:"Into the Canopy",        artist:"Nadia Frost",    price:370,  medium:"Photography",      dims:"70×100cm", cat:"photography", year:2025, ships:"Copenhagen, DK",   badge:"sale",img:"https://images.unsplash.com/photo-1540979388789-6cee28a1cdc9?w=600&q=80", desc:"Taken in the temperate rainforests of New Zealand. An ethereal upward perspective through ancient kauri trees." },
+    { id:14, title:"Domestic Fiction II",    artist:"Clara Voss",     price:680,  medium:"Oil on Canvas",    dims:"60×80cm",  cat:"paintings",   year:2025, ships:"Berlin, Germany",  badge:"",    img:"https://images.unsplash.com/photo-1579783902614-a3fb3927b6a5?w=600&q=80", desc:"The second in a domestic interior series that interrogates the constructed nature of home and belonging." },
+    { id:15, title:"Frequency",              artist:"Raj Kapoor",     price:210,  medium:"Ink on Paper",     dims:"42×59cm",  cat:"drawings",    year:2024, ships:"Mumbai, India",    badge:"",    img:"https://images.unsplash.com/photo-1618004912476-29818d81ae2e?w=600&q=80", desc:"Obsessively rendered parallel ink lines that, viewed from a distance, resolve into a landscape." },
+    { id:16, title:"Meridian",               artist:"Amara Osei",     price:1050, medium:"Oil & Resin",      dims:"100×80cm", cat:"paintings",   year:2025, ships:"Accra, Ghana",     badge:"new", img:"https://images.unsplash.com/photo-1547036967-23d11aacaee0?w=600&q=80", desc:"Resin poured over an oil painting base creates topographic depth. Light sources from different angles reveal entirely different compositions." },
+    { id:17, title:"The Blue Hour",          artist:"Léa Moreau",     price:580,  medium:"Photography",      dims:"90×60cm",  cat:"photography", year:2025, ships:"Paris, France",    badge:"ltd", img:"https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600&q=80", desc:"The precise twelve-minute window after sunset captured in the mountains of the Haute-Savoie. Edition 6 of 8." },
+    { id:18, title:"Vessel",                 artist:"Ifeoma Nwosu",   price:740,  medium:"Stoneware",        dims:"32×22cm",  cat:"sculpture",   year:2024, ships:"Lagos, Nigeria",   badge:"",    img:"https://images.unsplash.com/photo-1565193566173-7a0ee3dbe261?w=600&q=80", desc:"A tall-necked vessel inspired by traditional Igbo water pots, updated with a contemporary matte black glaze." },
+    { id:19, title:"Portrait of an Instant", artist:"Elena Vasquez",  price:390,  medium:"Oil on Board",     dims:"45×35cm",  cat:"paintings",   year:2025, ships:"Madrid, Spain",    badge:"",    img:"https://images.unsplash.com/photo-1515405295579-ba7b45403062?w=600&q=80", desc:"A small-format portrait study made in a single two-hour session. The directness of the gaze commands the viewer's attention." },
+    { id:20, title:"Urban Erosion",          artist:"Yuki Tanaka",    price:630,  medium:"Digital Print",    dims:"60×90cm",  cat:"digital",     year:2025, ships:"Tokyo, Japan",     badge:"new", img:"https://images.unsplash.com/photo-1486325212027-8081e485255e?w=600&q=80", desc:"Photographic source material processed through custom algorithms to simulate geological weathering. Edition 4 of 10." },
+    { id:21, title:"Studies in Stillness",   artist:"Clara Voss",     price:295,  medium:"Charcoal",         dims:"30×40cm",  cat:"drawings",    year:2024, ships:"Berlin, Germany",  badge:"",    img:"https://images.unsplash.com/photo-1499781350541-7783f6c6a0c8?w=600&q=80", desc:"Charcoal studies of hand-picked dried flowers and seedpods. Part of a sustained exploration of natural forms." },
+    { id:22, title:"The Waiting Room",       artist:"Marco Bellini",  price:870,  medium:"Watercolour",      dims:"70×50cm",  cat:"paintings",   year:2025, ships:"Florence, Italy",  badge:"",    img:"https://images.unsplash.com/photo-1578301978693-4960e8b56a02?w=600&q=80", desc:"A deceptively quiet interior with an undercurrent of tension. The absence of figures amplifies the sense of expectation." },
+    { id:23, title:"Nocturne No.3",          artist:"Soo-Jin Park",   price:310,  medium:"Photography",      dims:"50×50cm",  cat:"photography", year:2025, ships:"Seoul, Korea",     badge:"",    img:"https://images.unsplash.com/photo-1489513963433-9b7fcc83c3c6?w=600&q=80", desc:"Long-exposure night photography from the Nocturne series. The urban light trails become painterly marks." },
+    { id:24, title:"Open Field",             artist:"Nadia Frost",    price:440,  medium:"Photography",      dims:"80×60cm",  cat:"photography", year:2024, ships:"Copenhagen, DK",   badge:"sale",img:"https://images.unsplash.com/photo-1505765050516-f72dcac9c60e?w=600&q=80", desc:"The Scandinavian plain in early spring. Minimal, almost abstract — the horizon the only dividing line." },
   ];
 
-  let currentCat = 'all';
-  let savedWorks = new Set();
+  // ── State ────────────────────────────────────────────
+  let currentCat    = 'all';
+  let currentView   = 'grid-3';
+  let lightboxIndex = 0;
+  let filteredWorks = [...WORKS];
 
-  function renderWorks(list) {
-    const grid = document.getElementById('worksGrid');
-    const count = document.getElementById('resultCount');
-    if (!grid) return;
-    grid.innerHTML = list.map(w => `
-      <div class="work-card" onclick="location.href='listing.html'">
-        ${w.tag ? `<div class="work-tag tag-${w.tag}">${w.tag}</div>` : ''}
-        <div class="work-img-wrap">
-          <img src="${w.img}" alt="${w.title}" loading="lazy">
-          <div class="work-overlay">
-            <a class="overlay-btn" onclick="event.stopPropagation();location.href='listing.html'">View Work</a>
-          </div>
-        </div>
-        <div class="work-info">
-          <div class="work-title">${w.title}</div>
-          <div class="work-artist">${w.artist}</div>
-          <div class="work-footer">
-            <div class="work-price">${w.price}</div>
-            <button class="work-save${savedWorks.has(w.id)?' saved':''}"
-              onclick="event.stopPropagation();toggleSave(this,${w.id})" aria-label="Save">
-              <i class="${savedWorks.has(w.id)?'fas':'far'} fa-heart"></i>
-            </button>
-          </div>
-        </div>
-      </div>
-    `).join('');
-    if (count) count.textContent = `Showing ${list.length} works`;
-  }
+  // ── DOM refs ─────────────────────────────────────────
+  const artGrid       = document.getElementById('artGrid');
+  const lightbox      = document.getElementById('lightbox');
+  const lbImg         = document.getElementById('lbImg');
+  const lbArtist      = document.getElementById('lbArtist');
+  const lbTitle       = document.getElementById('lbTitle');
+  const lbYear        = document.getElementById('lbYear');
+  const lbPrice       = document.getElementById('lbPrice');
+  const lbMedium      = document.getElementById('lbMedium');
+  const lbDims        = document.getElementById('lbDims');
+  const lbCat         = document.getElementById('lbCat');
+  const lbShips       = document.getElementById('lbShips');
+  const lbDesc        = document.getElementById('lbDesc');
+  const cartCountEl   = document.getElementById('cartCount');
+  let   cartCount     = 3;
 
-  function toggleSave(btn, id) {
-    if (savedWorks.has(id)) { savedWorks.delete(id); btn.classList.remove('saved'); btn.querySelector('i').className='far fa-heart'; }
-    else { savedWorks.add(id); btn.classList.add('saved'); btn.querySelector('i').className='fas fa-heart'; }
-  }
+  // ── Render cards ─────────────────────────────────────
+  function renderCards(works) {
+    artGrid.innerHTML = '';
+    document.getElementById('resultNum').textContent = works.length.toLocaleString();
 
-  function filter() {
-    const q = (document.getElementById('searchInput')?.value || '').toLowerCase();
-    return WORKS.filter(w =>
-      (currentCat === 'all' || w.cat === currentCat) &&
-      (!q || w.title.toLowerCase().includes(q) || w.artist.toLowerCase().includes(q))
-    );
-  }
+    if (works.length === 0) {
+      document.getElementById('empty-state').style.display = 'block';
+      document.getElementById('load-more-wrap').style.display = 'none';
+      return;
+    }
+    document.getElementById('empty-state').style.display = 'none';
+    document.getElementById('load-more-wrap').style.display = 'block';
+    document.getElementById('shownCount').textContent = Math.min(works.length, 24);
 
-  renderWorks(WORKS);
-
-  document.querySelectorAll('.filter-chip').forEach(chip => {
-    chip.addEventListener('click', () => {
-      document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
-      chip.classList.add('active');
-      currentCat = chip.dataset.cat || 'all';
-      renderWorks(filter());
+    const frag = document.createDocumentFragment();
+    works.forEach((w, i) => {
+      const card = buildCard(w, i);
+      frag.appendChild(card);
     });
-  });
+    artGrid.appendChild(frag);
 
-  const searchInput = document.getElementById('searchInput');
-  if (searchInput) {
-    let debounce;
-    searchInput.addEventListener('input', () => {
-      clearTimeout(debounce);
-      debounce = setTimeout(() => renderWorks(filter()), 200);
+    // Stagger reveal
+    Array.from(artGrid.children).forEach((c, i) => {
+      c.style.opacity = '0';
+      c.style.transform = 'translateY(16px)';
+      c.style.transition = `opacity 0.4s ease ${i * 0.04}s, transform 0.4s ease ${i * 0.04}s`;
+      requestAnimationFrame(() => requestAnimationFrame(() => {
+        c.style.opacity = '1';
+        c.style.transform = 'translateY(0)';
+      }));
     });
   }
 
-  document.querySelectorAll('.filter-group-title').forEach(title => {
-    title.addEventListener('click', () => title.closest('.filter-group').classList.toggle('open'));
+  function buildCard(w, i) {
+    const isListView = currentView === 'grid-list';
+    const div = document.createElement('div');
+    div.className = 'art-card';
+    div.dataset.id = w.id;
+
+    const badgeHtml = w.badge ? `<div class="art-badge art-badge--${w.badge}">${
+      w.badge === 'new' ? 'New' : w.badge === 'ltd' ? 'Ltd. Ed.' : w.badge === 'sale' ? 'Sale' : w.badge
+    }</div>` : '';
+
+    const wasHtml = w.badge === 'sale' ? `<span class="was">KES ${Math.round(w.price * 1.2).toLocaleString()}</span>` : '';
+
+    if (!isListView) {
+      div.innerHTML = `
+        <div class="art-card-img-wrap">
+          <img class="art-card-img" src="${w.img}" alt="${w.title}" loading="lazy">
+          ${badgeHtml}
+          <div class="art-card-overlay">
+            <div class="overlay-actions">
+              <button class="oa-btn oa-primary" data-action="cart" aria-label="Add to cart">Add to Cart</button>
+              <button class="oa-icon oa-wish" aria-label="Wishlist"><i class="fas fa-heart"></i></button>
+              <button class="oa-icon" aria-label="Expand" data-action="expand"><i class="fas fa-expand-alt"></i></button>
+            </div>
+          </div>
+        </div>
+        <div class="art-card-footer">
+          <div class="art-card-top-row">
+            <div class="art-card-artist">${w.artist}</div>
+            <button class="art-card-wishlist-btn" aria-label="Wishlist"><i class="fas fa-heart"></i></button>
+          </div>
+          <div class="art-card-title">${w.title}</div>
+          <div class="art-card-bottom">
+            <div class="art-card-price">${wasHtml}KES ${w.price.toLocaleString()}</div>
+            <div class="art-card-medium">${w.medium}</div>
+          </div>
+        </div>`;
+    } else {
+      div.innerHTML = `
+        <div class="art-card-img-wrap">
+          <img class="art-card-img" src="${w.img}" alt="${w.title}" loading="lazy">
+          ${badgeHtml}
+        </div>
+        <div class="art-card-footer">
+          <div class="art-card-artist" onclick="location.href='artist.html';event.stopPropagation()" style="cursor:pointer">${w.artist}</div>
+          <div class="art-card-title">${w.title}</div>
+          <div class="art-card-bottom">
+            <div class="art-card-price">${wasHtml}KES ${w.price.toLocaleString()}</div>
+            <div class="art-card-medium">${w.medium} · ${w.dims}</div>
+          </div>
+        </div>
+        <div class="list-action-col">
+          <button class="list-btn list-btn-primary" data-action="cart">Add to Cart</button>
+          <button class="list-btn list-btn-ghost" data-action="expand">View Details</button>
+        </div>`;
+    }
+
+    // Click events
+    div.addEventListener('click', e => {
+      const action = e.target.closest('[data-action]')?.dataset.action;
+      if (action === 'cart') { e.stopPropagation(); addToCart(w); return; }
+      if (e.target.closest('.oa-wish') || e.target.closest('.art-card-wishlist-btn')) {
+        e.stopPropagation(); toggleWishlist(e.currentTarget, w); return;
+      }
+      if (action === 'expand' || !e.target.closest('[data-action]')) {
+        window.location.href = 'listing.html';
+        return;
+      }
+      openLightbox(filteredWorks.findIndex(fw => fw.id === w.id));
+    });
+
+    return div;
+  }
+
+  // ── Filter ───────────────────────────────────────────
+  function applyFilter() {
+    filteredWorks = currentCat === 'all' ? [...WORKS] : WORKS.filter(w => w.cat === currentCat);
+    renderCards(filteredWorks);
+  }
+
+  // Category list
+  document.querySelectorAll('.cat-list-item').forEach(item => {
+    item.addEventListener('click', () => {
+      document.querySelectorAll('.cat-list-item').forEach(i => i.classList.remove('active'));
+      item.classList.add('active');
+      currentCat = item.dataset.cat;
+      applyFilter();
+      updateActiveChips();
+    });
   });
+
+  // ── Active filter chips (toolbar) ────────────────────
+  function updateActiveChips() {
+    const bar = document.getElementById('activeFilters');
+    // Keep mobile button
+    const mobileBtn = document.getElementById('mobileFilterBtn');
+    bar.innerHTML = '';
+    bar.appendChild(mobileBtn);
+
+    if (currentCat !== 'all') {
+      const chip = document.createElement('button');
+      chip.className = 'filter-chip active';
+      chip.innerHTML = `${currentCat.charAt(0).toUpperCase()+currentCat.slice(1)} <span class="chip-x">×</span>`;
+      chip.addEventListener('click', () => {
+        currentCat = 'all';
+        document.querySelectorAll('.cat-list-item').forEach(i => i.classList.remove('active'));
+        document.querySelector('[data-cat="all"]').classList.add('active');
+        applyFilter(); updateActiveChips();
+      });
+      bar.appendChild(chip);
+    }
+
+    // Static chips for demo
+    const staticChips = [
+      { label:'Under KES 1,000', key:'price' },
+      { label:'Medium: M', key:'size' },
+    ];
+    staticChips.forEach(sc => {
+      const chip = document.createElement('button');
+      chip.className = 'filter-chip active';
+      chip.innerHTML = `${sc.label} <span class="chip-x">×</span>`;
+      chip.addEventListener('click', () => chip.remove());
+      bar.appendChild(chip);
+    });
+  }
+  updateActiveChips();
+
+  // ── View toggle ──────────────────────────────────────
+  document.querySelectorAll('.view-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.view-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      currentView = btn.dataset.view;
+      artGrid.className = `art-grid ${currentView === 'grid-3' ? '' : currentView}`;
+      renderCards(filteredWorks);
+    });
+  });
+
+  // ── Sidebar accordion ────────────────────────────────
+  document.querySelectorAll('.sidebar-title').forEach(title => {
+    const bodyId = title.dataset.target;
+    const body   = document.getElementById(bodyId);
+    if (!body) return;
+    body.style.maxHeight = body.scrollHeight + 'px';
+    title.addEventListener('click', () => {
+      const collapsed = title.classList.toggle('collapsed');
+      body.classList.toggle('collapsed', collapsed);
+      if (!collapsed) body.style.maxHeight = body.scrollHeight + 'px';
+    });
+  });
+
+  // ── Checkbox toggle ──────────────────────────────────
+  document.querySelectorAll('.check-item').forEach(item => {
+    item.addEventListener('click', () => item.classList.toggle('checked'));
+  });
+
+  // ── Size toggle ──────────────────────────────────────
+  document.querySelectorAll('.size-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.size-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+    });
+  });
+
+  // ── Swatch toggle ────────────────────────────────────
+  document.querySelectorAll('.swatch').forEach(sw => {
+    sw.addEventListener('click', () => sw.classList.toggle('active'));
+  });
+
+  // ── Clear filters ────────────────────────────────────
+  document.getElementById('clearBtn').addEventListener('click', () => {
+    currentCat = 'all';
+    document.querySelectorAll('.cat-list-item').forEach(i => i.classList.remove('active'));
+    document.querySelector('[data-cat="all"]').classList.add('active');
+    document.querySelectorAll('.check-item').forEach(i => i.classList.remove('checked'));
+    document.querySelectorAll('.size-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.swatch').forEach(s => s.classList.remove('active'));
+    applyFilter(); updateActiveChips();
+  });
+
+  // ── Cart ─────────────────────────────────────────────
+  function addToCart(w) {
+    cartCount++;
+    cartCountEl.textContent = cartCount;
+    cartCountEl.style.transform = 'scale(1.5)';
+    setTimeout(() => cartCountEl.style.transform = '', 200);
+    showToast(`"${w.title}" added to cart`);
+  }
+
+  function showToast(msg) {
+    const t = document.createElement('div');
+    t.style.cssText = `position:fixed;bottom:32px;left:50%;transform:translateX(-50%) translateY(8px);
+      background:var(--ink);color:var(--cream);padding:12px 22px; border-radius: 12px ;
+      font-family:var(--mono);font-size:0.72rem;letter-spacing:0.08em;z-index:999;
+      box-shadow:0 8px 32px rgba(14,11,7,0.3);opacity:0;
+      transition:opacity 0.2s ease,transform 0.2s ease;white-space:nowrap;`;
+    t.textContent = msg;
+    document.body.appendChild(t);
+    requestAnimationFrame(() => { t.style.opacity='1'; t.style.transform='translateX(-50%) translateY(0)'; });
+    setTimeout(() => { t.style.opacity='0'; setTimeout(()=>t.remove(),300); }, 2800);
+  }
+
+  // ── Wishlist ─────────────────────────────────────────
+  function toggleWishlist(card, w) {
+    const btns = card.querySelectorAll('.oa-wish, .art-card-wishlist-btn');
+    btns.forEach(b => b.classList.toggle('loved'));
+  }
+
+  // ── Lightbox ─────────────────────────────────────────
+  function openLightbox(idx) {
+    lightboxIndex = idx;
+    const w = filteredWorks[idx];
+    if (!w) return;
+    lbImg.src           = w.img.replace('w=600','w=900');
+    lbArtist.textContent = w.artist;
+    lbTitle.textContent  = w.title;
+    lbYear.textContent   = w.year + ' · ' + w.cat.charAt(0).toUpperCase() + w.cat.slice(1);
+    lbPrice.textContent  = 'KES ' + w.price.toLocaleString();
+    lbMedium.textContent = w.medium;
+    lbDims.textContent   = w.dims;
+    lbCat.textContent    = w.cat.charAt(0).toUpperCase() + w.cat.slice(1);
+    lbShips.textContent  = w.ships;
+    lbDesc.textContent   = w.desc;
+    lightbox.classList.add('active');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeLightbox() {
+    lightbox.classList.remove('active');
+    document.body.style.overflow = '';
+  }
+
+  document.getElementById('lbClose').addEventListener('click', closeLightbox);
+  document.getElementById('lbBackdrop').addEventListener('click', closeLightbox);
+  document.getElementById('lbPrev').addEventListener('click', () => openLightbox((lightboxIndex - 1 + filteredWorks.length) % filteredWorks.length));
+  document.getElementById('lbNext').addEventListener('click', () => openLightbox((lightboxIndex + 1) % filteredWorks.length));
+  document.getElementById('lbAddCart').addEventListener('click', () => {
+    addToCart(filteredWorks[lightboxIndex]);
+  });
+  document.addEventListener('keydown', e => {
+    if (!lightbox.classList.contains('active')) return;
+    if (e.key === 'Escape')     closeLightbox();
+    if (e.key === 'ArrowLeft')  document.getElementById('lbPrev').click();
+    if (e.key === 'ArrowRight') document.getElementById('lbNext').click();
+  });
+
+  // ── Mobile sidebar ───────────────────────────────────
+  const sidebar          = document.getElementById('sidebar');
+  const sidebarBackdrop  = document.getElementById('sidebarBackdrop');
+  document.getElementById('mobileFilterBtn').addEventListener('click', () => {
+    sidebar.classList.add('open');
+    sidebarBackdrop.style.display = 'block';
+    document.body.style.overflow = 'hidden';
+  });
+  sidebarBackdrop.addEventListener('click', () => {
+    sidebar.classList.remove('open');
+    sidebarBackdrop.style.display = 'none';
+    document.body.style.overflow = '';
+  });
+
+  // ── Sort ─────────────────────────────────────────────
+  document.getElementById('sortSelect').addEventListener('change', e => {
+    const val = e.target.value;
+    let works = [...filteredWorks];
+    if (val === 'price-asc')  works.sort((a,b) => a.price - b.price);
+    if (val === 'price-desc') works.sort((a,b) => b.price - a.price);
+    if (val === 'new')        works.sort((a,b) => b.year - a.year);
+    renderCards(works);
+  });
+
+  // ── Load more (demo) ─────────────────────────────────
+  document.getElementById('loadMoreBtn').addEventListener('click', () => {
+    showToast('All works loaded — end of collection');
+  });
+
+  // ── Price slider sync ────────────────────────────────
+  const slider   = document.getElementById('priceSlider');
+  const priceMax = document.getElementById('priceMax');
+  slider.addEventListener('input', () => { priceMax.value = slider.value; });
+  priceMax.addEventListener('input', () => { slider.value = priceMax.value; });
+
+  // ── Initial render ───────────────────────────────────
+  renderCards(WORKS);
+
   </script>
+  <script src="shared.js" defer>
+  // ── Mobile sidebar ──────────────────────────────────
+  (function() {
+    const filterBtn  = document.getElementById('mobileFilterBtn');
+    const sidebar    = document.querySelector('.sidebar');
+    const backdrop   = document.getElementById('sidebarBackdrop');
+    if (!filterBtn || !sidebar) return;
+
+    function openSidebar() {
+      sidebar.classList.add('mobile-open');
+      backdrop.classList.add('visible');
+      document.body.style.overflow = 'hidden';
+      sidebar.setAttribute('aria-hidden', 'false');
+      filterBtn.setAttribute('aria-expanded', 'true');
+    }
+    function closeSidebar() {
+      sidebar.classList.remove('mobile-open');
+      backdrop.classList.remove('visible');
+      document.body.style.overflow = '';
+      filterBtn.setAttribute('aria-expanded', 'false');
+    }
+    filterBtn.addEventListener('click', openSidebar);
+    backdrop.addEventListener('click', closeSidebar);
+    sidebar.addEventListener('keydown', e => { if (e.key === 'Escape') closeSidebar(); });
+
+    // Auto-close after filter applied on mobile
+    sidebar.querySelectorAll('.filter-label, .price-apply-btn').forEach(el => {
+      el.addEventListener('click', () => {
+        if (window.innerWidth <= 900) setTimeout(closeSidebar, 200);
+      });
+    });
+  })();
+
+</script>
 </body>
 </html>

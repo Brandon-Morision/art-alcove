@@ -1,1091 +1,2622 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Art Alcove — Discover, collect and sell original art from independent artists worldwide.">
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="description" content="Art Alcove — Discover, collect & sell original art from independent artists worldwide."/>
   <title>Art Alcove — Original Art Marketplace</title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <!-- Playfair Display: editorial serif headline | DM Mono: price/label accent | Libre Baskerville: body -->
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=DM+Mono:wght@400;500&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
 
   <style>
     /* ═══════════════════════════════════════
        TOKENS
     ═══════════════════════════════════════ */
     :root {
+  /* ── Glassmorphic extension tokens ── */
+  --glass-1:        rgba(250,247,242,0.55);
+  --glass-2:        rgba(250,247,242,0.35);
+  --glass-3:        rgba(250,247,242,0.18);
+  --glass-dark:     rgba(14,11,7,0.55);
+  --glass-border:   rgba(255,255,255,0.45);
+  --glass-border-2: rgba(255,255,255,0.25);
+  --glass-shadow:   0 8px 32px rgba(14,11,7,0.12), 0 2px 8px rgba(14,11,7,0.06);
+  --glass-shadow-lg:0 20px 60px rgba(14,11,7,0.18), 0 4px 16px rgba(14,11,7,0.08);
+  --blur-sm:  blur(10px);
+  --blur-md:  blur(20px);
+  --blur-lg:  blur(32px);
+  /* Rounded edge system */
+  --r-xs:  6px;
+  --r-sm:  12px;
+  --r-md:  18px;
+  --r-lg:  24px;
+  --r-xl:  32px;
+  --r-2xl: 40px;
+  --r-pill:9999px;
+
       --ink:        #0e0b07;
       --ink-2:      #3a3228;
       --ink-3:      #7a6e60;
       --paper:      #f7f3ee;
       --paper-2:    #efe9e0;
       --paper-3:    #e4dbd0;
-      --cream:      #faf7f2;
       --vermillion: #c8391a;
       --gold:       #b8902a;
+      --gold-light: #d4b04a;
       --sage:       #4a6b52;
+      --cream:      #faf7f2;
 
-      --serif: 'Playfair Display', Georgia, serif;
-      --body:  'Libre Baskerville', Georgia, serif;
-      --mono:  'DM Mono', monospace;
-      --t: 0.28s cubic-bezier(0.4,0,0.2,1);
-
-      --r-xs: 6px; --r-sm: 12px; --r-md: 18px;
-      --r-lg: 24px; --r-xl: 32px; --r-pill: 9999px;
+      --serif:  'Playfair Display', Georgia, serif;
+      --body:   'Libre Baskerville', Georgia, serif;
+      --mono:   'DM Mono', monospace;
+      --t:    0.3s cubic-bezier(0.4,0,0.2,1);
     }
 
     /* ═══════════════════════════════════════
        RESET & BASE
     ═══════════════════════════════════════ */
     *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
-    html { scroll-behavior: smooth; }
+    html { scroll-behavior: smooth; font-size: 16px; }
     body {
       font-family: var(--body);
-      background: var(--paper);
+      background: var(--cream);
       color: var(--ink);
-      -webkit-font-smoothing: antialiased;
       overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
     }
     img { display:block; max-width:100%; }
-    a   { text-decoration:none; color:inherit; }
+    a { text-decoration:none; color:inherit; }
     button { font-family:inherit; cursor:pointer; border:none; background:none; }
+
+    /* ═══════════════════════════════════════
+       UTILITY
+    ═══════════════════════════════════════ */
+    .visually-hidden { position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0,0,0,0); }
+    .tag {
+      display: inline-flex; align-items: center;
+      font-family: var(--mono);
+      font-size: 0.65rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--ink-3);
+      border: 1px solid var(--paper-3);
+      padding: 3px 9px;
+      border-radius: 999px;
+    }
+    .divider {
+      width: 40px; height: 2px;
+      background: var(--vermillion);
+      margin: 0 auto;
+    }
+    .divider--left { margin: 0; }
 
     /* ═══════════════════════════════════════
        NAV
     ═══════════════════════════════════════ */
     #nav {
-      position: sticky; top:0; z-index: 200;
+      position: fixed; top: 0; left: 0; right: 0;
+      z-index: 100;
       display: flex; align-items: center; justify-content: space-between;
       padding: 0 48px;
-      height: 68px;
-      background: rgba(247,243,238,0.88);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
+      height: 72px;
+      background: rgba(247,243,238,0.94);
+      backdrop-filter: blur(14px);
       border-bottom: 1px solid var(--paper-3);
+      transition: background var(--t), box-shadow var(--t);
+    }
+    #nav.scrolled {
+      box-shadow: 0 4px 32px rgba(14,11,7,0.1);
     }
 
     .nav-logo {
-      display: flex; align-items: baseline; gap: 3px;
+      display: flex; align-items: baseline; gap: 2px;
+    }
+    .nav-logo-word {
       font-family: var(--serif);
-      font-size: 1.4rem; font-weight: 900;
-      color: var(--ink); letter-spacing: -0.02em;
+      font-size: 1.5rem;
+      font-weight: 900;
+      color: var(--ink);
+      letter-spacing: -0.02em;
     }
     .nav-logo-dot {
-      display: inline-block;
-      width: 7px; height: 7px; border-radius: 50%;
+      width: 7px; height: 7px;
+      border-radius: 50%;
       background: var(--vermillion);
-      margin: 0 1px 3px; flex-shrink:0;
+      margin: 0 1px 2px;
+      flex-shrink: 0;
     }
 
     .nav-links {
       display: flex; align-items: center; gap: 36px;
+      list-style: none;
     }
     .nav-links a {
-      font-family: var(--mono); font-size: 0.68rem;
-      letter-spacing: 0.1em; text-transform: uppercase;
-      color: var(--ink-3);
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--ink-2);
       transition: color var(--t);
       position: relative;
     }
     .nav-links a::after {
-      content:''; position:absolute; bottom:-4px; left:0; right:0;
-      height:1px; background:var(--vermillion);
-      transform:scaleX(0); transform-origin:left;
-      transition:transform var(--t);
+      content: '';
+      position: absolute; bottom: -3px; left: 0; right: 0;
+      height: 1px; background: var(--vermillion);
+      transform: scaleX(0); transform-origin: left;
+      transition: transform var(--t);
     }
-    .nav-links a:hover { color:var(--ink); }
-    .nav-links a:hover::after { transform:scaleX(1); }
+    .nav-links a:hover { color: var(--ink); }
+    .nav-links a:hover::after { transform: scaleX(1); }
 
     .nav-actions {
       display: flex; align-items: center; gap: 12px;
     }
-    .btn-ghost {
-      font-family: var(--mono); font-size: 0.68rem;
-      letter-spacing: 0.1em; text-transform: uppercase;
-      color: var(--ink-2); padding: 8px 18px;
-      border: 1px solid var(--paper-3);
+    .nav-icon-btn {
+      width: 38px; height: 38px;
+      display: flex; align-items: center; justify-content: center;
       border-radius: var(--r-sm);
-      transition: all var(--t);
+      color: var(--ink-2);
+      transition: color var(--t), background var(--t);
+      font-size: 0.9rem;
     }
-    .btn-ghost:hover { border-color: var(--ink-2); color:var(--ink); }
-
-    .btn-primary {
-      font-family: var(--mono); font-size: 0.68rem;
-      letter-spacing: 0.1em; text-transform: uppercase;
-      color: #fff; padding: 9px 20px;
+    .nav-icon-btn:hover { color: var(--ink); background: var(--paper-2); }
+    .nav-cart-count {
+      position: absolute;
+      top: -3px; right: -3px;
+      width: 16px; height: 16px;
+      border-radius: 50%;
       background: var(--vermillion);
-      border-radius: var(--r-sm);
-      transition: all var(--t);
-      display: inline-flex; align-items:center; gap:8px;
+      color: #fff;
+      font-family: var(--mono);
+      font-size: 0.6rem;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 500;
     }
-    .btn-primary:hover {
+    .nav-icon-wrap { position: relative; }
+    .btn-sell {
+      padding: 9px 22px;
       background: var(--ink);
-      transform: translateY(-1px);
-      box-shadow: 0 6px 20px rgba(14,11,7,0.18);
+      color: var(--cream);
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      border-radius: var(--r-sm);
+      transition: background var(--t), transform var(--t);
     }
+    .btn-sell:hover { background: var(--vermillion); transform: translateY(-1px); }
 
     /* ═══════════════════════════════════════
        HERO
     ═══════════════════════════════════════ */
-    .hero {
+    #hero {
+      min-height: 100vh;
+      padding-top: 72px;
       display: grid;
       grid-template-columns: 1fr 1fr;
-      min-height: calc(100vh - 68px);
-      border-bottom: 1px solid var(--paper-3);
+      position: relative;
+      overflow: hidden;
     }
 
     .hero-left {
-      display: flex; flex-direction: column;
+      display: flex;
+      flex-direction: column;
       justify-content: center;
-      padding: 80px 64px 80px 48px;
-      border-right: 1px solid var(--paper-3);
+      padding: 80px 64px 80px 80px;
+      position: relative;
+      z-index: 2;
     }
 
-    .hero-overline {
-      font-family: var(--mono); font-size: 0.62rem;
-      letter-spacing: 0.2em; text-transform: uppercase;
-      color: var(--vermillion); margin-bottom: 24px;
+    .hero-issue-label {
       display: flex; align-items: center; gap: 12px;
+      margin-bottom: 36px;
     }
-    .hero-overline::before {
-      content: '';
-      display: block; width: 32px; height: 1.5px;
-      background: var(--vermillion);
+    .hero-issue-bar {
+      width: 32px; height: 2px; background: var(--vermillion);
     }
-
-    .hero-title {
-      font-family: var(--serif);
-      font-size: clamp(2.8rem, 5vw, 4.2rem);
-      font-weight: 900; line-height: 1.06;
-      color: var(--ink); letter-spacing: -0.02em;
-      margin-bottom: 28px;
-    }
-    .hero-title em {
-      font-style: italic; color: var(--vermillion);
-    }
-
-    .hero-sub {
-      font-size: 1rem; line-height: 1.7;
-      color: var(--ink-3); max-width: 440px;
-      margin-bottom: 44px;
-    }
-
-    .hero-ctas {
-      display: flex; align-items: center; gap: 16px;
-      margin-bottom: 56px;
-    }
-
-    .hero-stats {
-      display: grid; grid-template-columns: repeat(3,1fr);
-      gap: 0;
-      border-top: 1px solid var(--paper-3);
-      padding-top: 36px;
-    }
-    .hero-stat {
-      padding-right: 24px;
-      border-right: 1px solid var(--paper-3);
-    }
-    .hero-stat:last-child { border-right: none; padding-right: 0; padding-left: 24px; }
-    .hero-stat:nth-child(2) { padding: 0 24px; }
-
-    .stat-value {
-      font-family: var(--serif);
-      font-size: 1.8rem; font-weight: 900;
-      color: var(--ink); line-height: 1;
-      margin-bottom: 4px;
-    }
-    .stat-label {
-      font-family: var(--mono); font-size: 0.6rem;
-      letter-spacing: 0.12em; text-transform: uppercase;
+    .hero-issue-text {
+      font-family: var(--mono);
+      font-size: 0.68rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
       color: var(--ink-3);
     }
 
-    /* Hero right — mosaic */
+    .hero-headline {
+      font-family: var(--serif);
+      font-size: clamp(3.2rem, 5vw, 5.5rem);
+      font-weight: 900;
+      line-height: 1.0;
+      letter-spacing: -0.03em;
+      color: var(--ink);
+      margin-bottom: 8px;
+    }
+    .hero-headline em {
+      font-style: italic;
+      color: var(--vermillion);
+    }
+    .hero-headline .outline-text {
+      -webkit-text-stroke: 2px var(--ink);
+      color: transparent;
+    }
+
+    .hero-sub {
+      font-size: 1.0rem;
+      line-height: 1.7;
+      color: var(--ink-2);
+      max-width: 420px;
+      margin: 28px 0 40px;
+    }
+
+    .hero-cta-row {
+      display: flex; align-items: center; gap: 20px;
+      flex-wrap: wrap;
+    }
+    .btn-primary {
+      display: inline-flex; align-items: center; gap: 10px;
+      padding: 15px 32px;
+      background: var(--vermillion);
+      color: #fff;
+      font-family: var(--mono);
+      font-size: 0.78rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      border-radius: var(--r-sm);
+      transition: background var(--t), transform var(--t), box-shadow var(--t);
+    }
+    .btn-primary:hover {
+      background: #a82e14;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 28px rgba(200,57,26,0.3);
+    }
+    .btn-ghost {
+      display: inline-flex; align-items: center; gap: 8px;
+      font-family: var(--mono);
+      font-size: 0.75rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--ink-2);
+      border-bottom: 1px solid var(--paper-3);
+      padding-bottom: 2px;
+      transition: color var(--t), border-color var(--t);
+    }
+    .btn-ghost:hover { color: var(--ink); border-color: var(--ink); }
+
+    .hero-stats {
+      display: flex; gap: 40px;
+      margin-top: 60px;
+      padding-top: 40px;
+      border-top: 1px solid var(--paper-3);
+    }
+    .stat-item {}
+    .stat-num {
+      font-family: var(--serif);
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--ink);
+      line-height: 1;
+    }
+    .stat-label {
+      font-family: var(--mono);
+      font-size: 0.65rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--ink-3);
+      margin-top: 4px;
+    }
+
+    /* Hero right — editorial collage */
     .hero-right {
+      position: relative;
+      background: var(--ink);
+      overflow: hidden;
+    }
+    .hero-bg-text {
+      position: absolute;
+      font-family: var(--serif);
+      font-size: 28vw;
+      font-weight: 900;
+      color: rgba(255,255,255,0.03);
+      top: 50%; left: 50%;
+      transform: translate(-50%,-50%);
+      white-space: nowrap;
+      pointer-events: none;
+      user-select: none;
+    }
+
+    /* Mosaic of art cards stacked editorially */
+    .hero-mosaic {
+      position: absolute; inset: 0;
       display: grid;
       grid-template-columns: 1fr 1fr;
       grid-template-rows: 1fr 1fr;
       gap: 3px;
-      background: var(--paper-3);
+      padding: 3px;
+    }
+    .mosaic-cell {
       overflow: hidden;
+      position: relative;
     }
-    .hero-mosaic-img {
-      width: 100%; height: 100%;
-      object-fit: cover;
-      transition: transform 0.6s ease;
-    }
-    .hero-mosaic-img:hover { transform: scale(1.04); }
-    .mosaic-tall {
+    .mosaic-cell:first-child {
       grid-row: span 2;
     }
+    .mosaic-art {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      transition: transform 0.8s cubic-bezier(0.4,0,0.2,1);
+    }
+    .mosaic-cell:hover .mosaic-art { transform: scale(1.05); }
+
+    /* Overlay label on mosaic */
+    .mosaic-label {
+      position: absolute; bottom: 14px; left: 14px;
+      background: rgba(247,243,238,0.92);
+      backdrop-filter: blur(10px);
+      padding: 8px 14px;
+      border-radius: var(--r-sm);
+    }
+    .mosaic-label-artist {
+      font-family: var(--mono);
+      font-size: 0.6rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--ink-3);
+    }
+    .mosaic-label-title {
+      font-family: var(--serif);
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--ink);
+      margin-top: 1px;
+    }
+    .mosaic-price {
+      position: absolute; top: 14px; right: 14px;
+      background: var(--vermillion);
+      color: #fff;
+      font-family: var(--mono);
+      font-size: 0.7rem;
+      letter-spacing: 0.06em;
+      padding: 4px 10px;
+      border-radius: 999px;
+    }
+
+    /* Ticker strip between hero halves */
+    .hero-ticker {
+      position: absolute;
+      left: 50%; bottom: 80px;
+      transform: translateX(-50%);
+      z-index: 10;
+      background: var(--vermillion);
+      color: #fff;
+      padding: 10px 28px; border-radius: 10px ;
+      font-family: var(--mono);
+      font-size: 0.7rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      white-space: nowrap;
+      box-shadow: 0 8px 32px rgba(200,57,26,0.4);
+      display: flex; align-items: center; gap: 10px;
+    }
+    .hero-ticker i { font-size: 0.6rem; }
 
     /* ═══════════════════════════════════════
-       MARQUEE
+       SCROLLING MARQUEE BAR
     ═══════════════════════════════════════ */
-    .marquee-strip {
-      border-top: 1px solid var(--paper-3);
-      border-bottom: 1px solid var(--paper-3);
+    .marquee-bar {
       background: var(--ink);
-      overflow: hidden;
+      color: var(--cream);
       padding: 14px 0;
+      overflow: hidden;
+      border-top: 1px solid rgba(255,255,255,0.05);
     }
     .marquee-track {
       display: flex; gap: 0;
-      animation: marqueeScroll 28s linear infinite;
-      width: max-content;
+      animation: marqueeScroll 30s linear infinite;
+      will-change: transform;
+    }
+    .marquee-track:hover { animation-play-state: paused; }
+    .marquee-item {
+      display: flex; align-items: center; gap: 18px;
+      white-space: nowrap;
+      padding: 0 32px;
+    }
+    .marquee-sep {
+      width: 4px; height: 4px;
+      border-radius: 50%;
+      background: var(--vermillion);
+      flex-shrink: 0;
+    }
+    .marquee-text {
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: rgba(250,247,242,0.7);
     }
     @keyframes marqueeScroll {
       from { transform: translateX(0); }
       to   { transform: translateX(-50%); }
     }
-    .marquee-item {
-      display: flex; align-items: center; gap: 20px;
-      padding: 0 32px;
-      font-family: var(--mono); font-size: 0.65rem;
-      letter-spacing: 0.14em; text-transform: uppercase;
-      color: rgba(255,255,255,0.45);
-      white-space: nowrap;
-      border-right: 1px solid rgba(255,255,255,0.08);
-    }
-    .marquee-item i { color: var(--vermillion); font-size: 0.5rem; }
 
     /* ═══════════════════════════════════════
-       SECTION SHARED
+       SECTION HEADER (shared)
     ═══════════════════════════════════════ */
-    section { padding: 100px 48px; }
-
     .section-header {
       display: flex; align-items: flex-end; justify-content: space-between;
-      margin-bottom: 52px;
+      margin-bottom: 48px;
     }
-    .section-overline {
-      font-family: var(--mono); font-size: 0.6rem;
-      letter-spacing: 0.18em; text-transform: uppercase;
-      color: var(--vermillion); margin-bottom: 10px;
+    .section-label {
+      font-family: var(--mono);
+      font-size: 0.68rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--vermillion);
+      margin-bottom: 10px;
       display: flex; align-items: center; gap: 10px;
     }
-    .section-overline::before {
-      content:''; display:block;
-      width:20px; height:1.5px; background:var(--vermillion);
+    .section-label::before {
+      content: '';
+      display: block;
+      width: 20px; height: 1px;
+      background: var(--vermillion);
     }
     .section-title {
       font-family: var(--serif);
-      font-size: clamp(1.8rem, 3vw, 2.5rem);
-      font-weight: 900; line-height: 1.1;
-      color: var(--ink); letter-spacing: -0.02em;
+      font-size: clamp(2rem, 3.5vw, 3rem);
+      font-weight: 700;
+      line-height: 1.1;
+      letter-spacing: -0.02em;
+      color: var(--ink);
     }
-    .section-link {
-      font-family: var(--mono); font-size: 0.65rem;
-      letter-spacing: 0.1em; text-transform: uppercase;
-      color: var(--ink-3); display: flex; align-items: center; gap: 8px;
-      transition: color var(--t);
+    .section-title em { font-style: italic; color: var(--vermillion); }
+    .section-view-all {
+      display: flex; align-items: center; gap: 8px;
+      font-family: var(--mono);
+      font-size: 0.7rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--ink-2);
+      border-bottom: 1px solid var(--paper-3);
+      padding-bottom: 2px;
+      transition: color var(--t), border-color var(--t);
+      white-space: nowrap;
+      align-self: flex-end;
+      margin-bottom: 4px;
     }
-    .section-link:hover { color: var(--vermillion); }
+    .section-view-all:hover { color: var(--vermillion); border-color: var(--vermillion); }
 
     /* ═══════════════════════════════════════
        FEATURED WORKS GRID
     ═══════════════════════════════════════ */
-    #featured { background: var(--paper); }
+    #featured {
+      padding: 100px 80px;
+      background: var(--cream);
+    }
 
-    .works-grid {
+    .featured-grid {
       display: grid;
-      grid-template-columns: repeat(4, 1fr);
+      grid-template-columns: 2fr 1fr 1fr;
+      grid-template-rows: auto auto;
       gap: 3px;
     }
 
-    .work-card {
-      background: var(--cream);
-      border: 1px solid var(--paper-3);
-      overflow: hidden;
-      cursor: pointer;
-      transition: box-shadow var(--t), transform var(--t);
+    .art-card {
       position: relative;
+      overflow: hidden;
+      background: var(--paper);
+      cursor: pointer;
     }
-    .work-card:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 16px 48px rgba(14,11,7,0.12);
-      z-index: 2;
-    }
-    .work-card--tall { grid-row: span 2; }
+    .art-card--hero { grid-row: span 2; }
 
-    .work-img-wrap { position:relative; overflow:hidden; }
-    .work-img-wrap img {
-      width:100%; height:260px; object-fit:cover;
-      transition: transform 0.55s ease;
+    .art-card-img-wrap {
+      overflow: hidden;
+      aspect-ratio: unset;
     }
-    .work-card--tall .work-img-wrap img { height:100%; min-height:523px; }
-    .work-card:hover .work-img-wrap img { transform: scale(1.05); }
+    .art-card--hero .art-card-img-wrap { height: 680px; }
+    .art-card:not(.art-card--hero) .art-card-img-wrap { height: 320px; }
 
-    .work-overlay {
-      position:absolute; inset:0;
-      background: linear-gradient(to top, rgba(14,11,7,0.7) 0%, transparent 55%);
-      opacity:0; transition: opacity var(--t);
-      display:flex; align-items:flex-end; padding:20px;
+    .art-card-img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      transition: transform 0.7s cubic-bezier(0.4,0,0.2,1);
+      display: block;
     }
-    .work-card:hover .work-overlay { opacity:1; }
-    .work-overlay-btn {
-      font-family:var(--mono); font-size:0.62rem;
-      letter-spacing:0.1em; text-transform:uppercase;
-      color:#fff; padding:8px 16px;
-      border:1px solid rgba(255,255,255,0.4);
-      border-radius:var(--r-xs);
-      transition:all var(--t);
-    }
-    .work-overlay-btn:hover { background:var(--vermillion); border-color:var(--vermillion); }
+    .art-card:hover .art-card-img { transform: scale(1.06); }
 
-    .work-info { padding: 16px 18px 20px; }
-    .work-title {
-      font-family:var(--serif); font-size:0.95rem; font-weight:700;
-      color:var(--ink); margin-bottom:4px;
-      white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+    /* Card overlay on hover */
+    .art-card-overlay {
+      position: absolute; inset: 0;
+      background: linear-gradient(to top, rgba(14,11,7,0.88) 0%, rgba(14,11,7,0.2) 45%, transparent 65%);
+      opacity: 0;
+      transition: opacity var(--t);
+      display: flex; flex-direction: column; justify-content: flex-end;
+      padding: 28px;
     }
-    .work-artist {
-      font-family:var(--mono); font-size:0.6rem;
-      letter-spacing:0.08em; text-transform:uppercase;
-      color:var(--ink-3); margin-bottom:10px;
+    .art-card:hover .art-card-overlay { opacity: 1; }
+
+    .art-card-footer {
+      position: absolute; bottom: 0; left: 0; right: 0;
+      padding: 20px 22px;
+      background: linear-gradient(to top, rgba(247,243,238,0.98) 60%, transparent 100%);
+      transition: transform var(--t);
     }
-    .work-footer {
-      display:flex; align-items:center; justify-content:space-between;
-      padding-top:10px; border-top:1px solid var(--paper-3);
+    .art-card-artist {
+      font-family: var(--mono);
+      font-size: 0.62rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--ink-3);
+      margin-bottom: 3px;
     }
-    .work-price {
-      font-family:var(--mono); font-size:0.82rem;
-      font-weight:600; color:var(--ink);
+    .art-card-title {
+      font-family: var(--serif);
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--ink);
+      margin-bottom: 4px;
     }
-    .work-save {
-      width:30px; height:30px; border-radius:50%;
-      display:flex; align-items:center; justify-content:center;
-      color:var(--ink-3); font-size:0.8rem;
-      border:1px solid var(--paper-3);
-      transition:all var(--t);
+    .art-card--hero .art-card-title { font-size: 1.4rem; }
+    .art-card-meta {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-top: 6px;
     }
-    .work-save:hover { border-color:var(--vermillion); color:var(--vermillion); }
+    .art-card-price {
+      font-family: var(--mono);
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: var(--ink);
+    }
+    .art-card-medium {
+      font-family: var(--mono);
+      font-size: 0.6rem;
+      letter-spacing: 0.09em;
+      text-transform: uppercase;
+      color: var(--ink-3);
+    }
+
+    /* Hover quick-buy */
+    .art-card-actions {
+      display: flex; gap: 8px;
+      transform: translateY(8px);
+      transition: transform var(--t);
+    }
+    .art-card:hover .art-card-actions { transform: translateY(0); }
+
+    .qbtn {
+      flex: 1;
+      padding: 10px;
+      background: rgba(247,243,238,0.92);
+      backdrop-filter: blur(10px);
+      color: var(--ink);
+      font-family: var(--mono);
+      font-size: 0.68rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      border-radius: var(--r-sm);
+      border: 1px solid rgba(255,255,255,0.2);
+      transition: background var(--t), color var(--t);
+      text-align: center;
+    }
+    .qbtn:hover, .qbtn--primary { background: var(--vermillion); color: #fff; border-color: var(--vermillion); }
+    .qbtn-icon {
+      width: 38px; height: 38px;
+      background: rgba(247,243,238,0.92);
+      backdrop-filter: blur(10px);
+      color: var(--ink);
+      border-radius: var(--r-sm);
+      border: 1px solid rgba(255,255,255,0.2);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.8rem;
+      transition: background var(--t), color var(--t);
+      flex-shrink: 0;
+    }
+    .qbtn-icon:hover { background: var(--vermillion); color: #fff; }
+
+    /* Edition badge */
+    .edition-badge {
+      position: absolute; top: 16px; left: 16px;
+      background: var(--ink);
+      color: var(--cream);
+      font-family: var(--mono);
+      font-size: 0.6rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 4px 10px;
+      border-radius: 999px;
+    }
+    .edition-badge--featured {
+      background: var(--gold);
+      color: #fff;
+    }
 
     /* ═══════════════════════════════════════
-       CATEGORY STRIP
+       CATEGORIES STRIP
     ═══════════════════════════════════════ */
     #categories {
-      background: var(--ink);
-      padding: 80px 48px;
+      padding: 80px;
+      background: var(--paper);
     }
-    #categories .section-title { color: var(--cream); }
-    #categories .section-overline { color: rgba(255,255,255,0.4); }
-    #categories .section-overline::before { background: rgba(255,255,255,0.4); }
 
-    .cats-grid {
+    .cat-grid {
       display: grid;
       grid-template-columns: repeat(6, 1fr);
       gap: 3px;
-      margin-top: 48px;
     }
+
     .cat-card {
-      position: relative; overflow: hidden;
+      position: relative;
+      overflow: hidden;
       aspect-ratio: 3/4;
       cursor: pointer;
-      border-radius: var(--r-xs);
+      background: var(--paper-2);
     }
-    .cat-card img {
-      width:100%; height:100%; object-fit:cover;
-      transition: transform 0.55s ease;
-      filter: brightness(0.65);
+    .cat-bg {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      transition: transform 0.6s cubic-bezier(0.4,0,0.2,1);
+      filter: saturate(0.7);
     }
-    .cat-card:hover img { transform: scale(1.08); filter: brightness(0.75); }
-    .cat-card-body {
-      position:absolute; bottom:0; left:0; right:0;
-      padding: 20px 16px;
-      background: linear-gradient(to top, rgba(14,11,7,0.85), transparent);
+    .cat-card:hover .cat-bg { transform: scale(1.1); filter: saturate(1); }
+    .cat-overlay {
+      position: absolute; inset: 0;
+      background: linear-gradient(to top, rgba(14,11,7,0.75) 0%, transparent 60%);
+      transition: opacity var(--t);
+    }
+    .cat-card:hover .cat-overlay { opacity: 0.8; }
+    .cat-label {
+      position: absolute; bottom: 0; left: 0; right: 0;
+      padding: 18px 16px;
+      text-align: center;
     }
     .cat-name {
-      font-family:var(--serif); font-size:1rem; font-weight:700;
-      color:#fff; margin-bottom:4px;
+      font-family: var(--serif);
+      font-size: 1rem;
+      font-weight: 700;
+      color: #fff;
+      display: block;
+      margin-bottom: 2px;
     }
     .cat-count {
-      font-family:var(--mono); font-size:0.58rem;
-      letter-spacing:0.1em; text-transform:uppercase;
-      color:rgba(255,255,255,0.5);
+      font-family: var(--mono);
+      font-size: 0.6rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.6);
     }
 
     /* ═══════════════════════════════════════
-       EDITORIAL FEATURE
+       EDITORIAL FEATURE (full-bleed)
     ═══════════════════════════════════════ */
     #editorial {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 0;
-      padding: 0;
-      border-top: 1px solid var(--paper-3);
-      border-bottom: 1px solid var(--paper-3);
-      min-height: 600px;
+      min-height: 640px;
     }
-    .editorial-img {
-      width:100%; height:100%;
-      object-fit:cover; display:block;
-      border-right: 1px solid var(--paper-3);
+    .editorial-image {
+      position: relative;
+      overflow: hidden;
+      background: var(--ink);
+    }
+    .editorial-image img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      opacity: 0.85;
+      transition: opacity var(--t), transform 0.8s ease;
+    }
+    .editorial-image:hover img { opacity: 1; transform: scale(1.03); }
+    .editorial-image-caption {
+      position: absolute; bottom: 24px; left: 24px;
+      font-family: var(--mono);
+      font-size: 0.62rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.55);
+    }
+    .editorial-content {
+      background: var(--ink);
+      color: var(--cream);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 80px 72px;
+    }
+    .editorial-issue {
+      font-family: var(--mono);
+      font-size: 0.65rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--gold-light);
+      margin-bottom: 24px;
+      display: flex; align-items: center; gap: 12px;
+    }
+    .editorial-issue::before {
+      content: '';
+      width: 24px; height: 1px;
+      background: var(--gold-light);
+    }
+    .editorial-headline {
+      font-family: var(--serif);
+      font-size: clamp(2rem, 3.2vw, 3.2rem);
+      font-weight: 900;
+      line-height: 1.05;
+      letter-spacing: -0.02em;
+      color: #fff;
+      margin-bottom: 24px;
+    }
+    .editorial-headline em {
+      font-style: italic;
+      color: var(--gold-light);
     }
     .editorial-body {
-      display:flex; flex-direction:column; justify-content:center;
-      padding: 80px 64px;
-      background: var(--cream);
+      font-size: 0.95rem;
+      line-height: 1.8;
+      color: rgba(250,247,242,0.68);
+      max-width: 420px;
+      margin-bottom: 40px;
     }
-    .editorial-tag {
-      display:inline-flex; align-items:center; gap:8px;
-      font-family:var(--mono); font-size:0.58rem;
-      letter-spacing:0.16em; text-transform:uppercase;
-      color:var(--vermillion); margin-bottom:24px;
+    .btn-light {
+      display: inline-flex; align-items: center; gap: 10px;
+      padding: 14px 30px;
+      border: 1px solid rgba(255,255,255,0.25);
+      color: var(--cream);
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      border-radius: var(--r-sm);
+      transition: background var(--t), border-color var(--t);
+      align-self: flex-start;
     }
-    .editorial-tag::before {
-      content:''; display:block;
-      width:24px; height:1.5px; background:var(--vermillion);
-    }
-    .editorial-title {
-      font-family:var(--serif);
-      font-size:clamp(1.6rem, 2.5vw, 2.2rem); font-weight:900;
-      line-height:1.12; color:var(--ink); margin-bottom:20px;
-    }
-    .editorial-title em { font-style:italic; color:var(--vermillion); }
-    .editorial-text {
-      font-size:0.92rem; line-height:1.75;
-      color:var(--ink-3); margin-bottom:36px; max-width:420px;
-    }
-    .editorial-artist-row {
-      display:flex; align-items:center; gap:14px;
-      padding-top:28px; border-top:1px solid var(--paper-3);
-    }
-    .editorial-avatar {
-      width:48px; height:48px; border-radius:50%;
-      object-fit:cover; border:2px solid var(--paper-3);
-    }
-    .editorial-artist-name {
-      font-family:var(--serif); font-size:0.9rem; font-weight:700;
-    }
-    .editorial-artist-tag {
-      font-family:var(--mono); font-size:0.6rem;
-      letter-spacing:0.1em; text-transform:uppercase; color:var(--ink-3);
-    }
+    .btn-light:hover { background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.5); }
 
     /* ═══════════════════════════════════════
-       ARTIST SPOTLIGHT
+       ARTISTS SPOTLIGHT
     ═══════════════════════════════════════ */
-    #artists { background: var(--paper-2); }
+    #artists {
+      padding: 100px 80px;
+      background: var(--cream);
+    }
 
     .artists-grid {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
-      gap: 3px;
+      gap: 24px;
     }
+
     .artist-card {
-      background: var(--cream);
-      border: 1px solid var(--paper-3);
-      padding: 28px;
-      text-align:center;
-      transition: all var(--t);
+      position: relative;
       cursor: pointer;
     }
-    .artist-card:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 12px 36px rgba(14,11,7,0.1);
+    .artist-img-wrap {
+      position: relative;
+      overflow: hidden;
+      aspect-ratio: 3/4;
+      background: var(--paper);
+      margin-bottom: 16px;
     }
-    .artist-avatar-wrap { position:relative; display:inline-block; margin-bottom:16px; }
-    .artist-avatar {
-      width:72px; height:72px; border-radius:50%;
-      object-fit:cover; border:3px solid var(--paper-3);
-      transition: border-color var(--t);
+    .artist-img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      transition: transform 0.6s cubic-bezier(0.4,0,0.2,1);
+      filter: grayscale(20%);
     }
-    .artist-card:hover .artist-avatar { border-color:var(--vermillion); }
-    .artist-verified {
-      position:absolute; bottom:-2px; right:-2px;
-      width:20px; height:20px; border-radius:50%;
-      background:var(--sage); border:2px solid var(--cream);
-      display:flex; align-items:center; justify-content:center;
-      color:#fff; font-size:0.5rem;
+    .artist-card:hover .artist-img { transform: scale(1.05); filter: grayscale(0); }
+    .artist-follow-btn {
+      position: absolute; top: 14px; right: 14px;
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      background: rgba(247,243,238,0.88);
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(14,11,7,0.1);
+      display: flex; align-items: center; justify-content: center;
+      color: var(--ink-3);
+      font-size: 0.8rem;
+      opacity: 0;
+      transform: scale(0.8);
+      transition: opacity var(--t), transform var(--t), color var(--t);
     }
+    .artist-card:hover .artist-follow-btn { opacity: 1; transform: scale(1); }
+    .artist-follow-btn:hover { color: var(--vermillion); }
+
+    .artist-works-strip {
+      position: absolute; bottom: 0; left: 0; right: 0;
+      display: flex; gap: 2px;
+      opacity: 0;
+      transform: translateY(100%);
+      transition: opacity var(--t), transform var(--t);
+    }
+    .artist-card:hover .artist-works-strip { opacity: 1; transform: translateY(0); }
+    .artist-work-thumb {
+      flex: 1; height: 52px;
+      object-fit: cover;
+      border-top: 2px solid var(--cream);
+    }
+
     .artist-name {
-      font-family:var(--serif); font-size:1rem; font-weight:700;
-      margin-bottom:4px;
+      font-family: var(--serif);
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--ink);
+      margin-bottom: 3px;
     }
-    .artist-medium {
-      font-family:var(--mono); font-size:0.6rem;
-      letter-spacing:0.1em; text-transform:uppercase;
-      color:var(--ink-3); margin-bottom:14px;
+    .artist-specialty {
+      font-family: var(--mono);
+      font-size: 0.62rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--ink-3);
+      margin-bottom: 10px;
     }
     .artist-stats {
-      display:flex; justify-content:center; gap:20px;
-      padding-top:14px; border-top:1px solid var(--paper-3);
+      display: flex; gap: 20px;
     }
     .artist-stat-val {
-      font-family:var(--mono); font-size:0.72rem; font-weight:600;
+      font-family: var(--serif);
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--ink);
     }
     .artist-stat-lbl {
-      font-family:var(--mono); font-size:0.56rem;
-      letter-spacing:0.08em; text-transform:uppercase; color:var(--ink-3);
+      font-family: var(--mono);
+      font-size: 0.58rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--ink-3);
     }
 
     /* ═══════════════════════════════════════
-       HOW IT WORKS
+       PROCESS / HOW IT WORKS
     ═══════════════════════════════════════ */
-    #how { background: var(--cream); }
+    #how {
+      padding: 100px 80px;
+      background: var(--paper);
+    }
 
     .how-grid {
-      display:grid; grid-template-columns:repeat(3,1fr);
-      gap:3px;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 3px;
     }
     .how-card {
-      padding:40px 36px;
-      border:1px solid var(--paper-3);
-      background:var(--paper);
-      position:relative;
+      background: var(--cream);
+      padding: 52px 44px;
+      position: relative;
+      overflow: hidden;
+      transition: background var(--t);
     }
+    .how-card:hover { background: var(--ink); }
+    .how-card:hover * { color: var(--cream) !important; }
+    .how-card:hover .how-num { opacity: 0.06; }
+
     .how-num {
-      font-family:var(--serif);
-      font-size:3.5rem; font-weight:900; line-height:1;
-      color:var(--paper-3); margin-bottom:20px;
-      user-select:none;
+      font-family: var(--serif);
+      font-size: 6rem;
+      font-weight: 900;
+      color: var(--paper-3);
+      line-height: 1;
+      margin-bottom: 24px;
+      letter-spacing: -0.04em;
+      transition: color var(--t), opacity var(--t);
+      opacity: 0.4;
     }
     .how-icon {
-      width:44px; height:44px; border-radius:var(--r-sm);
-      background:var(--paper-2);
-      display:flex; align-items:center; justify-content:center;
-      color:var(--vermillion); font-size:1rem;
-      margin-bottom:20px;
+      width: 48px; height: 48px;
+      border-radius: var(--r-sm);
+      background: var(--paper-2);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.1rem;
+      color: var(--vermillion);
+      margin-bottom: 20px;
+      transition: background var(--t), color var(--t);
     }
+    .how-card:hover .how-icon { background: rgba(255,255,255,0.08); color: var(--gold-light) !important; }
     .how-title {
-      font-family:var(--serif); font-size:1.1rem; font-weight:700;
-      margin-bottom:10px;
+      font-family: var(--serif);
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: var(--ink);
+      margin-bottom: 12px;
+      transition: color var(--t);
     }
-    .how-text { font-size:0.88rem; line-height:1.7; color:var(--ink-3); }
+    .how-body {
+      font-size: 0.9rem;
+      line-height: 1.7;
+      color: var(--ink-2);
+      transition: color var(--t);
+    }
+    .how-link {
+      display: inline-flex; align-items: center; gap: 8px;
+      font-family: var(--mono);
+      font-size: 0.68rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--vermillion);
+      margin-top: 24px;
+      transition: gap var(--t), color var(--t);
+    }
+    .how-card:hover .how-link { color: var(--gold-light) !important; gap: 14px; }
+    .how-link i { font-size: 0.6rem; }
 
     /* ═══════════════════════════════════════
-       SELL CTA
+       TESTIMONIAL / PULL QUOTE
     ═══════════════════════════════════════ */
-    #sell-cta {
-      background: var(--vermillion);
-      padding: 100px 48px;
-      text-align: center;
+    #testimonials {
+      padding: 100px 80px;
+      background: var(--cream);
     }
-    .cta-overline {
-      font-family:var(--mono); font-size:0.62rem;
-      letter-spacing:0.2em; text-transform:uppercase;
-      color:rgba(255,255,255,0.6); margin-bottom:20px;
+    .testimonials-layout {
+      display: grid;
+      grid-template-columns: 1fr 2fr;
+      gap: 80px;
+      align-items: center;
     }
-    .cta-title {
-      font-family:var(--serif);
-      font-size:clamp(2rem,4vw,3.2rem); font-weight:900;
-      color:#fff; line-height:1.08; margin-bottom:20px;
+    .testimonial-left {}
+    .big-quote {
+      font-family: var(--serif);
+      font-size: 10rem;
+      font-weight: 900;
+      color: var(--paper-3);
+      line-height: 0.7;
+      margin-bottom: -20px;
     }
+    .testimonial-text {
+      font-family: var(--serif);
+      font-size: clamp(1.4rem, 2vw, 2rem);
+      font-style: italic;
+      line-height: 1.5;
+      color: var(--ink);
+      margin-bottom: 32px;
+    }
+    .testimonial-author {
+      display: flex; align-items: center; gap: 16px;
+    }
+    .testimonial-avatar {
+      width: 52px; height: 52px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid var(--paper-3);
+    }
+    .testimonial-author-name {
+      font-family: var(--serif);
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--ink);
+    }
+    .testimonial-author-role {
+      font-family: var(--mono);
+      font-size: 0.62rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--ink-3);
+    }
+    .testimonial-dots {
+      display: flex; gap: 8px; margin-top: 32px;
+    }
+    .t-dot {
+      width: 28px; height: 3px; border-radius: 10px ;
+      background: var(--paper-3);
+      cursor: pointer;
+      transition: background var(--t), width var(--t);
+    }
+    .t-dot.active { background: var(--vermillion); width: 52px; }
+
+    .testimonial-cards {
+      display: flex; flex-direction: column; gap: 2px;
+    }
+    .t-mini-card {
+      background: var(--paper);
+      padding: 28px 32px;
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      align-items: center;
+      gap: 20px;
+      transition: background var(--t);
+      cursor: pointer;
+    }
+    .t-mini-card:hover { background: var(--paper-2); }
+    .t-mini-avatar {
+      width: 44px; height: 44px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+    .t-mini-text {
+      font-size: 0.85rem;
+      line-height: 1.5;
+      color: var(--ink-2);
+      font-style: italic;
+    }
+    .t-mini-stars {
+      color: var(--gold);
+      font-size: 0.65rem;
+      letter-spacing: 2px;
+    }
+
+    /* ═══════════════════════════════════════
+       CTA BANNER
+    ═══════════════════════════════════════ */
+    #cta {
+      background: var(--ink);
+      padding: 100px 80px;
+      position: relative;
+      overflow: hidden;
+    }
+    .cta-bg-text {
+      position: absolute;
+      font-family: var(--serif);
+      font-size: 22rem;
+      font-weight: 900;
+      color: rgba(255,255,255,0.02);
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      white-space: nowrap;
+      pointer-events: none;
+      user-select: none;
+      letter-spacing: -0.05em;
+    }
+    .cta-content {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: center;
+      gap: 60px;
+    }
+    .cta-headline {
+      font-family: var(--serif);
+      font-size: clamp(2.4rem, 4vw, 4rem);
+      font-weight: 900;
+      line-height: 1.05;
+      letter-spacing: -0.02em;
+      color: #fff;
+      margin-bottom: 16px;
+    }
+    .cta-headline em { font-style: italic; color: var(--gold-light); }
     .cta-sub {
-      font-size:1rem; line-height:1.7;
-      color:rgba(255,255,255,0.72); max-width:520px;
-      margin:0 auto 40px;
+      font-size: 0.95rem;
+      line-height: 1.7;
+      color: rgba(250,247,242,0.55);
+      max-width: 500px;
     }
-    .btn-white {
-      display:inline-flex; align-items:center; gap:10px;
-      font-family:var(--mono); font-size:0.72rem;
-      letter-spacing:0.1em; text-transform:uppercase;
-      color:var(--vermillion); background:#fff;
-      padding:14px 32px; border-radius:var(--r-sm);
-      transition:all var(--t);
+    .cta-actions {
+      display: flex; flex-direction: column; gap: 12px; align-items: flex-start;
     }
-    .btn-white:hover {
-      background:var(--ink); color:#fff;
-      transform:translateY(-2px);
-      box-shadow:0 10px 32px rgba(14,11,7,0.3);
+    .btn-gold {
+      display: inline-flex; align-items: center; gap: 10px;
+      padding: 15px 32px;
+      background: var(--gold);
+      color: #fff;
+      font-family: var(--mono);
+      font-size: 0.78rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      border-radius: var(--r-sm);
+      transition: background var(--t), transform var(--t), box-shadow var(--t);
+      white-space: nowrap;
+    }
+    .btn-gold:hover {
+      background: var(--gold-light);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 28px rgba(184,144,42,0.4);
+    }
+    .cta-note {
+      font-family: var(--mono);
+      font-size: 0.65rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: rgba(250,247,242,0.35);
     }
 
     /* ═══════════════════════════════════════
        FOOTER
     ═══════════════════════════════════════ */
-    footer {
+    #footer {
       background: var(--ink);
-      padding: 72px 48px 36px;
+      padding: 72px 80px 40px;
+      border-top: 1px solid rgba(255,255,255,0.06);
     }
     .footer-top {
-      display:grid; grid-template-columns:2fr 1fr 1fr 1fr;
-      gap:40px; margin-bottom:60px;
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr 1fr;
+      gap: 60px;
+      margin-bottom: 64px;
     }
+    .footer-brand {}
     .footer-logo {
-      font-family:var(--serif); font-size:1.5rem; font-weight:900;
-      color:#fff; letter-spacing:-0.02em; margin-bottom:16px;
-      display:flex; align-items:baseline; gap:3px;
+      display: flex; align-items: baseline; gap: 2px;
+      margin-bottom: 18px;
+    }
+    .footer-logo-word {
+      font-family: var(--serif);
+      font-size: 1.4rem;
+      font-weight: 900;
+      color: #fff;
     }
     .footer-logo-dot {
-      width:7px; height:7px; border-radius:50%;
-      background:var(--vermillion); margin:0 1px 3px; flex-shrink:0;
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--vermillion);
+      margin: 0 1px 2px;
     }
     .footer-tagline {
-      font-size:0.88rem; line-height:1.7;
-      color:rgba(255,255,255,0.4); max-width:280px;
-      margin-bottom:28px;
+      font-size: 0.88rem;
+      line-height: 1.7;
+      color: rgba(250,247,242,0.45);
+      max-width: 280px;
+      margin-bottom: 28px;
     }
     .footer-social {
-      display:flex; gap:10px;
+      display: flex; gap: 10px;
     }
     .footer-social-btn {
-      width:36px; height:36px; border-radius:var(--r-xs);
-      border:1px solid rgba(255,255,255,0.1);
-      display:flex; align-items:center; justify-content:center;
-      color:rgba(255,255,255,0.4); font-size:0.8rem;
-      transition:all var(--t);
+      width: 38px; height: 38px;
+      border-radius: var(--r-sm);
+      border: 1px solid rgba(255,255,255,0.1);
+      display: flex; align-items: center; justify-content: center;
+      color: rgba(250,247,242,0.45);
+      font-size: 0.8rem;
+      transition: border-color var(--t), color var(--t), background var(--t);
     }
-    .footer-social-btn:hover { border-color:var(--vermillion); color:var(--vermillion); }
+    .footer-social-btn:hover { border-color: var(--vermillion); color: var(--vermillion); background: rgba(200,57,26,0.08); }
 
     .footer-col-title {
-      font-family:var(--mono); font-size:0.6rem;
-      letter-spacing:0.16em; text-transform:uppercase;
-      color:rgba(255,255,255,0.3); margin-bottom:20px;
+      font-family: var(--mono);
+      font-size: 0.65rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: rgba(250,247,242,0.4);
+      margin-bottom: 20px;
     }
-    .footer-col a {
-      display:block;
-      font-size:0.88rem; color:rgba(255,255,255,0.55);
-      margin-bottom:12px; transition:color var(--t);
+    .footer-links {
+      list-style: none;
+      display: flex; flex-direction: column; gap: 10px;
     }
-    .footer-col a:hover { color:#fff; }
+    .footer-links a {
+      font-size: 0.88rem;
+      color: rgba(250,247,242,0.55);
+      transition: color var(--t);
+    }
+    .footer-links a:hover { color: #fff; }
 
     .footer-bottom {
-      display:flex; align-items:center; justify-content:space-between;
-      padding-top:28px; border-top:1px solid rgba(255,255,255,0.07);
-      font-family:var(--mono); font-size:0.6rem;
-      letter-spacing:0.08em; color:rgba(255,255,255,0.25);
+      display: flex; align-items: center; justify-content: space-between;
+      padding-top: 32px;
+      border-top: 1px solid rgba(255,255,255,0.06);
     }
+    .footer-copy {
+      font-family: var(--mono);
+      font-size: 0.65rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: rgba(250,247,242,0.28);
+    }
+    .footer-legal {
+      display: flex; gap: 24px;
+    }
+    .footer-legal a {
+      font-family: var(--mono);
+      font-size: 0.65rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: rgba(250,247,242,0.28);
+      transition: color var(--t);
+    }
+    .footer-legal a:hover { color: rgba(250,247,242,0.7); }
+
+    /* ═══════════════════════════════════════
+       SCROLL ANIMATIONS
+    ═══════════════════════════════════════ */
+    .reveal {
+      opacity: 0;
+      transform: translateY(28px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .reveal-delay-1 { transition-delay: 0.1s; }
+    .reveal-delay-2 { transition-delay: 0.2s; }
+    .reveal-delay-3 { transition-delay: 0.3s; }
+    .reveal-delay-4 { transition-delay: 0.4s; }
+    .reveal-delay-5 { transition-delay: 0.5s; }
 
     /* ═══════════════════════════════════════
        RESPONSIVE
     ═══════════════════════════════════════ */
-    @media (max-width:1100px) {
-      .works-grid { grid-template-columns:repeat(3,1fr); }
-      .cats-grid  { grid-template-columns:repeat(3,1fr); }
-      .artists-grid { grid-template-columns:repeat(2,1fr); }
-      .footer-top { grid-template-columns:1fr 1fr; }
+    @media (max-width: 1100px) {
+      #hero { grid-template-columns: 1fr; }
+      .hero-right { min-height: 420px; }
+      .hero-left { padding: 60px 40px; }
+      .featured-grid { grid-template-columns: 1fr 1fr; }
+      .art-card--hero { grid-row: span 1; }
+      .art-card--hero .art-card-img-wrap { height: 360px; }
+      .art-card:not(.art-card--hero) .art-card-img-wrap { height: 280px; }
+      .cat-grid { grid-template-columns: repeat(3, 1fr); }
+      .artists-grid { grid-template-columns: repeat(2, 1fr); }
+      .how-grid { grid-template-columns: 1fr; }
+      .testimonials-layout { grid-template-columns: 1fr; gap: 48px; }
+      .cta-content { grid-template-columns: 1fr; }
+      .footer-top { grid-template-columns: 1fr 1fr; gap: 40px; }
     }
-    @media (max-width:768px) {
-      #nav { padding:0 24px; }
-      .nav-links { display:none; }
-      section { padding:60px 24px; }
-      .hero { grid-template-columns:1fr; min-height:auto; }
-      .hero-right { display:none; }
-      .hero-left { padding:60px 24px; }
-      #editorial { grid-template-columns:1fr; }
-      .editorial-img { height:300px; }
-      .editorial-body { padding:48px 24px; }
-      .works-grid { grid-template-columns:repeat(2,1fr); }
-      .cats-grid  { grid-template-columns:repeat(2,1fr); }
-      .artists-grid { grid-template-columns:repeat(2,1fr); }
-      .how-grid { grid-template-columns:1fr; }
-      .footer-top { grid-template-columns:1fr; }
-      #categories { padding:60px 24px; }
-      #sell-cta { padding:60px 24px; }
-      footer { padding:48px 24px 28px; }
+    @media (max-width: 768px) {
+      #nav { padding: 0 20px; }
+      .nav-links { display: none; }
+      #featured, #categories, #artists, #how, #testimonials, #cta, #footer { padding: 60px 24px; }
+      .featured-grid { grid-template-columns: 1fr; }
+      .cat-grid { grid-template-columns: repeat(2, 1fr); }
+      .artists-grid { grid-template-columns: 1fr 1fr; }
+      .editorial-image { display: none; }
+      #editorial { grid-template-columns: 1fr; }
+      .editorial-content { padding: 52px 32px; }
+      .footer-top { grid-template-columns: 1fr; gap: 32px; }
+      .footer-bottom { flex-direction: column; gap: 16px; text-align: center; }
+      .section-header { flex-direction: column; align-items: flex-start; gap: 16px; }
     }
-  </style>
+
+    /* ═══════════════════════════════════════
+       CURSOR DOT (subtle editorial touch)
+    ═══════════════════════════════════════ */
+    .cursor-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--vermillion);
+      position: fixed;
+      pointer-events: none;
+      z-index: 9999;
+      transform: translate(-50%, -50%);
+      transition: transform 0.08s ease, width 0.2s ease, height 0.2s ease, opacity 0.2s ease;
+      mix-blend-mode: multiply;
+    }
+    .cursor-ring {
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      border: 1px solid rgba(200,57,26,0.4);
+      position: fixed;
+      pointer-events: none;
+      z-index: 9998;
+      transform: translate(-50%, -50%);
+      transition: transform 0.18s ease, width 0.2s ease, height 0.2s ease;
+    }
+    @media (hover: none) { .cursor-dot, .cursor-ring { display: none; } }
+  
+  /* ═══════════════════════════════════════════════════════════
+     ART ALCOVE — GLASSMORPHIC DESIGN SYSTEM v2
+     Magazine editorial warmth + deep frosted glass surfaces
+  ═══════════════════════════════════════════════════════════ */
+
+  /* ── 1. Ambient light orbs (warm paper tone atmosphere) ── */
+  body { position: relative; }
+  body::before {
+    content: '';
+    position: fixed; inset: 0; z-index: -2; pointer-events: none;
+    background:
+      radial-gradient(ellipse 90% 70% at 10% 5%,   rgba(200,57,26,0.09)  0%, transparent 55%),
+      radial-gradient(ellipse 70% 60% at 90% 90%,  rgba(184,144,42,0.08) 0%, transparent 55%),
+      radial-gradient(ellipse 80% 80% at 50% 45%,  rgba(74,107,82,0.05)  0%, transparent 65%),
+      radial-gradient(ellipse 50% 40% at 70% 15%,  rgba(200,57,26,0.05)  0%, transparent 50%);
+  }
+
+  /* ── 2. Nav — heavy frosted glass ── */
+  #nav, #site-header {
+    background: rgba(250,247,242,0.68) !important;
+    backdrop-filter: blur(40px) saturate(1.6) brightness(1.05) !important;
+    -webkit-backdrop-filter: blur(40px) saturate(1.6) brightness(1.05) !important;
+    border-bottom: 1px solid rgba(255,255,255,0.7) !important;
+    box-shadow:
+      0 1px 0 rgba(255,255,255,0.9) inset,
+      0 4px 32px rgba(14,11,7,0.08),
+      0 1px 4px rgba(14,11,7,0.04) !important;
+  }
+
+  /* ── 3. Art cards — glass cards with rounded top image ── */
+  .art-card, .work-card {
+    background: rgba(250,247,242,0.60) !important;
+    backdrop-filter: blur(16px) saturate(1.3) !important;
+    -webkit-backdrop-filter: blur(16px) saturate(1.3) !important;
+    border: 1px solid rgba(255,255,255,0.55) !important;
+    border-radius: 20px !important;
+    box-shadow:
+      0 2px 0 rgba(255,255,255,0.8) inset,
+      0 12px 40px rgba(14,11,7,0.10),
+      0 2px 8px rgba(14,11,7,0.06) !important;
+    overflow: hidden !important;
+  }
+  .art-card:hover, .work-card:hover {
+    box-shadow:
+      0 2px 0 rgba(255,255,255,0.9) inset,
+      0 20px 60px rgba(14,11,7,0.16),
+      0 4px 12px rgba(14,11,7,0.08) !important;
+    border-color: rgba(255,255,255,0.75) !important;
+    transform: translateY(-4px) scale(1.01);
+  }
+  .art-card-img-wrap {
+    border-radius: 20px 20px 0 0 !important;
+  }
+
+  /* ── 4. Artist cards ── */
+  .artist-card .artist-img-wrap {
+    border-radius: 16px !important;
+    overflow: hidden !important;
+    border: 1px solid rgba(255,255,255,0.5) !important;
+    box-shadow: 0 8px 28px rgba(14,11,7,0.10) !important;
+  }
+
+  /* ── 5. Category cards ── */
+  .cat-card {
+    border-radius: 16px !important;
+    overflow: hidden !important;
+    border: 1px solid rgba(255,255,255,0.4) !important;
+    box-shadow: 0 8px 24px rgba(14,11,7,0.10) !important;
+  }
+  .cat-card:hover {
+    box-shadow: 0 16px 48px rgba(14,11,7,0.16) !important;
+  }
+
+  /* ── 6. How-it-works cards — glass on hover ── */
+  .how-card {
+    border-radius: 20px !important;
+    border: 1px solid rgba(255,255,255,0.4) !important;
+  }
+  .how-card:hover {
+    background: rgba(14,11,7,0.88) !important;
+    backdrop-filter: blur(20px) !important;
+    -webkit-backdrop-filter: blur(20px) !important;
+    border-color: rgba(255,255,255,0.12) !important;
+    box-shadow: 0 20px 60px rgba(14,11,7,0.22) !important;
+  }
+  .how-icon {
+    border-radius: 12px !important;
+    backdrop-filter: blur(8px) !important;
+    border: 1px solid rgba(255,255,255,0.3) !important;
+  }
+
+  /* ── 7. Testimonial mini cards ── */
+  .t-mini-card {
+    border-radius: 16px !important;
+    border: 1px solid rgba(255,255,255,0.45) !important;
+    background: rgba(250,247,242,0.65) !important;
+    backdrop-filter: blur(12px) !important;
+    -webkit-backdrop-filter: blur(12px) !important;
+    box-shadow: 0 4px 20px rgba(14,11,7,0.07) !important;
+  }
+  .t-mini-card:hover {
+    background: rgba(250,247,242,0.85) !important;
+    box-shadow: 0 8px 32px rgba(14,11,7,0.12) !important;
+  }
+
+  /* ── 8. Mosaic labels & price tags ── */
+  .mosaic-label {
+    background: rgba(250,247,242,0.80) !important;
+    backdrop-filter: blur(16px) saturate(1.3) !important;
+    border: 1px solid rgba(255,255,255,0.7) !important;
+    border-radius: 12px !important;
+    box-shadow: 0 4px 16px rgba(14,11,7,0.12) !important;
+  }
+  .mosaic-price {
+    background: rgba(200,57,26,0.88) !important;
+    backdrop-filter: blur(10px) !important;
+    border: 1px solid rgba(255,255,255,0.25) !important;
+    border-radius: 999px !important;
+    padding: 5px 14px !important;
+    color: #fff !important;
+    font-size: 0.7rem !important;
+  }
+
+  /* ── 9. Art card footer & price ── */
+  .art-card-footer {
+    background: rgba(250,247,242,0.88) !important;
+    backdrop-filter: blur(12px) !important;
+    border-top: 1px solid rgba(255,255,255,0.6) !important;
+  }
+  .art-card-price {
+    font-family: var(--mono) !important;
+    background: rgba(14,11,7,0.06) !important;
+    border-radius: 999px !important;
+    padding: 3px 12px !important;
+    border: 1px solid rgba(14,11,7,0.08) !important;
+    font-size: 0.78rem !important;
+  }
+
+  /* ── 10. Quick-buy buttons glass ── */
+  .qbtn, .qbtn-icon, .oa-btn, .oa-icon, .wco-btn, .wco-icon {
+    border-radius: 10px !important;
+    backdrop-filter: blur(16px) !important;
+    background: rgba(250,247,242,0.88) !important;
+    border: 1px solid rgba(255,255,255,0.6) !important;
+    box-shadow: 0 2px 8px rgba(14,11,7,0.08) !important;
+  }
+  .qbtn:hover, .qbtn--primary,
+  .oa-btn:hover, .oa-primary,
+  .wco-btn:hover, .wco-primary {
+    background: var(--vermillion) !important;
+    border-color: transparent !important;
+    color: #fff !important;
+  }
+
+  /* ── 11. Buttons rounded ── */
+  .btn-sell, .btn-primary, .btn-gold, .btn-light,
+  .btn-ghost, .btn-addcart, .btn-wishlist, .btn-offer,
+  .lb-btn-primary, .lb-btn-secondary, .btn-commission,
+  .list-btn, .oa-btn, .wco-btn, .overlay-actions button,
+  .nav-icon-btn, .nav-icon-wrap button,
+  .artist-follow-btn {
+    border-radius: 12px !important;
+  }
+  .btn-sell, .btn-primary, .btn-gold {
+    box-shadow: 0 4px 20px rgba(14,11,7,0.12) !important;
+  }
+  .btn-primary:hover {
+    box-shadow: 0 8px 32px rgba(200,57,26,0.28) !important;
+  }
+  .btn-sell:hover {
+    box-shadow: 0 8px 28px rgba(200,57,26,0.22) !important;
+  }
+
+  /* ── 12. Tags / chips / badges — pill style ── */
+  .tag, .edition-badge, .timeline-tag, .art-badge,
+  .work-card-badge, .status-pill, .sac-verified,
+  .nav-cart-count {
+    border-radius: 999px !important;
+  }
+  .tag, .edition-badge, .art-badge, .work-card-badge {
+    backdrop-filter: blur(8px) !important;
+    background: rgba(250,247,242,0.85) !important;
+    border: 1px solid rgba(255,255,255,0.5) !important;
+  }
+  .edition-badge--featured, .art-badge--new, .art-badge--ltd {
+    background: rgba(184,144,42,0.85) !important;
+    border-color: rgba(255,255,255,0.3) !important;
+    color: #fff !important;
+  }
+  .edition-badge:not(.edition-badge--featured), .art-badge:not(.art-badge--new):not(.art-badge--ltd) {
+    background: rgba(14,11,7,0.75) !important;
+    border-color: rgba(255,255,255,0.15) !important;
+    color: var(--cream) !important;
+  }
+
+  /* ── 13. Filter chips ── */
+  .chip, .wlt-chip, .wf-chip {
+    border-radius: 999px !important;
+    border: 1px solid rgba(14,11,7,0.12) !important;
+    background: rgba(250,247,242,0.7) !important;
+    backdrop-filter: blur(8px) !important;
+    transition: all 0.25s ease !important;
+  }
+  .chip.active, .wlt-chip.active, .wf-chip.active {
+    background: var(--vermillion) !important;
+    border-color: transparent !important;
+    color: #fff !important;
+    box-shadow: 0 4px 16px rgba(200,57,26,0.25) !important;
+  }
+
+  /* ── 14. Browse sidebar ── */
+  .sidebar, #sidebar {
+    background: rgba(250,247,242,0.78) !important;
+    backdrop-filter: blur(28px) saturate(1.4) !important;
+    -webkit-backdrop-filter: blur(28px) saturate(1.4) !important;
+    border-right: 1px solid rgba(255,255,255,0.6) !important;
+    box-shadow: 2px 0 24px rgba(14,11,7,0.06) !important;
+  }
+
+  /* ── 15. Form inputs ── */
+  .glass-input, .form-input, input[type="text"],
+  input[type="email"], input[type="number"],
+  select, textarea, .price-input,
+  .msg-compose-input, .topnav-center input {
+    border-radius: 12px !important;
+    background: rgba(250,247,242,0.7) !important;
+    backdrop-filter: blur(8px) !important;
+    border: 1px solid rgba(255,255,255,0.6) !important;
+    box-shadow: 0 2px 8px rgba(14,11,7,0.05) inset !important;
+  }
+  .glass-input:focus, .form-input:focus,
+  input[type="text"]:focus, input[type="email"]:focus,
+  select:focus, textarea:focus {
+    background: rgba(250,247,242,0.92) !important;
+    border-color: rgba(200,57,26,0.35) !important;
+    outline: none !important;
+    box-shadow: 0 0 0 3px rgba(200,57,26,0.08), 0 2px 8px rgba(14,11,7,0.04) inset !important;
+  }
+
+  /* ── 16. Price range slider track ── */
+  .price-range-track, .range-track {
+    border-radius: 999px !important;
+  }
+  .range-input::-webkit-slider-thumb {
+    border-radius: 50% !important;
+    box-shadow: 0 2px 8px rgba(14,11,7,0.15) !important;
+  }
+
+  /* ── 17. Dashboard KPI cards ── */
+  .kpi-card {
+    background: rgba(250,247,242,0.65) !important;
+    backdrop-filter: blur(20px) saturate(1.3) !important;
+    -webkit-backdrop-filter: blur(20px) saturate(1.3) !important;
+    border: 1px solid rgba(255,255,255,0.6) !important;
+    border-radius: 20px !important;
+    box-shadow:
+      0 2px 0 rgba(255,255,255,0.8) inset,
+      0 12px 40px rgba(14,11,7,0.09) !important;
+  }
+  .kpi-card:hover {
+    box-shadow:
+      0 2px 0 rgba(255,255,255,0.9) inset,
+      0 20px 56px rgba(14,11,7,0.14) !important;
+    transform: translateY(-2px);
+  }
+
+  /* ── 18. Dashboard chart & table cards ── */
+  .chart-card, .analytics-card, .table-card,
+  .dash-section > .dash-col > div,
+  .orders-table-wrap, .works-list-wrap,
+  .payouts-wrap, .notif-list-wrap, .settings-wrap {
+    background: rgba(250,247,242,0.62) !important;
+    backdrop-filter: blur(16px) !important;
+    -webkit-backdrop-filter: blur(16px) !important;
+    border: 1px solid rgba(255,255,255,0.55) !important;
+    border-radius: 20px !important;
+    box-shadow:
+      0 2px 0 rgba(255,255,255,0.75) inset,
+      0 8px 32px rgba(14,11,7,0.08) !important;
+  }
+
+  /* ── 19. Dashboard payout cells ── */
+  .payout-cell {
+    background: rgba(250,247,242,0.65) !important;
+    backdrop-filter: blur(12px) !important;
+    border: 1px solid rgba(255,255,255,0.55) !important;
+    border-radius: 16px !important;
+    box-shadow: 0 4px 16px rgba(14,11,7,0.07) !important;
+  }
+
+  /* ── 20. Dashboard topnav ── */
+  #topnav {
+    background: rgba(14,11,7,0.88) !important;
+    backdrop-filter: blur(32px) saturate(1.4) !important;
+    -webkit-backdrop-filter: blur(32px) saturate(1.4) !important;
+    border-bottom: 1px solid rgba(255,255,255,0.08) !important;
+    box-shadow: 0 2px 20px rgba(0,0,0,0.25) !important;
+  }
+  #topnav .topnav-center input {
+    background: rgba(255,255,255,0.08) !important;
+    border: 1px solid rgba(255,255,255,0.12) !important;
+    border-radius: 999px !important;
+    color: #fff !important;
+  }
+  #topnav .topnav-center input::placeholder { color: rgba(255,255,255,0.35) !important; }
+
+  /* ── 21. Dashboard sidebar ── */
+  #sidebar {
+    background: rgba(250,247,242,0.82) !important;
+    backdrop-filter: blur(32px) saturate(1.4) !important;
+    -webkit-backdrop-filter: blur(32px) saturate(1.4) !important;
+    border-right: 1px solid rgba(255,255,255,0.65) !important;
+    box-shadow: 2px 0 32px rgba(14,11,7,0.07) !important;
+  }
+  .snav-link {
+    border-radius: 12px !important;
+    transition: all 0.22s ease !important;
+  }
+  .snav-link:hover {
+    background: rgba(200,57,26,0.08) !important;
+    backdrop-filter: blur(8px) !important;
+  }
+  .snav-link.active {
+    background: rgba(200,57,26,0.12) !important;
+    backdrop-filter: blur(8px) !important;
+    border: 1px solid rgba(200,57,26,0.2) !important;
+    box-shadow: 0 2px 12px rgba(200,57,26,0.10) !important;
+  }
+
+  /* ── 22. Listing page product viewer ── */
+  .product-viewer {
+    background: rgba(250,247,242,0.55) !important;
+    backdrop-filter: blur(16px) !important;
+    border: 1px solid rgba(255,255,255,0.55) !important;
+    border-radius: 24px !important;
+    box-shadow: 0 12px 48px rgba(14,11,7,0.10) !important;
+    overflow: hidden !important;
+  }
+  .viewer-main {
+    border-radius: 20px !important;
+    overflow: hidden !important;
+  }
+  .viewer-thumb {
+    border-radius: 10px !important;
+    border: 1px solid rgba(255,255,255,0.5) !important;
+    overflow: hidden !important;
+  }
+  .viewer-thumb.active {
+    border-color: var(--vermillion) !important;
+    box-shadow: 0 0 0 2px rgba(200,57,26,0.25) !important;
+  }
+
+  /* ── 23. Listing product panel ── */
+  .product-panel {
+    background: rgba(250,247,242,0.62) !important;
+    backdrop-filter: blur(20px) !important;
+    -webkit-backdrop-filter: blur(20px) !important;
+    border: 1px solid rgba(255,255,255,0.55) !important;
+    border-radius: 24px !important;
+    box-shadow: 0 12px 48px rgba(14,11,7,0.09) !important;
+    padding: 36px !important;
+  }
+
+  /* ── 24. Listing spec cells ── */
+  .spec-cell {
+    background: rgba(250,247,242,0.65) !important;
+    backdrop-filter: blur(10px) !important;
+    border: 1px solid rgba(255,255,255,0.55) !important;
+    border-radius: 14px !important;
+    box-shadow: 0 2px 8px rgba(14,11,7,0.06) !important;
+  }
+  .ship-cell {
+    background: rgba(250,247,242,0.65) !important;
+    backdrop-filter: blur(10px) !important;
+    border: 1px solid rgba(255,255,255,0.55) !important;
+    border-radius: 14px !important;
+    box-shadow: 0 2px 8px rgba(14,11,7,0.06) !important;
+  }
+  .edition-info {
+    background: rgba(184,144,42,0.08) !important;
+    backdrop-filter: blur(10px) !important;
+    border: 1px solid rgba(184,144,42,0.2) !important;
+    border-radius: 14px !important;
+  }
+  .trust-row {
+    background: rgba(250,247,242,0.55) !important;
+    backdrop-filter: blur(8px) !important;
+    border: 1px solid rgba(255,255,255,0.5) !important;
+    border-radius: 14px !important;
+    box-shadow: 0 2px 8px rgba(14,11,7,0.05) !important;
+  }
+
+  /* ── 25. Listing tabs ── */
+  .tab-btn {
+    border-radius: 10px 10px 0 0 !important;
+    transition: all 0.22s ease !important;
+  }
+  .tab-btn.active {
+    background: rgba(200,57,26,0.06) !important;
+    backdrop-filter: blur(8px) !important;
+  }
+
+  /* ── 26. Artist page panels ── */
+  .about-panel {
+    background: rgba(250,247,242,0.65) !important;
+    backdrop-filter: blur(16px) !important;
+    border: 1px solid rgba(255,255,255,0.55) !important;
+    border-radius: 20px !important;
+    box-shadow: 0 8px 32px rgba(14,11,7,0.08) !important;
+  }
+  .review-card {
+    background: rgba(250,247,242,0.65) !important;
+    backdrop-filter: blur(12px) !important;
+    border: 1px solid rgba(255,255,255,0.5) !important;
+    border-radius: 16px !important;
+    box-shadow: 0 4px 16px rgba(14,11,7,0.07) !important;
+  }
+  .artist-stat-panel, .artist-meta-card {
+    background: rgba(250,247,242,0.65) !important;
+    backdrop-filter: blur(16px) !important;
+    border: 1px solid rgba(255,255,255,0.55) !important;
+    border-radius: 20px !important;
+    box-shadow: 0 8px 32px rgba(14,11,7,0.08) !important;
+  }
+
+  /* ── 27. Lightbox ── */
+  .lb-panel, .lightbox-panel {
+    background: rgba(14,11,7,0.82) !important;
+    backdrop-filter: blur(32px) saturate(1.2) !important;
+    -webkit-backdrop-filter: blur(32px) saturate(1.2) !important;
+    border: 1px solid rgba(255,255,255,0.1) !important;
+    border-radius: 20px !important;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.35) !important;
+  }
+  .lb-nav-btn, .lb-close {
+    background: rgba(250,247,242,0.85) !important;
+    backdrop-filter: blur(12px) !important;
+    border: 1px solid rgba(255,255,255,0.6) !important;
+    border-radius: 12px !important;
+    box-shadow: 0 4px 16px rgba(14,11,7,0.12) !important;
+  }
+  .lb-nav-btn:hover, .lb-close:hover {
+    background: var(--vermillion) !important;
+    color: #fff !important;
+    border-color: transparent !important;
+  }
+  /* Browse page lightbox panel */
+  .lbp-wrap, .lb-overlay-panel {
+    background: rgba(250,247,242,0.88) !important;
+    backdrop-filter: blur(32px) !important;
+    border: 1px solid rgba(255,255,255,0.65) !important;
+    border-radius: 24px !important;
+    box-shadow: 0 24px 80px rgba(14,11,7,0.18) !important;
+  }
+
+  /* ── 28. Toasts ── */
+  .aa-toast {
+    background: rgba(14,11,7,0.84) !important;
+    backdrop-filter: blur(24px) saturate(1.2) !important;
+    -webkit-backdrop-filter: blur(24px) saturate(1.2) !important;
+    border: 1px solid rgba(255,255,255,0.12) !important;
+    border-radius: 14px !important;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.25) !important;
+  }
+
+  /* ── 29. Mobile nav drawer ── */
+  .mobile-nav-panel {
+    background: rgba(250,247,242,0.94) !important;
+    backdrop-filter: blur(40px) saturate(1.5) !important;
+    -webkit-backdrop-filter: blur(40px) saturate(1.5) !important;
+    border-left: 1px solid rgba(255,255,255,0.75) !important;
+    border-radius: 24px 0 0 24px !important;
+    box-shadow: -8px 0 48px rgba(14,11,7,0.14) !important;
+  }
+  .mnp-sell-btn {
+    border-radius: 12px !important;
+    background: rgba(200,57,26,0.9) !important;
+    backdrop-filter: blur(8px) !important;
+    border: 1px solid rgba(255,255,255,0.2) !important;
+    box-shadow: 0 4px 16px rgba(200,57,26,0.25) !important;
+  }
+
+  /* ── 30. Breadcrumb ── */
+  .breadcrumb {
+    background: rgba(250,247,242,0.75) !important;
+    backdrop-filter: blur(16px) !important;
+    border-bottom: 1px solid rgba(255,255,255,0.6) !important;
+  }
+
+  /* ── 31. Section padding & backgrounds — glass float ── */
+  #featured, #artists, #testimonials {
+    background: transparent !important;
+  }
+  #categories, #how {
+    background: rgba(239,233,224,0.55) !important;
+    backdrop-filter: blur(8px) !important;
+  }
+
+  /* ── 32. CTA section overlay ── */
+  #cta {
+    position: relative !important;
+  }
+  #cta::after {
+    content: '';
+    position: absolute; inset: 0; z-index: 0;
+    background: rgba(14,11,7,0.04) !important;
+    backdrop-filter: blur(4px) !important;
+    pointer-events: none;
+  }
+  #cta .cta-content { z-index: 1; position: relative; }
+
+  /* ── 33. Upload/add form in dashboard ── */
+  .upload-box, .add-form-wrap {
+    background: rgba(250,247,242,0.65) !important;
+    backdrop-filter: blur(16px) !important;
+    border: 2px dashed rgba(14,11,7,0.15) !important;
+    border-radius: 20px !important;
+  }
+  .upload-box:hover, .add-form-wrap .upload-box:hover {
+    border-color: rgba(200,57,26,0.35) !important;
+    background: rgba(250,247,242,0.80) !important;
+  }
+
+  /* ── 34. Message thread ── */
+  .msg-list, .msg-thread {
+    background: rgba(250,247,242,0.65) !important;
+    backdrop-filter: blur(16px) !important;
+    border: 1px solid rgba(255,255,255,0.55) !important;
+    border-radius: 20px !important;
+  }
+  .msg-compose {
+    background: rgba(250,247,242,0.75) !important;
+    backdrop-filter: blur(12px) !important;
+    border-top: 1px solid rgba(255,255,255,0.6) !important;
+    border-radius: 0 0 20px 20px !important;
+  }
+  .msg-bubble--them {
+    background: rgba(255,255,255,0.75) !important;
+    backdrop-filter: blur(8px) !important;
+    border: 1px solid rgba(255,255,255,0.7) !important;
+    border-radius: 0 14px 14px 14px !important;
+    box-shadow: 0 2px 8px rgba(14,11,7,0.06) !important;
+  }
+  .msg-bubble--me {
+    background: rgba(200,57,26,0.88) !important;
+    backdrop-filter: blur(8px) !important;
+    border-radius: 14px 14px 0 14px !important;
+    box-shadow: 0 4px 16px rgba(200,57,26,0.2) !important;
+  }
+
+  /* ── 35. Notification items ── */
+  .notif-item {
+    background: rgba(250,247,242,0.65) !important;
+    backdrop-filter: blur(10px) !important;
+    border: 1px solid rgba(255,255,255,0.5) !important;
+    border-radius: 14px !important;
+    transition: all 0.22s ease !important;
+  }
+  .notif-item:hover {
+    background: rgba(250,247,242,0.85) !important;
+    box-shadow: 0 4px 20px rgba(14,11,7,0.08) !important;
+  }
+  .notif-item.unread {
+    background: rgba(200,57,26,0.06) !important;
+    border-color: rgba(200,57,26,0.2) !important;
+  }
+
+  /* ── 36. Timeline dots ── */
+  .timeline-dot {
+    background: rgba(250,247,242,0.9) !important;
+    backdrop-filter: blur(8px) !important;
+    box-shadow: 0 0 0 3px rgba(250,247,242,0.5), 0 2px 8px rgba(14,11,7,0.12) !important;
+  }
+
+  /* ── 37. Scrollbar styling ── */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: rgba(250,247,242,0.4); border-radius: 999px; }
+  ::-webkit-scrollbar-thumb { background: rgba(14,11,7,0.18); border-radius: 999px; }
+  ::-webkit-scrollbar-thumb:hover { background: rgba(200,57,26,0.35); }
+
+  /* ── 38. Accordion sections (browse sidebar, dashboard) ── */
+  .filter-section, .acc-section {
+    border-bottom: 1px solid rgba(255,255,255,0.5) !important;
+  }
+  .filter-section-title, .acc-title {
+    border-radius: 8px !important;
+    transition: background 0.22s ease !important;
+  }
+  .filter-section-title:hover, .acc-title:hover {
+    background: rgba(200,57,26,0.06) !important;
+  }
+
+  /* ── 39. Settings toggles ── */
+  .toggle-track {
+    border-radius: 999px !important;
+    backdrop-filter: blur(8px) !important;
+  }
+
+  /* ── 40. Work-card (artist page) image wrap ── */
+  .work-card-img-wrap {
+    border-radius: 16px 16px 0 0 !important;
+    overflow: hidden !important;
+  }
+  .work-card {
+    border-radius: 20px !important;
+    overflow: hidden !important;
+    background: rgba(250,247,242,0.60) !important;
+    backdrop-filter: blur(14px) !important;
+    border: 1px solid rgba(255,255,255,0.55) !important;
+    box-shadow: 0 8px 28px rgba(14,11,7,0.09) !important;
+  }
+
+    /* ── Logo image ── */
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      text-decoration: none;
+      flex-shrink: 0;
+    }
+    .nav-logo-img {
+      height: 52px;
+      width: auto;
+      display: block;
+      object-fit: contain;
+      /* The logo has a near-white background — mix-blend keeps it crisp on the glass nav */
+      mix-blend-mode: multiply;
+      transition: opacity 0.25s ease, transform 0.25s ease;
+    }
+    .nav-logo:hover .nav-logo-img {
+      opacity: 0.85;
+      transform: scale(1.03);
+    }
+    /* Footer logo — smaller, inverted for dark background */
+    .footer-logo-img {
+      height: 44px;
+      width: auto;
+      display: block;
+      object-fit: contain;
+      filter: brightness(0) invert(1);
+      opacity: 0.75;
+      transition: opacity 0.25s ease;
+    }
+    .footer-logo-img:hover { opacity: 1; }
+    /* Dashboard topnav logo */
+    .topnav-logo {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      text-decoration: none;
+      flex-shrink: 0;
+    }
+    .topnav-logo-img {
+      height: 44px;
+      width: auto;
+      display: block;
+      object-fit: contain;
+      filter: brightness(0) invert(1);
+      opacity: 0.88;
+      transition: opacity 0.25s ease;
+    }
+    .topnav-logo:hover .topnav-logo-img { opacity: 1; }
+</style>
+  <link rel="stylesheet" href="shared.css">
 </head>
 <body>
 
-  <!-- ══════════ NAV ══════════ -->
-  <nav id="nav">
-    <a href="index.html" class="nav-logo">
-      Art<span class="nav-logo-dot"></span>Alcove
+  <!-- Custom cursor -->
+  <div class="cursor-dot" id="cursorDot"></div>
+  <div class="cursor-ring" id="cursorRing"></div>
+
+  <!-- ═══════════ NAV ═══════════ -->
+  <nav id="nav" role="navigation" aria-label="Main navigation">
+    <a href="index.html" class="nav-logo" aria-label="Art Alcove home">
+      <img class="nav-logo-img" src="Art_Alcove_logo.png" alt="Art Alcove">
     </a>
-    <div class="nav-links">
-      <a href="browse.html">Browse</a>
-      <a href="artist.html">Artists</a>
-      <a href="#">Editorial</a>
-      <a href="#">About</a>
-    </div>
+
+    <ul class="nav-links">
+      <li><a href="browse.html">Browse</a></li>
+      <li><a href="artist.html">Artists</a></li>
+      <li><a href="#categories">Categories</a></li>
+      <li><a href="dashboard.html">Commissions</a></li>
+      <li><a href="#">Editorial</a></li>
+    </ul>
+
     <div class="nav-actions">
-      <a href="browse.html" class="btn-ghost">Explore</a>
-      <a href="dashboard.html" class="btn-primary">
-        <i class="fas fa-plus"></i> Start Selling
-      </a>
+      <button class="nav-icon-btn" aria-label="Search">
+        <i class="fas fa-search"></i>
+      </button>
+      <div class="nav-icon-wrap">
+        <button class="nav-icon-btn" aria-label="Wishlist">
+          <i class="fas fa-heart"></i>
+        </button>
+      </div>
+      <div class="nav-icon-wrap">
+        <button class="nav-icon-btn" aria-label="Cart (3 items)">
+          <i class="fas fa-shopping-bag"></i>
+          <span class="nav-cart-count">3</span>
+        </button>
+      </div>
+      <a href="dashboard.html" class="btn-sell">Sell Art</a>
     </div>
   </nav>
 
-  <!-- ══════════ HERO ══════════ -->
-  <section class="hero">
+  <!-- ═══════════ HERO ═══════════ -->
+  <section id="hero" aria-label="Hero">
     <div class="hero-left">
-      <div class="hero-overline">Original Art Marketplace</div>
-      <h1 class="hero-title">
-        Where Art Finds<br>Its <em>Rightful</em><br>Home
-      </h1>
-      <p class="hero-sub">
-        Discover original paintings, prints and sculptures from independent artists worldwide. Every piece tells a story — find yours.
-      </p>
-      <div class="hero-ctas">
-        <a href="browse.html" class="btn-primary">
-          <i class="fas fa-compass"></i> Browse Works
-        </a>
-        <a href="dashboard.html" class="btn-ghost">Sell Your Art</a>
+      <div class="hero-issue-label">
+        <div class="hero-issue-bar"></div>
+        <span class="hero-issue-text">Spring Collection 2026 &nbsp;·&nbsp; 4,200+ Works</span>
       </div>
+
+      <h1 class="hero-headline">
+        Where<br>
+        <em>Art</em> Finds<br>
+        <span class="outline-text">Its Home</span>
+      </h1>
+
+      <p class="hero-sub">
+        Discover and collect original artworks from independent artists worldwide — paintings, prints, sculpture, photography, and more. Every piece tells a story.
+      </p>
+
+      <div class="hero-cta-row">
+        <a href="browse.html" class="btn-primary">
+          <i class="fas fa-compass"></i>
+          Explore Works
+        </a>
+        <a href="#artists" class="btn-ghost">
+          Meet the Artists <i class="fas fa-arrow-right" style="font-size:0.6rem"></i>
+        </a>
+      </div>
+
       <div class="hero-stats">
-        <div class="hero-stat">
-          <div class="stat-value">12K+</div>
+        <div class="stat-item">
+          <div class="stat-num">4.2K</div>
           <div class="stat-label">Original Works</div>
         </div>
-        <div class="hero-stat">
-          <div class="stat-value">3,400</div>
+        <div class="stat-item">
+          <div class="stat-num">840</div>
           <div class="stat-label">Artists</div>
         </div>
-        <div class="hero-stat">
-          <div class="stat-value">48K</div>
-          <div class="stat-label">Collectors</div>
+        <div class="stat-item">
+          <div class="stat-num">98%</div>
+          <div class="stat-label">Buyer Satisfaction</div>
         </div>
       </div>
     </div>
 
-    <div class="hero-right">
-      <img class="hero-mosaic-img mosaic-tall"
-        src="https://images.unsplash.com/photo-1541961017774-22349e4a1262?w=600&q=80" alt="Featured artwork">
-      <img class="hero-mosaic-img"
-        src="https://images.unsplash.com/photo-1579783901586-d88db74b4fe4?w=400&q=80" alt="Artwork">
-      <img class="hero-mosaic-img"
-        src="https://images.unsplash.com/photo-1547036967-23d11aacaee0?w=400&q=80" alt="Artwork">
+    <!-- Hero right: editorial mosaic -->
+    <div class="hero-right" aria-hidden="true">
+      <div class="hero-bg-text">ART</div>
+      <div class="hero-mosaic">
+
+        <div class="mosaic-cell">
+          <img class="mosaic-art" src="https://images.unsplash.com/photo-1541961017774-22349e4a1262?w=600&q=80" alt="Featured artwork">
+          <div class="mosaic-label">
+            <div class="mosaic-label-artist">Elena Vasquez</div>
+            <div class="mosaic-label-title">Golden Hour Study</div>
+          </div>
+          <div class="mosaic-price">KES 54,600</div>
+        </div>
+
+        <div class="mosaic-cell">
+          <img class="mosaic-art" src="https://images.unsplash.com/photo-1579783902614-a3fb3927b6a5?w=600&q=80" alt="Featured artwork">
+          <div class="mosaic-price">KES 36,400</div>
+        </div>
+
+        <div class="mosaic-cell">
+          <img class="mosaic-art" src="https://images.unsplash.com/photo-1549490349-8643362247b5?w=600&q=80" alt="Featured artwork">
+          <div class="mosaic-price">KES 115,700</div>
+        </div>
+
+      </div>
     </div>
+
   </section>
 
-  <!-- ══════════ MARQUEE ══════════ -->
-  <div class="marquee-strip" aria-hidden="true">
-    <div class="marquee-track">
-      <!-- doubled for seamless loop -->
-      <div class="marquee-item"><i class="fas fa-circle"></i> Oil Paintings</div>
-      <div class="marquee-item"><i class="fas fa-circle"></i> Watercolours</div>
-      <div class="marquee-item"><i class="fas fa-circle"></i> Photography</div>
-      <div class="marquee-item"><i class="fas fa-circle"></i> Sculpture</div>
-      <div class="marquee-item"><i class="fas fa-circle"></i> Printmaking</div>
-      <div class="marquee-item"><i class="fas fa-circle"></i> Digital Art</div>
-      <div class="marquee-item"><i class="fas fa-circle"></i> Mixed Media</div>
-      <div class="marquee-item"><i class="fas fa-circle"></i> Illustration</div>
-      <div class="marquee-item"><i class="fas fa-circle"></i> Abstract</div>
-      <div class="marquee-item"><i class="fas fa-circle"></i> Portrait</div>
-      <div class="marquee-item"><i class="fas fa-circle"></i> Oil Paintings</div>
-      <div class="marquee-item"><i class="fas fa-circle"></i> Watercolours</div>
-      <div class="marquee-item"><i class="fas fa-circle"></i> Photography</div>
-      <div class="marquee-item"><i class="fas fa-circle"></i> Sculpture</div>
-      <div class="marquee-item"><i class="fas fa-circle"></i> Printmaking</div>
-      <div class="marquee-item"><i class="fas fa-circle"></i> Digital Art</div>
-      <div class="marquee-item"><i class="fas fa-circle"></i> Mixed Media</div>
-      <div class="marquee-item"><i class="fas fa-circle"></i> Illustration</div>
-      <div class="marquee-item"><i class="fas fa-circle"></i> Abstract</div>
-      <div class="marquee-item"><i class="fas fa-circle"></i> Portrait</div>
+  <!-- ═══════════ MARQUEE ═══════════ -->
+  <div class="marquee-bar" aria-hidden="true">
+    <div class="marquee-track" id="marqueeTrack">
+      <!-- repeated twice for seamless loop -->
+      <div class="marquee-item"><span class="marquee-text">Original Paintings</span><span class="marquee-sep"></span></div>
+      <div class="marquee-item"><span class="marquee-text">Limited Edition Prints</span><span class="marquee-sep"></span></div>
+      <div class="marquee-item"><span class="marquee-text">Abstract &amp; Contemporary</span><span class="marquee-sep"></span></div>
+      <div class="marquee-item"><span class="marquee-text">Photography</span><span class="marquee-sep"></span></div>
+      <div class="marquee-item"><span class="marquee-text">Sculpture &amp; Ceramics</span><span class="marquee-sep"></span></div>
+      <div class="marquee-item"><span class="marquee-text">Artist Commissions</span><span class="marquee-sep"></span></div>
+      <div class="marquee-item"><span class="marquee-text">Secure Worldwide Shipping</span><span class="marquee-sep"></span></div>
+      <div class="marquee-item"><span class="marquee-text">Certificates of Authenticity</span><span class="marquee-sep"></span></div>
+      <!-- duplicate -->
+      <div class="marquee-item"><span class="marquee-text">Original Paintings</span><span class="marquee-sep"></span></div>
+      <div class="marquee-item"><span class="marquee-text">Limited Edition Prints</span><span class="marquee-sep"></span></div>
+      <div class="marquee-item"><span class="marquee-text">Abstract &amp; Contemporary</span><span class="marquee-sep"></span></div>
+      <div class="marquee-item"><span class="marquee-text">Photography</span><span class="marquee-sep"></span></div>
+      <div class="marquee-item"><span class="marquee-text">Sculpture &amp; Ceramics</span><span class="marquee-sep"></span></div>
+      <div class="marquee-item"><span class="marquee-text">Artist Commissions</span><span class="marquee-sep"></span></div>
+      <div class="marquee-item"><span class="marquee-text">Secure Worldwide Shipping</span><span class="marquee-sep"></span></div>
+      <div class="marquee-item"><span class="marquee-text">Certificates of Authenticity</span><span class="marquee-sep"></span></div>
     </div>
   </div>
 
-  <!-- ══════════ FEATURED WORKS ══════════ -->
-  <section id="featured">
-    <div class="section-header">
-      <div>
-        <div class="section-overline">Curated Selection</div>
-        <h2 class="section-title">Featured Works</h2>
-      </div>
-      <a href="browse.html" class="section-link">
-        View all works <i class="fas fa-arrow-right"></i>
-      </a>
-    </div>
-
-    <div class="works-grid">
-      <div class="work-card work-card--tall">
-        <div class="work-img-wrap">
-          <img src="https://images.unsplash.com/photo-1541961017774-22349e4a1262?w=600&q=80" alt="Golden Hour Study">
-          <div class="work-overlay">
-            <a href="listing.html" class="work-overlay-btn">View Work</a>
-          </div>
-        </div>
-        <div class="work-info">
-          <div class="work-title">Golden Hour Study</div>
-          <div class="work-artist">Elena Vasquez</div>
-          <div class="work-footer">
-            <div class="work-price">KES 54,600</div>
-            <button class="work-save" aria-label="Save"><i class="far fa-heart"></i></button>
-          </div>
-        </div>
-      </div>
-
-      <div class="work-card">
-        <div class="work-img-wrap">
-          <img src="https://images.unsplash.com/photo-1547036967-23d11aacaee0?w=400&q=80" alt="Meridian">
-          <div class="work-overlay"><a href="listing.html" class="work-overlay-btn">View Work</a></div>
-        </div>
-        <div class="work-info">
-          <div class="work-title">Meridian</div>
-          <div class="work-artist">Elena Vasquez</div>
-          <div class="work-footer">
-            <div class="work-price">KES 136,500</div>
-            <button class="work-save" aria-label="Save"><i class="far fa-heart"></i></button>
-          </div>
-        </div>
-      </div>
-
-      <div class="work-card">
-        <div class="work-img-wrap">
-          <img src="https://images.unsplash.com/photo-1579783901586-d88db74b4fe4?w=400&q=80" alt="Still Water">
-          <div class="work-overlay"><a href="listing.html" class="work-overlay-btn">View Work</a></div>
-        </div>
-        <div class="work-info">
-          <div class="work-title">Still Water</div>
-          <div class="work-artist">Marcus Chen</div>
-          <div class="work-footer">
-            <div class="work-price">KES 75,400</div>
-            <button class="work-save" aria-label="Save"><i class="far fa-heart"></i></button>
-          </div>
-        </div>
-      </div>
-
-      <div class="work-card">
-        <div class="work-img-wrap">
-          <img src="https://images.unsplash.com/photo-1549490349-8643362247b5?w=400&q=80" alt="Harbour at Dusk">
-          <div class="work-overlay"><a href="listing.html" class="work-overlay-btn">View Work</a></div>
-        </div>
-        <div class="work-info">
-          <div class="work-title">Harbour at Dusk</div>
-          <div class="work-artist">Amara Osei</div>
-          <div class="work-footer">
-            <div class="work-price">KES 62,400</div>
-            <button class="work-save" aria-label="Save"><i class="far fa-heart"></i></button>
-          </div>
-        </div>
-      </div>
-
-      <div class="work-card">
-        <div class="work-img-wrap">
-          <img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=400&q=80" alt="Chromatic Study III">
-          <div class="work-overlay"><a href="listing.html" class="work-overlay-btn">View Work</a></div>
-        </div>
-        <div class="work-info">
-          <div class="work-title">Chromatic Study III</div>
-          <div class="work-artist">Yuki Tanaka</div>
-          <div class="work-footer">
-            <div class="work-price">KES 109,200</div>
-            <button class="work-save" aria-label="Save"><i class="far fa-heart"></i></button>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ══════════ CATEGORIES ══════════ -->
-  <section id="categories">
-    <div class="section-header">
-      <div>
-        <div class="section-overline" style="color:rgba(255,255,255,0.4)">Shop by medium</div>
-        <h2 class="section-title" style="color:var(--cream)">Browse by Category</h2>
-      </div>
-      <a href="browse.html" class="section-link" style="color:rgba(255,255,255,0.4)">
-        All categories <i class="fas fa-arrow-right"></i>
-      </a>
-    </div>
-    <div class="cats-grid">
-      <div class="cat-card">
-        <img src="https://images.unsplash.com/photo-1541961017774-22349e4a1262?w=400&q=80" alt="Oil Paintings">
-        <div class="cat-card-body">
-          <div class="cat-name">Oil Paintings</div>
-          <div class="cat-count">2,840 works</div>
-        </div>
-      </div>
-      <div class="cat-card">
-        <img src="https://images.unsplash.com/photo-1579783901586-d88db74b4fe4?w=400&q=80" alt="Watercolour">
-        <div class="cat-card-body">
-          <div class="cat-name">Watercolour</div>
-          <div class="cat-count">1,620 works</div>
-        </div>
-      </div>
-      <div class="cat-card">
-        <img src="https://images.unsplash.com/photo-1505765050516-f72dcac9c60e?w=400&q=80" alt="Photography">
-        <div class="cat-card-body">
-          <div class="cat-name">Photography</div>
-          <div class="cat-count">3,210 works</div>
-        </div>
-      </div>
-      <div class="cat-card">
-        <img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=400&q=80" alt="Abstract">
-        <div class="cat-card-body">
-          <div class="cat-name">Abstract</div>
-          <div class="cat-count">1,980 works</div>
-        </div>
-      </div>
-      <div class="cat-card">
-        <img src="https://images.unsplash.com/photo-1547036967-23d11aacaee0?w=400&q=80" alt="Prints">
-        <div class="cat-card-body">
-          <div class="cat-name">Prints</div>
-          <div class="cat-count">890 works</div>
-        </div>
-      </div>
-      <div class="cat-card">
-        <img src="https://images.unsplash.com/photo-1549490349-8643362247b5?w=400&q=80" alt="Sculpture">
-        <div class="cat-card-body">
-          <div class="cat-name">Sculpture</div>
-          <div class="cat-count">430 works</div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ══════════ EDITORIAL ══════════ -->
-  <section id="editorial">
-    <img class="editorial-img"
-      src="https://images.unsplash.com/photo-1579783901586-d88db74b4fe4?w=900&q=80"
-      alt="Artist at work">
-    <div class="editorial-body">
-      <div class="editorial-tag">Artist Story</div>
-      <h2 class="editorial-title">
-        "Painting is how I<br><em>process the world</em>"
-      </h2>
-      <p class="editorial-text">
-        Elena Vasquez's studio in Nairobi is a study in controlled chaos — canvases stacked three deep, pigment-stained palettes crowding every surface. Over the past decade she has sold over 400 original works to collectors across 28 countries.
-      </p>
-      <a href="artist.html" class="btn-primary">
-        Read Her Story <i class="fas fa-arrow-right"></i>
-      </a>
-      <div class="editorial-artist-row">
-        <img class="editorial-avatar"
-          src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=80&q=80"
-          alt="Elena Vasquez">
+  <!-- ═══════════ FEATURED WORKS ═══════════ -->
+  <main id="main-content"><section id="featured" aria-label="Featured works">
+    <div style="padding:100px 80px 0">
+      <div class="section-header reveal">
         <div>
-          <div class="editorial-artist-name">Elena Vasquez</div>
-          <div class="editorial-artist-tag">Oil & Resin · Nairobi, Kenya</div>
+          <div class="section-label">Featured Works</div>
+          <h2 class="section-title">Curated for<br><em>Discerning</em> Collectors</h2>
+        </div>
+        <a href="browse.html" class="section-view-all">View All Works <i class="fas fa-arrow-right" style="font-size:0.6rem"></i></a>
+      </div>
+    </div>
+
+    <div style="padding:0 80px 100px">
+      <div class="featured-grid reveal">
+
+        <!-- Hero card -->
+        <div class="art-card art-card--hero">
+          <div class="art-card-img-wrap" onclick="location.href='listing.html'" style="cursor:pointer">
+            <img class="art-card-img" src="https://images.unsplash.com/photo-1543857778-c4a1a3e0b2eb?w=800&q=80" alt="The Weight of Memory by Amara Osei">
+          </div>
+          <div class="edition-badge edition-badge--featured">Featured Work</div>
+          <div class="art-card-overlay">
+            <div class="art-card-actions">
+              <button class="qbtn qbtn--primary">Add to Cart</button>
+              <button class="qbtn-icon" aria-label="Save to wishlist"><i class="fas fa-heart"></i></button>
+              <button class="qbtn-icon" aria-label="View details"><i class="fas fa-expand"></i></button>
+            </div>
+          </div>
+          <div class="art-card-footer">
+            <div class="art-card-artist">Amara Osei</div>
+            <div class="art-card-title">The Weight of Memory</div>
+            <div class="art-card-meta">
+              <div class="art-card-price">KES 162,500</div>
+              <div class="art-card-medium">Oil on Canvas · 80×100cm</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Top right -->
+        <div class="art-card">
+          <div class="art-card-img-wrap" onclick="location.href='listing.html'" style="cursor:pointer">
+            <img class="art-card-img" src="https://images.unsplash.com/photo-1579783901586-d88db74b4fe4?w=600&q=80" alt="Midnight Bloom by Soo-Jin Park">
+          </div>
+          <div class="edition-badge">Ed. 5/12</div>
+          <div class="art-card-overlay">
+            <div class="art-card-actions">
+              <button class="qbtn qbtn--primary">Add to Cart</button>
+              <button class="qbtn-icon" aria-label="Save"><i class="fas fa-heart"></i></button>
+            </div>
+          </div>
+          <div class="art-card-footer">
+            <div class="art-card-artist">Soo-Jin Park</div>
+            <div class="art-card-title">Midnight Bloom</div>
+            <div class="art-card-meta">
+              <div class="art-card-price">KES 49,400</div>
+              <div class="art-card-medium">Giclee Print</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Bottom right -->
+        <div class="art-card">
+          <div class="art-card-img-wrap" onclick="location.href='listing.html'" style="cursor:pointer">
+            <img class="art-card-img" src="https://images.unsplash.com/photo-1508919801845-fc2ae1bc2a28?w=600&q=80" alt="Still Life No.7 by Marco Bellini">
+          </div>
+          <div class="art-card-overlay">
+            <div class="art-card-actions">
+              <button class="qbtn qbtn--primary">Add to Cart</button>
+              <button class="qbtn-icon" aria-label="Save"><i class="fas fa-heart"></i></button>
+            </div>
+          </div>
+          <div class="art-card-footer">
+            <div class="art-card-artist">Marco Bellini</div>
+            <div class="art-card-title">Still Life No.7</div>
+            <div class="art-card-meta">
+              <div class="art-card-price">KES 84,500</div>
+              <div class="art-card-medium">Watercolour · 42×60cm</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════ CATEGORIES ═══════════ -->
+  <section id="categories" aria-label="Browse by category">
+    <div class="section-header reveal">
+      <div>
+        <div class="section-label">Explore</div>
+        <h2 class="section-title">Browse by<br><em>Category</em></h2>
+      </div>
+    </div>
+    <div class="cat-grid">
+      <div class="cat-card reveal reveal-delay-1">
+        <img class="cat-bg" src="https://images.unsplash.com/photo-1578301978018-3005759f48f7?w=400&q=80" alt="Paintings">
+        <div class="cat-overlay"></div>
+        <div class="cat-label">
+          <span class="cat-name">Paintings</span>
+          <span class="cat-count">1,240 works</span>
+        </div>
+      </div>
+      <div class="cat-card reveal reveal-delay-2">
+        <img class="cat-bg" src="https://images.unsplash.com/photo-1547891654-e66ed7ebb968?w=400&q=80" alt="Photography">
+        <div class="cat-overlay"></div>
+        <div class="cat-label">
+          <span class="cat-name">Photography</span>
+          <span class="cat-count">980 works</span>
+        </div>
+      </div>
+      <div class="cat-card reveal reveal-delay-3">
+        <img class="cat-bg" src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&q=80" alt="Prints">
+        <div class="cat-overlay"></div>
+        <div class="cat-label">
+          <span class="cat-name">Prints</span>
+          <span class="cat-count">760 works</span>
+        </div>
+      </div>
+      <div class="cat-card reveal reveal-delay-4">
+        <img class="cat-bg" src="https://images.unsplash.com/photo-1493106641515-5d4fd4e6f731?w=400&q=80" alt="Sculpture">
+        <div class="cat-overlay"></div>
+        <div class="cat-label">
+          <span class="cat-name">Sculpture</span>
+          <span class="cat-count">340 works</span>
+        </div>
+      </div>
+      <div class="cat-card reveal reveal-delay-5">
+        <img class="cat-bg" src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=400&q=80" alt="Digital Art">
+        <div class="cat-overlay"></div>
+        <div class="cat-label">
+          <span class="cat-name">Digital Art</span>
+          <span class="cat-count">520 works</span>
+        </div>
+      </div>
+      <div class="cat-card reveal reveal-delay-5">
+        <img class="cat-bg" src="https://images.unsplash.com/photo-1551888954-a5c296b07eb5?w=400&q=80" alt="Drawings">
+        <div class="cat-overlay"></div>
+        <div class="cat-label">
+          <span class="cat-name">Drawings</span>
+          <span class="cat-count">410 works</span>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- ══════════ ARTIST SPOTLIGHT ══════════ -->
-  <section id="artists">
-    <div class="section-header">
-      <div>
-        <div class="section-overline">Meet the makers</div>
-        <h2 class="section-title">Featured Artists</h2>
-      </div>
-      <a href="artist.html" class="section-link">All artists <i class="fas fa-arrow-right"></i></a>
+  <!-- ═══════════ EDITORIAL FEATURE ═══════════ -->
+  <section id="editorial" aria-label="Editorial feature">
+    <div class="editorial-image">
+      <img src="https://images.unsplash.com/photo-1513364776144-60967b0f800f?w=900&q=80" alt="Artist at work">
+      <div class="editorial-image-caption">Photo: Studio Visit, 2026</div>
     </div>
-    <div class="artists-grid">
-      <div class="artist-card" onclick="location.href='artist.html'">
-        <div class="artist-avatar-wrap">
-          <img class="artist-avatar" src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=160&q=80" alt="Elena Vasquez">
-          <div class="artist-verified"><i class="fas fa-check"></i></div>
+    <div class="editorial-content">
+      <div class="editorial-issue">Artist Spotlight — Spring 2026</div>
+      <h2 class="editorial-headline">
+        "Art is the only<br><em>language</em> that<br>needs no translation"
+      </h2>
+      <p class="editorial-body">
+        We sat down with five of our most celebrated artists to discuss process, inspiration, and what it means to create in an increasingly digital world. Their stories are as textured as the canvases they work on.
+      </p>
+      <a href="artist.html" class="btn-light">
+        Read the Feature <i class="fas fa-arrow-right" style="font-size:0.65rem"></i>
+      </a>
+    </div>
+  </section>
+
+  <!-- ═══════════ ARTISTS ═══════════ -->
+  <section id="artists" aria-label="Featured artists">
+    <div class="section-header reveal">
+      <div>
+        <div class="section-label">The Artists</div>
+        <h2 class="section-title">Voices Behind<br><em>the Work</em></h2>
+      </div>
+      <a href="artist.html" class="section-view-all">All Artists <i class="fas fa-arrow-right" style="font-size:0.6rem"></i></a>
+    </div>
+
+    <div class="artists-grid sr-stagger">
+      <div class="artist-card reveal reveal-delay-1">
+        <div class="artist-img-wrap">
+          <img class="artist-img" src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400&q=80" alt="Elena Vasquez">
+          <button class="artist-follow-btn" aria-label="Follow Elena Vasquez">
+            <i class="fas fa-plus"></i>
+          </button>
+          <div class="artist-works-strip">
+            <img class="artist-work-thumb" src="https://images.unsplash.com/photo-1541961017774-22349e4a1262?w=100&q=70" alt="">
+            <img class="artist-work-thumb" src="https://images.unsplash.com/photo-1579783901586-d88db74b4fe4?w=100&q=70" alt="">
+            <img class="artist-work-thumb" src="https://images.unsplash.com/photo-1543857778-c4a1a3e0b2eb?w=100&q=70" alt="">
+          </div>
         </div>
         <div class="artist-name">Elena Vasquez</div>
-        <div class="artist-medium">Oil & Resin</div>
+        <div class="artist-specialty">Oil · Impressionism</div>
         <div class="artist-stats">
-          <div><div class="artist-stat-val">218</div><div class="artist-stat-lbl">Sold</div></div>
-          <div><div class="artist-stat-val">4.9★</div><div class="artist-stat-lbl">Rating</div></div>
+          <div><div class="artist-stat-val">142</div><div class="artist-stat-lbl">Works</div></div>
+          <div><div class="artist-stat-val">2.4K</div><div class="artist-stat-lbl">Followers</div></div>
+          <div><div class="artist-stat-val">KES 44,200</div><div class="artist-stat-lbl">Avg. Price</div></div>
         </div>
       </div>
-      <div class="artist-card" onclick="location.href='artist.html'">
-        <div class="artist-avatar-wrap">
-          <img class="artist-avatar" src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=160&q=80" alt="Marcus Chen">
-          <div class="artist-verified"><i class="fas fa-check"></i></div>
-        </div>
-        <div class="artist-name">Marcus Chen</div>
-        <div class="artist-medium">Watercolour</div>
-        <div class="artist-stats">
-          <div><div class="artist-stat-val">134</div><div class="artist-stat-lbl">Sold</div></div>
-          <div><div class="artist-stat-val">4.8★</div><div class="artist-stat-lbl">Rating</div></div>
-        </div>
-      </div>
-      <div class="artist-card" onclick="location.href='artist.html'">
-        <div class="artist-avatar-wrap">
-          <img class="artist-avatar" src="https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=160&q=80" alt="Amara Osei">
-          <div class="artist-verified"><i class="fas fa-check"></i></div>
+
+      <div class="artist-card reveal reveal-delay-2">
+        <div class="artist-img-wrap">
+          <img class="artist-img" src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&q=80" alt="Amara Osei">
+          <button class="artist-follow-btn" aria-label="Follow Amara Osei">
+            <i class="fas fa-plus"></i>
+          </button>
+          <div class="artist-works-strip">
+            <img class="artist-work-thumb" src="https://images.unsplash.com/photo-1508919801845-fc2ae1bc2a28?w=100&q=70" alt="">
+            <img class="artist-work-thumb" src="https://images.unsplash.com/photo-1549490349-8643362247b5?w=100&q=70" alt="">
+            <img class="artist-work-thumb" src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=100&q=70" alt="">
+          </div>
         </div>
         <div class="artist-name">Amara Osei</div>
-        <div class="artist-medium">Photography</div>
+        <div class="artist-specialty">Mixed Media · Abstract</div>
         <div class="artist-stats">
-          <div><div class="artist-stat-val">89</div><div class="artist-stat-lbl">Sold</div></div>
-          <div><div class="artist-stat-val">4.7★</div><div class="artist-stat-lbl">Rating</div></div>
+          <div><div class="artist-stat-val">87</div><div class="artist-stat-lbl">Works</div></div>
+          <div><div class="artist-stat-val">1.8K</div><div class="artist-stat-lbl">Followers</div></div>
+          <div><div class="artist-stat-val">KES 115,700</div><div class="artist-stat-lbl">Avg. Price</div></div>
         </div>
       </div>
-      <div class="artist-card" onclick="location.href='artist.html'">
-        <div class="artist-avatar-wrap">
-          <img class="artist-avatar" src="https://images.unsplash.com/photo-1488161628813-04466f872be2?w=160&q=80" alt="Yuki Tanaka">
+
+      <div class="artist-card reveal reveal-delay-3">
+        <div class="artist-img-wrap">
+          <img class="artist-img" src="https://images.unsplash.com/photo-1494790108755-2616b612b786?w=400&q=80" alt="Soo-Jin Park">
+          <button class="artist-follow-btn" aria-label="Follow Soo-Jin Park">
+            <i class="fas fa-plus"></i>
+          </button>
+          <div class="artist-works-strip">
+            <img class="artist-work-thumb" src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=100&q=70" alt="">
+            <img class="artist-work-thumb" src="https://images.unsplash.com/photo-1547891654-e66ed7ebb968?w=100&q=70" alt="">
+            <img class="artist-work-thumb" src="https://images.unsplash.com/photo-1551888954-a5c296b07eb5?w=100&q=70" alt="">
+          </div>
         </div>
-        <div class="artist-name">Yuki Tanaka</div>
-        <div class="artist-medium">Abstract · Mixed Media</div>
+        <div class="artist-name">Soo-Jin Park</div>
+        <div class="artist-specialty">Photography · Conceptual</div>
         <div class="artist-stats">
-          <div><div class="artist-stat-val">67</div><div class="artist-stat-lbl">Sold</div></div>
-          <div><div class="artist-stat-val">4.9★</div><div class="artist-stat-lbl">Rating</div></div>
+          <div><div class="artist-stat-val">218</div><div class="artist-stat-lbl">Works</div></div>
+          <div><div class="artist-stat-val">3.1K</div><div class="artist-stat-lbl">Followers</div></div>
+          <div><div class="artist-stat-val">KES 28,600</div><div class="artist-stat-lbl">Avg. Price</div></div>
+        </div>
+      </div>
+
+      <div class="artist-card reveal reveal-delay-4">
+        <div class="artist-img-wrap">
+          <img class="artist-img" src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&q=80" alt="Marco Bellini">
+          <button class="artist-follow-btn" aria-label="Follow Marco Bellini">
+            <i class="fas fa-plus"></i>
+          </button>
+          <div class="artist-works-strip">
+            <img class="artist-work-thumb" src="https://images.unsplash.com/photo-1493106641515-5d4fd4e6f731?w=100&q=70" alt="">
+            <img class="artist-work-thumb" src="https://images.unsplash.com/photo-1578301978018-3005759f48f7?w=100&q=70" alt="">
+            <img class="artist-work-thumb" src="https://images.unsplash.com/photo-1513364776144-60967b0f800f?w=100&q=70" alt="">
+          </div>
+        </div>
+        <div class="artist-name">Marco Bellini</div>
+        <div class="artist-specialty">Watercolour · Realism</div>
+        <div class="artist-stats">
+          <div><div class="artist-stat-val">63</div><div class="artist-stat-lbl">Works</div></div>
+          <div><div class="artist-stat-val">970</div><div class="artist-stat-lbl">Followers</div></div>
+          <div><div class="artist-stat-val">KES 72,800</div><div class="artist-stat-lbl">Avg. Price</div></div>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- ══════════ HOW IT WORKS ══════════ -->
-  <section id="how">
-    <div class="section-header">
+  <!-- ═══════════ HOW IT WORKS ═══════════ -->
+  <section id="how" aria-label="How it works">
+    <div class="section-header reveal">
       <div>
-        <div class="section-overline">Simple process</div>
-        <h2 class="section-title">How Art Alcove Works</h2>
+        <div class="section-label">The Process</div>
+        <h2 class="section-title">Simple by<br><em>Design</em></h2>
       </div>
     </div>
-    <div class="how-grid">
-      <div class="how-card">
+    <div class="how-grid sr-stagger">
+      <div class="how-card reveal reveal-delay-1">
         <div class="how-num">01</div>
         <div class="how-icon"><i class="fas fa-compass"></i></div>
         <div class="how-title">Discover Original Art</div>
-        <p class="how-text">Browse thousands of original works from independent artists. Filter by medium, style, price, and size to find exactly what speaks to you.</p>
+        <div class="how-body">Browse thousands of original works across every medium and style. Filter by category, price, size, or artist — or let the curated collections guide you.</div>
+        <a href="browse.html" class="how-link">Start Browsing <i class="fas fa-arrow-right"></i></a>
       </div>
-      <div class="how-card">
+      <div class="how-card reveal reveal-delay-2">
         <div class="how-num">02</div>
-        <div class="how-icon"><i class="fas fa-shield-alt"></i></div>
+        <div class="how-icon"><i class="fas fa-handshake"></i></div>
         <div class="how-title">Buy with Confidence</div>
-        <p class="how-text">Every purchase is protected. Secure payments, certificate of authenticity, and a 14-day return policy on all original works.</p>
+        <div class="how-body">Every purchase comes with a certificate of authenticity, secure payment, and buyer protection. If anything goes wrong, we'll make it right — guaranteed.</div>
+        <a href="browse.html" class="how-link">Our Guarantee <i class="fas fa-arrow-right"></i></a>
       </div>
-      <div class="how-card">
+      <div class="how-card reveal reveal-delay-3">
         <div class="how-num">03</div>
-        <div class="how-icon"><i class="fas fa-home"></i></div>
-        <div class="how-title">Art Arrives at Your Door</div>
-        <p class="how-text">Professional art packaging and insured worldwide shipping. Your new piece arrives safely, ready to hang — with a story worth telling.</p>
+        <div class="how-icon"><i class="fas fa-paint-brush"></i></div>
+        <div class="how-title">Sell Your Work</div>
+        <div class="how-body">Join 840+ independent artists already selling on Art Alcove. Set your own prices, keep 80% of every sale, and reach collectors who truly appreciate original art.</div>
+        <a href="dashboard.html" class="how-link">Start Selling <i class="fas fa-arrow-right"></i></a>
       </div>
     </div>
   </section>
 
-  <!-- ══════════ SELL CTA ══════════ -->
-  <section id="sell-cta">
-    <div class="cta-overline">For Artists</div>
-    <h2 class="cta-title">Your Art Deserves<br>a Global Audience</h2>
-    <p class="cta-sub">Join 3,400 independent artists selling on Art Alcove. Set your own prices, keep 80% of every sale, and reach collectors in over 60 countries.</p>
-    <a href="dashboard.html" class="btn-white">
-      <i class="fas fa-plus"></i> Start Selling Today
-    </a>
-  </section>
-
-  <!-- ══════════ FOOTER ══════════ -->
-  <footer>
-    <div class="footer-top">
-      <div>
-        <div class="footer-logo">Art<span class="footer-logo-dot"></span>Alcove</div>
-        <p class="footer-tagline">The marketplace for original art from independent artists worldwide. Every piece, a story.</p>
-        <div class="footer-social">
-          <a class="footer-social-btn" href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
-          <a class="footer-social-btn" href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
-          <a class="footer-social-btn" href="#" aria-label="Pinterest"><i class="fab fa-pinterest"></i></a>
+  <!-- ═══════════ TESTIMONIALS ═══════════ -->
+  <section id="testimonials" aria-label="Testimonials">
+    <div class="testimonials-layout">
+      <div class="testimonial-left reveal">
+        <div class="big-quote">"</div>
+        <p class="testimonial-text" id="testimonialText">
+          "Art Alcove has completely transformed how I connect with collectors. Within three months of joining I'd sold 18 pieces to buyers across four continents."
+        </p>
+        <div class="testimonial-author">
+          <img class="testimonial-avatar" src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&q=80" alt="Elena Vasquez" id="testimonialAvatar">
+          <div>
+            <div class="testimonial-author-name" id="testimonialName">Elena Vasquez</div>
+            <div class="testimonial-author-role" id="testimonialRole">Oil Painter · Madrid, Spain</div>
+          </div>
+        </div>
+        <div class="testimonial-dots">
+          <div class="t-dot active" data-index="0"></div>
+          <div class="t-dot" data-index="1"></div>
+          <div class="t-dot" data-index="2"></div>
         </div>
       </div>
-      <div class="footer-col">
-        <div class="footer-col-title">Explore</div>
-        <a href="browse.html">Browse Works</a>
-        <a href="artist.html">Artists</a>
-        <a href="#">Editorial</a>
-        <a href="#">New Arrivals</a>
-      </div>
-      <div class="footer-col">
-        <div class="footer-col-title">Sell</div>
-        <a href="dashboard.html">Start Selling</a>
-        <a href="#">Pricing</a>
-        <a href="#">Artist Resources</a>
-        <a href="#">Success Stories</a>
-      </div>
-      <div class="footer-col">
-        <div class="footer-col-title">Support</div>
-        <a href="#">Help Centre</a>
-        <a href="#">Shipping Info</a>
-        <a href="#">Returns</a>
-        <a href="#">Contact Us</a>
+
+      <div class="testimonial-cards reveal reveal-delay-2">
+        <div class="t-mini-card">
+          <img class="t-mini-avatar" src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&q=80" alt="James Thornton">
+          <div class="t-mini-text">"Found my first original piece here. The framing advice and certificate made gifting it to my wife even more special."</div>
+          <div class="t-mini-stars">★★★★★</div>
+        </div>
+        <div class="t-mini-card">
+          <img class="t-mini-avatar" src="https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?w=100&q=80" alt="Priya Mehta">
+          <div class="t-mini-text">"The curation is exceptional. I've discovered artists I never would have found elsewhere, and my collection is richer for it."</div>
+          <div class="t-mini-stars">★★★★★</div>
+        </div>
+        <div class="t-mini-card">
+          <img class="t-mini-avatar" src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&q=80" alt="Daniel Okafor">
+          <div class="t-mini-text">"As an emerging artist, the exposure has been incredible. The platform genuinely cares about both sides of the transaction."</div>
+          <div class="t-mini-stars">★★★★★</div>
+        </div>
       </div>
     </div>
+  </section>
+
+  <!-- ═══════════ CTA ═══════════ -->
+  <section id="cta" aria-label="Call to action">
+    <div class="cta-bg-text">SELL</div>
+    <div class="cta-content sr">
+      <div>
+        <h2 class="cta-headline reveal">
+          Your art deserves<br>an <em>audience</em>
+        </h2>
+        <p class="cta-sub reveal reveal-delay-1">
+          Join Art Alcove and put your work in front of passionate collectors worldwide. No listing fees. No monthly subscriptions. Just art finding its home.
+        </p>
+      </div>
+      <div class="cta-actions reveal reveal-delay-2">
+        <a href="dashboard.html" class="btn-gold">
+          <i class="fas fa-paint-brush"></i>
+          Start Selling Free
+        </a>
+        <span class="cta-note">No listing fees &nbsp;·&nbsp; 80% commission kept</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════ FOOTER ═══════════ -->
+  <footer id="footer" role="contentinfo">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <div class="footer-logo">
+          <img class="footer-logo-img" src="Art_Alcove_logo.png" alt="Art Alcove">
+        </div>
+        <p class="footer-tagline">
+          The marketplace for original art — connecting independent artists with passionate collectors since 2024.
+        </p>
+        <div class="footer-social">
+          <a href="#" class="footer-social-btn" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+          <a href="#" class="footer-social-btn" aria-label="Pinterest"><i class="fab fa-pinterest-p"></i></a>
+          <a href="#" class="footer-social-btn" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+          <a href="#" class="footer-social-btn" aria-label="TikTok"><i class="fab fa-tiktok"></i></a>
+        </div>
+      </div>
+
+      <div>
+        <div class="footer-col-title">Explore</div>
+        <ul class="footer-links">
+          <li><a href="browse.html">Browse All Works</a></li>
+          <li><a href="browse.html">New Arrivals</a></li>
+          <li><a href="artist.html">Featured Artists</a></li>
+          <li><a href="browse.html">Curated Collections</a></li>
+          <li><a href="browse.html">Limited Editions</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <div class="footer-col-title">Artists</div>
+        <ul class="footer-links">
+          <li><a href="dashboard.html">Start Selling</a></li>
+          <li><a href="dashboard.html">Artist Resources</a></li>
+          <li><a href="dashboard.html">Pricing & Fees</a></li>
+          <li><a href="artist.html">Success Stories</a></li>
+          <li><a href="artist.html">Artist Community</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <div class="footer-col-title">Support</div>
+        <ul class="footer-links">
+          <li><a href="index.html">Help Centre</a></li>
+          <li><a href="listing.html">Shipping Info</a></li>
+          <li><a href="listing.html">Returns Policy</a></li>
+          <li><a href="listing.html">Authentication</a></li>
+          <li><a href="index.html">Contact Us</a></li>
+        </ul>
+      </div>
+    </div>
+
     <div class="footer-bottom">
-      <span>© 2025 Art Alcove. All rights reserved.</span>
-      <span>Privacy Policy · Terms of Service</span>
+      <div class="footer-copy">© 2026 Art Alcove Ltd. All rights reserved.</div>
+      <div class="footer-legal">
+        <a href="#">Privacy Policy</a>
+        <a href="#">Terms of Service</a>
+        <a href="#">Cookie Settings</a>
+      </div>
     </div>
   </footer>
 
+  <script>
+    'use strict';
+
+    // ── Nav scroll ──────────────────────────────────
+    const nav = document.getElementById('nav');
+    window.addEventListener('scroll', () => {
+      nav.classList.toggle('scrolled', window.scrollY > 40);
+    }, { passive: true });
+
+    // ── Scroll reveal ───────────────────────────────
+    const reveals = document.querySelectorAll('.reveal');
+    const revealObs = new IntersectionObserver(entries => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.classList.add('visible');
+          revealObs.unobserve(e.target);
+        }
+      });
+    }, { rootMargin: '-60px 0px', threshold: 0.1 });
+    reveals.forEach(el => revealObs.observe(el));
+
+    // ── Cursor dot ──────────────────────────────────
+    const dot  = document.getElementById('cursorDot');
+    const ring = document.getElementById('cursorRing');
+    let mx = 0, my = 0, rx = 0, ry = 0;
+    document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; }, { passive: true });
+    (function animCursor() {
+      dot.style.left  = mx + 'px';
+      dot.style.top   = my + 'px';
+      rx += (mx - rx) * 0.14;
+      ry += (my - ry) * 0.14;
+      ring.style.left = rx + 'px';
+      ring.style.top  = ry + 'px';
+      requestAnimationFrame(animCursor);
+    })();
+
+    // Grow cursor on interactive elements
+    document.querySelectorAll('a, button, .art-card, .cat-card, .artist-card').forEach(el => {
+      el.addEventListener('mouseenter', () => {
+        dot.style.width  = '14px';
+        dot.style.height = '14px';
+        ring.style.width  = '56px';
+        ring.style.height = '56px';
+      });
+      el.addEventListener('mouseleave', () => {
+        dot.style.width  = '8px';
+        dot.style.height = '8px';
+        ring.style.width  = '36px';
+        ring.style.height = '36px';
+      });
+    });
+
+    // ── Testimonials carousel ───────────────────────
+    const testimonials = [
+      {
+        text: '"Art Alcove has completely transformed how I connect with collectors. Within three months of joining I\'d sold 18 pieces to buyers across four continents."',
+        name: 'Elena Vasquez', role: 'Oil Painter · Madrid, Spain',
+        avatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&q=80'
+      },
+      {
+        text: '"I spent years trying to sell through galleries that kept 50% and barely promoted my work. Art Alcove gave me full control. Now I sell directly and earn what I deserve."',
+        name: 'Amara Osei', role: 'Mixed Media · Accra, Ghana',
+        avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&q=80'
+      },
+      {
+        text: '"The collector community here is unlike any other platform. People who buy on Art Alcove genuinely care about the artists they support. It shows in every interaction."',
+        name: 'Soo-Jin Park', role: 'Photographer · Seoul, Korea',
+        avatar: 'https://images.unsplash.com/photo-1494790108755-2616b612b786?w=100&q=80'
+      }
+    ];
+    let tIdx = 0;
+    const tText   = document.getElementById('testimonialText');
+    const tName   = document.getElementById('testimonialName');
+    const tRole   = document.getElementById('testimonialRole');
+    const tAvatar = document.getElementById('testimonialAvatar');
+    const tDots   = document.querySelectorAll('.t-dot');
+
+    function setTestimonial(i) {
+      tIdx = i;
+      const t = testimonials[i];
+      tText.textContent   = t.text;
+      tName.textContent   = t.name;
+      tRole.textContent   = t.role;
+      tAvatar.src         = t.avatar;
+      tDots.forEach((d, j) => d.classList.toggle('active', j === i));
+    }
+    tDots.forEach(d => d.addEventListener('click', () => setTestimonial(+d.dataset.index)));
+    setInterval(() => setTestimonial((tIdx + 1) % testimonials.length), 5500);
+
+    // ── Wishlist / cart micro-interactions ──────────
+    document.querySelectorAll('.qbtn-icon[aria-label="Save to wishlist"], .qbtn-icon[aria-label="Save"]').forEach(btn => {
+      btn.addEventListener('click', e => {
+        e.stopPropagation();
+        const icon = btn.querySelector('i');
+        icon.style.color = '#c8391a';
+        btn.style.background = 'rgba(200,57,26,0.2)';
+      });
+    });
+
+    // ── Follow button toggle ────────────────────────
+    document.querySelectorAll('.artist-follow-btn').forEach(btn => {
+      btn.addEventListener('click', e => {
+        e.stopPropagation();
+        const icon = btn.querySelector('i');
+        const following = icon.classList.contains('fa-check');
+        icon.className = following ? 'fas fa-plus' : 'fas fa-check';
+        btn.style.background = following ? 'rgba(247,243,238,0.88)' : 'rgba(200,57,26,0.9)';
+        btn.style.color      = following ? '' : '#fff';
+      });
+    });
+  </script>
+  <script src="shared.js" defer></script>
 </body>
 </html>
